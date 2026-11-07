@@ -69,9 +69,10 @@ script:
     alias: "Haus verlassen"
     icon: mdi:exit-run
     sequence:
+      # 07.11.: Giebel bleibt an (Wunsch) – geht um 23 Uhr selbst aus
       - action: light.turn_off
         target:
-          entity_id: light.alle_lichter
+          entity_id: "{{ state_attr('light.alle_lichter', 'entity_id') | reject('eq', 'light.dimmer_aussenbeleuchtung_giebel') | list }}"
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.alles_an

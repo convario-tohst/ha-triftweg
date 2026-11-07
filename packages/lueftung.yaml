@@ -1,7 +1,8 @@
 # Lüftung (Vallox): Stoßlüften, wenn ein Bad benutzt wird
 # Bad belegt = Präsenz Gästebad (0/7/3) oder Deckenlicht Bad Yvonne / Bad OG an.
-# Beim Betreten und beim Verlassen läuft Boost für die eingestellte Dauer,
-# danach kehrt die Vallox selbst ins vorherige Profil zurück.
+# 07.11.: Boost nur noch beim VERLASSEN und nur, wenn das Bad mind. 2 min belegt war (kein Boost beim Betreten /
+# kurzem Durchgehen). Vorher lief Boost 51 h in 10 Tagen allein durch Betreten+Verlassen. Dauer jetzt 10 min.
+# Danach kehrt die Vallox selbst ins vorherige Profil zurück. Duschen regelt zusätzlich die Feuchte (raumklima_nutzung.yaml).
 
 input_boolean:
   lueftung_bad_automatik:
@@ -36,16 +37,18 @@ automation:
     triggers:
       - trigger: state
         entity_id: binary_sensor.bad_belegt
-        from: "off"
-        to: "on"
-      - trigger: state
-        entity_id: binary_sensor.bad_belegt
         from: "on"
         to: "off"
     conditions:
       - condition: state
         entity_id: input_boolean.lueftung_bad_automatik
         state: "on"
+      # nur nach echter Benutzung (mind. 2 min belegt)
+      - "{{ (trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds() >= 120 }}"
+      # nicht bei Abwesenheit
+      - condition: state
+        entity_id: input_boolean.haus_abwesend
+        state: "off"
       # Kamin-Profil nicht überschreiben
       - condition: not
         conditions:
@@ -56,4 +59,4 @@ automation:
       - action: vallox.set_profile
         data:
           profile: boost
-          duration: "{{ states('input_number.lueftung_bad_dauer') | int(15) }}"
+          duration: "{{ states('input_number.lueftung_bad_dauer') | int(10) }}"

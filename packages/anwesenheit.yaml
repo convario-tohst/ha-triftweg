@@ -1,6 +1,9 @@
 # Anwesenheit: "Haus verlassen" setzt Abwesend; das Haus erkennt die Rückkehr selbst
 # Rückkehr = ein Handy kommt nach Hause ODER Bewegung im Haus (Ring Flur/Wohnzimmer, KNX-Präsenz)
 # -> Lüftung zurück auf Zuhause, Hinweis weg, Begrüßungslicht im Flur bei Dunkelheit
+# 07.11. NEU: "Abwesend ohne Bewegung" – 15 min keine Präsenz/Bewegung im Haus → Abwesend (Licht aus, Lüftung Away),
+#   auch wenn Handys zu Hause sind. Nicht nachts (22–7 Uhr), nicht bei laufendem TV/Musik, Sauna, Disco oder Sauger.
+#   Rückkehr: jede Präsenz/Bewegung innen (alle Melder + Ring innen) schaltet zurück.
 
 input_boolean:
   haus_abwesend:
@@ -9,6 +12,9 @@ input_boolean:
   haus_verlassen_automatisch:
     name: "Haus verlassen automatisch"
     icon: mdi:home-export-outline
+  abwesend_ohne_bewegung:
+    name: "Abwesend nach 15 min ohne Bewegung"
+    icon: mdi:motion-sensor-off
 
 input_text:
   heizung_modus_vorher:
@@ -17,6 +23,29 @@ input_text:
 
 template:
   - binary_sensor:
+      # Nur Präsenzmelder + Ring innen (ohne Handys), 15 min Nachlauf – Grundlage für "Abwesend ohne Bewegung"
+      - name: "Bewegung im Haus"
+        unique_id: bewegung_im_haus
+        device_class: motion
+        delay_off: "00:15:00"
+        state: >
+          {% set ring_innen = ['event.flur_bewegung', 'event.mobil_bewegung']
+               | map('states') | reject('in', ['unknown', 'unavailable'])
+               | map('as_datetime') | select('ne', none)
+               | select('gt', now() - timedelta(minutes=15)) | list | count > 0 %}
+          {% set innen = ['binary_sensor.prasenz_gastebad',
+                          'binary_sensor.prasenzmelder_og_malte_decke', 'binary_sensor.prasenzmelder_og_lara_decke',
+                          'binary_sensor.prasenzmelder_og_schlafzimmer_decke', 'binary_sensor.prasenzmelder_eg_flur_decke',
+                          'binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_sauna',
+                          'binary_sensor.prasenz_wohnzimmer', 'binary_sensor.prasenz_hwr', 'binary_sensor.prasenz_ankleide_tobias'] %}
+          {# hängende Durchgangsmelder (> 2 h ununterbrochen besetzt) zählen nicht, wie bei "Jemand im Haus" #}
+          {% set durchgang = ['binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_eg_flur_decke',
+                              'binary_sensor.prasenz_gastebad', 'binary_sensor.prasenzmelder_sauna'] %}
+          {% set ns = namespace(an=false) %}
+          {% for e in innen if is_state(e, 'on') %}
+            {% if e not in durchgang or (now() - states[e].last_changed).total_seconds() < 7200 %}{% set ns.an = true %}{% endif %}
+          {% endfor %}
+          {{ ns.an or ring_innen }}
       # Jemand im Haus? Handys ODER Bewegung/Präsenz innen in den letzten 15 Minuten
       # (wichtig, weil nicht jeder ein Handy hat, z. B. Lara)
       - name: "Jemand im Haus"
@@ -128,6 +157,42 @@ automation:
       - action: logbook.log
         data: { name: "Haus verlassen", message: "automatisch – alle Handys weg, 15 Minuten keine Bewegung im Haus" }
 
+  - id: abwesend_ohne_bewegung
+    alias: "Anwesenheit: 15 min keine Bewegung → Abwesend"
+    description: "Keine Präsenz/Bewegung im Haus seit 15 min (Handys egal) → Skript 'Haus verlassen'. Tagsüber 7–22 Uhr."
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.bewegung_im_haus
+        to: "off"
+      # nachholen, wenn z. B. TV/Musik ausgeht oder 7 Uhr erreicht ist
+      - trigger: time_pattern
+        minutes: "/5"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.abwesend_ohne_bewegung
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.haus_abwesend
+        state: "off"
+      - condition: state
+        entity_id: binary_sensor.bewegung_im_haus
+        state: "off"
+      - condition: time
+        after: "07:00:00"
+        before: "22:00:00"
+      # Ausnahmen: jemand sitzt still vor TV/Musik, Sauna/Disco laufen, Sauger fährt
+      - "{{ not is_state('media_player.samsung_6_series_55', 'on') }}"
+      - "{{ ['media_player.ma_wohnzimmer', 'media_player.ma_schlafzimmer', 'media_player.wohnzimmer', 'media_player.schlafzimmer']
+            | select('is_state', 'playing') | list | count == 0 }}"
+      - "{{ not is_state('switch.saunaofen', 'on') }}"
+      - "{{ not is_state('input_boolean.disco', 'on') }}"
+      - "{{ not is_state('binary_sensor.sauger_unterwegs', 'on') }}"
+    actions:
+      - action: script.haus_verlassen
+      - action: logbook.log
+        data: { name: "Abwesend", message: "automatisch – 15 Minuten keine Bewegung im Haus" }
+
   - id: rueckkehr_erkannt
     alias: "Anwesenheit: Rückkehr erkannt"
     mode: single
@@ -142,7 +207,19 @@ automation:
           - binary_sensor.prasenzmelder_og_malte_decke
           - binary_sensor.prasenzmelder_og_lara_decke
           - binary_sensor.prasenzmelder_og_schlafzimmer_decke
+          # 07.11. ergänzt (für "Abwesend ohne Bewegung", Handys sind dann ja zu Hause)
+          - binary_sensor.prasenz_wohnzimmer
+          - binary_sensor.prasenzmelder_eg_flur_decke
+          - binary_sensor.prasenz_hwr
+          - binary_sensor.prasenz_ankleide_tobias
+          - binary_sensor.prasenz_flur_og
+          - binary_sensor.prasenzmelder_sauna
         to: "on"
+        id: bewegung
+      - trigger: state
+        entity_id: [event.flur_bewegung, event.mobil_bewegung]
+        not_from: ["unavailable", "unknown"]
+        not_to: ["unavailable", "unknown"]
         id: bewegung
     conditions:
       - condition: state

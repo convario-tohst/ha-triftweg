@@ -3,6 +3,11 @@
 # - Innen zu feucht und Außenluft deutlich trockener → Lüftung hoch ("trocknen"), nachts gedeckelt
 # - Außenluft feuchter als innen (Sommer, schwül) → Lüftung auf Minimum, sonst wird es feuchter
 # - Innen zu trocken (Winter) → Lüftung runter, damit es nicht unter ~38 % fällt
+# 07.11.: Ankleide (innenliegend, dauerhaft 51–62 %) zählt nicht mehr für die Hausregelung – sie hielt die Lüftung
+#   94 % der Zeit auf "trocknen". Feuchtewarnung für die Ankleide bleibt (raumklima_nutzung.yaml).
+# 07.11.: Bei Außenluft < 5 °C max. 40 % Drehzahl (Zugluft/Wärmeverlust). Stufen Trocknen 45 %, nachts 35 %.
+# 07.11.: Hängende 1-Wire-Werte: ein Wert zählt nur als frisch, wenn er sich in den letzten 12 h UND nach dem
+#   letzten HA-Start (+10 min) geändert hat (vorher galten hängende Werte nach jedem Neustart 12 h als frisch).
 # Geregelt werden nur die Drehzahlen der Profile "Home" und "Away"; Boost/Kamin bleiben unberührt.
 
 input_boolean:
@@ -55,6 +60,19 @@ input_number:
     unit_of_measurement: "%"
 
 template:
+  # Startzeit von HA (für die Erkennung hängender Sensoren)
+  - triggers:
+      - trigger: homeassistant
+        event: start
+      # manuell setzbar (Ereignis "ha_startzeit_setzen", Daten: zeit = ISO-Zeitpunkt)
+      - trigger: event
+        event_type: ha_startzeit_setzen
+    sensor:
+      - name: "HA Startzeit"
+        unique_id: ha_startzeit
+        device_class: timestamp
+        icon: mdi:restart
+        state: "{{ trigger.event.data.zeit if trigger.platform == 'event' and trigger.event.data.zeit is defined else now().isoformat() }}"
   # Feuchte-Summen ignorieren hängende Sensoren: Wert seit > 12 h unverändert (offline; Timberwolf sendet den
   # letzten Wert weiter, z. B. Lara 52,6 % seit 24.10.) – Wunsch Tobias 26.10.
   - sensor:
@@ -65,11 +83,11 @@ template:
         state_class: measurement
         state: >
           {% set w = expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
-                     | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | map('float') | list %}
+                     | selectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='state') | select('is_number') | map('float') | list %}
           {{ (w | sum / w | count) | round(0) if w else none }}
         availability: >
           {{ expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
-             | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | list | count > 0 }}
+             | selectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='state') | select('is_number') | list | count > 0 }}
       - name: "Feuchte EG"
         unique_id: feuchte_eg
         unit_of_measurement: "%"
@@ -77,28 +95,29 @@ template:
         state_class: measurement
         state: >
           {% set w = expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide', 'sensor.feuchte_hwr'])
-                     | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | map('float') | list %}
+                     | selectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='state') | select('is_number') | map('float') | list %}
           {{ (w | sum / w | count) | round(0) if w else none }}
         availability: >
           {{ expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide', 'sensor.feuchte_hwr'])
-             | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | list | count > 0 }}
-      # Regelgröße: feuchtester Wohnraum (ohne Bäder – die regelt der Bad-Boost); ohne Raumsensoren die Vallox-Abluft
+             | selectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='state') | select('is_number') | list | count > 0 }}
+      # Regelgröße: feuchtester Wohnraum (ohne Bäder – die regelt der Bad-Boost – und ohne Ankleide, 07.11.);
+      # ohne Raumsensoren die Vallox-Abluft
       - name: "Feuchte Haus (max.)"
         unique_id: feuchte_haus_max
         unit_of_measurement: "%"
         device_class: humidity
         state_class: measurement
         state: >
-          {% set w = expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide',
+          {% set w = expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg',
                       'sensor.feuchte_hwr', 'sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
-                     | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | map('float') | list %}
+                     | selectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='state') | select('is_number') | map('float') | list %}
           {{ w | max if w else states('sensor.vallox_luftfeuchtigkeit') | float(50) }}
         attributes:
           quelle: >
             {% set ns = namespace(n=none, v=-1) %}
-            {% for e in ['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide',
+            {% for e in ['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg',
                          'sensor.feuchte_hwr', 'sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og']
-                 if is_number(states(e)) and states(e) | float > ns.v %}
+                 if is_number(states(e)) and states(e) | float > ns.v and states[e].last_changed > ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max) %}
               {% set ns.v = states(e) | float %}{% set ns.n = state_attr(e, 'friendly_name') %}
             {% endfor %}
             {{ ns.n or 'Vallox Abluft' }}
@@ -109,10 +128,11 @@ template:
         state_class: measurement
         # höchster Taupunkt der Wohnräume (Feuchte + Temperatur desselben Raums); ohne Raumsensoren Vallox-Abluft
         state: >
-          {% set paare = [['wohnzimmer', 'wohnzimmer'], ['flur_eg', 'flur_eg'], ['ankleide', 'ankleide'],
+          {% set paare = [['wohnzimmer', 'wohnzimmer'], ['flur_eg', 'flur_eg'],
                           ['hwr', 'hwr'], ['schlafzimmer', 'schlafzimmer'], ['malte', 'malte'], ['lara', 'lara'], ['flur_og', 'og']] %}
           {% set ns = namespace(dp=[]) %}
-          {% for f, t in paare %}
+          {% set frisch = ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max) %}
+          {% for f, t in paare if states['sensor.feuchte_' ~ f] is not none and states['sensor.feuchte_' ~ f].last_changed > frisch %}
             {% set rh = states('sensor.feuchte_' ~ f) %}{% set tt = states('sensor.temperatur_' ~ t) %}
             {% set tw = states('sensor.taupunkt_' ~ f) %}
             {# Taupunkt direkt vom 1-Wire-Sensor (Timberwolf), sonst aus Feuchte + Temperatur berechnet #}
@@ -185,11 +205,14 @@ automation:
     variables:
       modus: "{{ states('sensor.luftung_feuchte_modus') }}"
       nacht: "{{ now().hour >= 22 or now().hour < 7 }}"
-      trocknen: "{{ states('input_number.lueftung_stufe_trocknen') | int(60) }}"
+      trocknen: "{{ states('input_number.lueftung_stufe_trocknen') | int(45) }}"
+      # Außenluft < 5 °C: höchstens 40 % (Zugluft, Wärmeverlust) – 07.11.
+      kalt: "{{ states('sensor.vallox_aussenluft') | float(10) < 5 }}"
       soll_home: >
-        {% if modus == 'trocknen' %}{{ [trocknen, states('input_number.lueftung_stufe_trocknen_nacht') | int(40)] | min if nacht else trocknen }}
-        {% elif modus in ['außen feuchter', 'zu trocken'] %}{{ states('input_number.lueftung_stufe_minimum') | int(20) }}
-        {% else %}{{ states('input_number.lueftung_stufe_normal') | int(30) }}{% endif %}
+        {% if modus == 'trocknen' %}{% set v = [trocknen, states('input_number.lueftung_stufe_trocknen_nacht') | int(35)] | min if nacht else trocknen %}
+        {% elif modus in ['außen feuchter', 'zu trocken'] %}{% set v = states('input_number.lueftung_stufe_minimum') | int(15) %}
+        {% else %}{% set v = states('input_number.lueftung_stufe_normal') | int(30) %}{% endif %}
+        {{ [v | int, 40] | min if kalt else v | int }}
       soll_away: >
         {% if modus == 'trocknen' %}{{ states('input_number.lueftung_stufe_abwesend_trocknen') | int(50) }}
         {% else %}5{% endif %}

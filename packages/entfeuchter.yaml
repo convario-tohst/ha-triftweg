@@ -4,7 +4,7 @@
 # Logik (zusammen mit packages/raumfeuchte.yaml):
 #   - Feuchte OG über Ziel + 3 % und die Lüftung kann nicht trocknen (außen feuchter / normal) → Entfeuchter an
 #   - Lüftung im Modus "trocknen" (Winter): Entfeuchter nur bei deutlich zu feucht (Ziel + 8 %)
-#   - Feuchte OG unter Ziel - 2 % → aus; Tank voll → Push an Tobias
+#   - Feuchte OG unter Ziel - 2 % → aus (bei Lüftung "trocknen": unter Ziel + 3 % aus) – umgesetzt 07.11.; Tank voll → Push an Tobias
 #   - Nachts (einstellbar, Standard 22–7 Uhr) je nach Auswahl "Entfeuchter nachts": leise / aus / normal
 
 input_boolean:
@@ -52,7 +52,7 @@ template:
         # Regelgröße Entfeuchter (Tobias 26.10.): Prio 1 Schlafräume (Schlafzimmer, Malte, Lara – feuchtester zählt),
         # nur Wandsensoren mit frischen Werten (seit < 12 h verändert). Ohne Schlafraum-Werte: Flur OG, zuletzt Gerätesensor.
         state: >
-          {% set frisch = now() - timedelta(hours=12) %}
+          {% set frisch = ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max) %}
           {% set schlaf = expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara'])
                           | selectattr('last_changed', 'gt', frisch) | map(attribute='state') | select('is_number') | map('float') | list %}
           {% set flur = expand(['sensor.feuchte_flur_og']) | selectattr('last_changed', 'gt', frisch)
@@ -61,11 +61,11 @@ template:
           {{ schlaf | max if schlaf else (flur | max if flur else (g | float if is_number(g) else none)) }}
         availability: >
           {{ expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
-              | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | list | count > 0
+              | selectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='state') | select('is_number') | list | count > 0
              or is_number(states('sensor.entfeuchter_og_feuchte')) }}
         attributes:
           quelle: >
-            {% set frisch = now() - timedelta(hours=12) %}
+            {% set frisch = ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max) %}
             {% set s = expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara'])
                        | selectattr('last_changed', 'gt', frisch) | selectattr('state', 'is_number') | list %}
             {% set f = expand(['sensor.feuchte_flur_og']) | selectattr('last_changed', 'gt', frisch) | selectattr('state', 'is_number') | list %}
@@ -73,7 +73,7 @@ template:
                else ('Feuchte Flur OG (kein Schlafraum-Sensor)' if f else 'Gerätesensor Entfeuchter') }}
           ignoriert: >
             {{ expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
-               | rejectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='name') | list | join(', ') or 'keine' }}
+               | rejectattr('last_changed', 'gt', ([now() - timedelta(hours=12), ((states('sensor.ha_startzeit') | as_datetime) or (now() - timedelta(days=1))) + timedelta(minutes=10)] | max)) | map(attribute='name') | list | join(', ') or 'keine' }}
       - name: "Entfeuchter Nacht"
         unique_id: entfeuchter_nacht
         icon: mdi:weather-night
@@ -94,9 +94,13 @@ template:
           {% if states(e) in ['unknown', 'unavailable'] %}kein Gerät
           {% elif is_state('sensor.entfeuchter_nacht', 'an') and is_state('input_select.entfeuchter_nachtmodus', 'aus') %}aus
           {% elif not is_number(rh) %}keine Messung
-          {# mit Hysterese: einschalten erst deutlich über Ziel, ausschalten erst knapp unter Ziel (vorher: An/Aus-Pendeln um 53 %, 23.10.) #}
+          {# Hysterese. 07.11.: Trocknet die Lüftung gerade (Winter, außen trockener), springt der Entfeuchter erst ab
+             Ziel + 8 % an und geht schon unter Ziel + 3 % aus – sonst laufen beide gegeneinander/doppelt.
+             Sonst (Lüftung kann nicht trocknen): an ab Ziel + 2 %, aus unter Ziel - 2 % (Tobias 26.10.) #}
+          {% elif modus == 'trocknen' and rh | float < ziel + 3 %}aus
+          {% elif modus == 'trocknen' and rh | float > ziel + 8 %}an
+          {% elif modus == 'trocknen' %}halten
           {% elif rh | float < ziel - 2 %}aus
-          {# an ab Ziel + 2 (47 %), aus unter Ziel - 2 (43 %) – Tobias 26.10. #}
           {% elif rh | float > ziel + 2 %}an
           {% else %}halten{% endif %}
 
@@ -107,7 +111,7 @@ automation:
     mode: restart
     triggers:
       - trigger: state
-        entity_id: [sensor.entfeuchter_og_soll, input_boolean.entfeuchter_automatik]
+        entity_id: [sensor.entfeuchter_og_soll, input_boolean.entfeuchter_automatik, sensor.luftung_feuchte_modus]
       - trigger: time_pattern
         minutes: "/15"
       - trigger: state
