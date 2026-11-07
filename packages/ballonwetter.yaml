@@ -1,0 +1,110 @@
+# Ballonwetter: Open-Meteo (Wind Boden/Höhe, Böen, Regen, Sicht, Labilität) + METAR/TAF Bremen (EDDW)
+# Ampel je Fahrtfenster: Morgenfahrt (Sonnenaufgang -30 min bis +3 h), Abendfahrt (Sonnenuntergang -3 h bis SU)
+# Grenzwerte (anpassbar): Boden <= 8 kt, Böen <= 12 kt, 925 hPa (~750 m) <= 20 kt, Regen <= 20 %, Sicht >= 5 km, CAPE < 100
+
+rest:
+  - resource: >-
+      https://api.open-meteo.com/v1/forecast?latitude=53.2&longitude=8.2&timezone=Europe%2FBerlin&forecast_days=2&wind_speed_unit=kn&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m,wind_speed_925hPa,wind_direction_925hPa,wind_speed_850hPa,wind_direction_850hPa,precipitation_probability,visibility,cloud_cover_low,cape&daily=sunrise,sunset
+    scan_interval: 1800
+    sensor:
+      - name: "Ballonwetter Daten"
+        unique_id: ballonwetter_daten
+        value_template: "{{ now().strftime('%H:%M') }}"
+        json_attributes: [hourly, daily]
+  - resource: "https://aviationweather.gov/api/data/metar?ids=EDDW&format=json"
+    scan_interval: 900
+    sensor:
+      - name: "METAR Bremen"
+        unique_id: metar_eddw
+        value_template: "{{ value_json[0].rawOb[:250] if value_json else 'keine Daten' }}"
+  - resource: "https://aviationweather.gov/api/data/taf?ids=EDDW&format=json"
+    scan_interval: 1800
+    sensor:
+      - name: "TAF Bremen"
+        unique_id: taf_eddw
+        value_template: "{{ (value_json[0].issueTime if value_json else 'keine Daten') }}"
+        json_attributes_path: "$[0]"
+        json_attributes: [rawTAF]
+
+template:
+  - trigger:
+      - trigger: state
+        entity_id: sensor.ballonwetter_daten
+      - trigger: time_pattern
+        minutes: "/30"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - variables:
+          fenster: >
+            {% set h = state_attr('sensor.ballonwetter_daten', 'hourly') %}
+            {% set d = state_attr('sensor.ballonwetter_daten', 'daily') %}
+            {% set out = namespace(list=[]) %}
+            {% if h and d %}
+              {% set n = now().replace(tzinfo=None) %}
+              {# Morgenfahrt: heute, falls noch nicht vorbei, sonst morgen #}
+              {% set sr0 = as_datetime(d.sunrise[0]) %}
+              {% set sr = sr0 if n < sr0 + timedelta(hours=2) else as_datetime(d.sunrise[1]) %}
+              {% set ss0 = as_datetime(d.sunset[0]) %}
+              {% set ss = ss0 if n < ss0 else as_datetime(d.sunset[1]) %}
+              {% for name, s, e in [('morgen', sr - timedelta(minutes=30), sr + timedelta(hours=3)),
+                                    ('abend', ss - timedelta(hours=3), ss)] %}
+                {% set ns = namespace(w=0, g=0, a=0, b=0, p=0, v=99999, c=0, dir=0, adir=0) %}
+                {% for t in h.time %}
+                  {% set dt = as_datetime(t) %}
+                  {% if s <= dt <= e %}
+                    {% set i = loop.index0 %}
+                    {% set ns.w = [ns.w, h.wind_speed_10m[i] or 0] | max %}
+                    {% set ns.g = [ns.g, h.wind_gusts_10m[i] or 0] | max %}
+                    {% set ns.a = [ns.a, h.wind_speed_925hPa[i] or 0] | max %}
+                    {% set ns.b = [ns.b, h.wind_speed_850hPa[i] or 0] | max %}
+                    {% set ns.p = [ns.p, h.precipitation_probability[i] or 0] | max %}
+                    {% set ns.v = [ns.v, h.visibility[i] or 99999] | min %}
+                    {% set ns.c = [ns.c, h.cape[i] or 0] | max %}
+                    {% set ns.dir = h.wind_direction_10m[i] %}
+                    {% set ns.adir = h.wind_direction_925hPa[i] %}
+                  {% endif %}
+                {% endfor %}
+                {% set gruen = ns.w <= 8 and ns.g <= 12 and ns.a <= 20 and ns.p <= 20 and ns.v >= 5000 and ns.c < 100 %}
+                {% set gelb = ns.w <= 10 and ns.g <= 15 and ns.a <= 25 and ns.p <= 40 and ns.v >= 3000 and ns.c < 300 %}
+                {% set gr = (['Bodenwind ' ~ (ns.w|round(0)|int) ~ ' kt'] if ns.w > 8 else []) + (['Böen ' ~ (ns.g|round(0)|int) ~ ' kt'] if ns.g > 12 else []) + (['Höhenwind ' ~ (ns.a|round(0)|int) ~ ' kt'] if ns.a > 20 else []) + (['Regenrisiko ' ~ ns.p ~ ' %'] if ns.p > 20 else []) + (['Sicht nur ' ~ ((ns.v/1000)|round(1)) ~ ' km'] if ns.v < 5000 else []) + (['Gewitter/Thermik (CAPE ' ~ (ns.c|round(0)|int) ~ ')'] if ns.c >= 100 else []) %}
+                {% set out.list = out.list + [{'name': name, 'start': ['Mo','Di','Mi','Do','Fr','Sa','So'][s.weekday()] ~ ' ' ~ s.strftime('%H:%M'), 'ende': e.strftime('%H:%M'),
+                    'ampel': 'grün' if gruen else ('gelb' if gelb else 'rot'), 'grund': gr | join(', '),
+                    'boden': ns.w | round(0), 'boeen': ns.g | round(0), 'hoehe750': ns.a | round(0), 'hoehe1500': ns.b | round(0),
+                    'richtung': ns.dir, 'richtung750': ns.adir, 'regen': ns.p, 'sicht_km': (ns.v / 1000) | round(1), 'cape': ns.c | round(0)}] %}
+              {% endfor %}
+            {% endif %}
+            {{ out.list }}
+    sensor:
+      - name: "Ballon Morgenfahrt"
+        unique_id: ballon_morgenfahrt
+        icon: >
+          {% set f = fenster[0] if fenster else none %}
+          {{ 'mdi:airballoon' if f and f.ampel == 'grün' else ('mdi:airballoon-outline' if f and f.ampel == 'gelb' else 'mdi:weather-windy') }}
+        state: >
+          {% set f = fenster[0] if fenster else none %}
+          {% if f %}{{ {'grün': '🟢 fahrbar', 'gelb': '🟡 grenzwertig', 'rot': '🔴 nicht fahrbar'}[f.ampel] }} {{ f.start }}–{{ f.ende }}: {{ f.grund if f.grund else 'Boden ' ~ f.boden ~ ' kt, Böen ' ~ f.boeen ~ ' kt, alle Werte im Rahmen' }}{% else %}keine Daten{% endif %}
+        attributes:
+          ampel: "{{ fenster[0].ampel if fenster else none }}"
+          details: >
+            {% set f = fenster[0] if fenster else none %}
+            {% if f %}Boden {{ f.boden }} kt aus {{ f.richtung }}° · Böen {{ f.boeen }} kt · 750 m {{ f.hoehe750 }} kt aus {{ f.richtung750 }}° · 1500 m {{ f.hoehe1500 }} kt · Regen {{ f.regen }} % · Sicht {{ f.sicht_km }} km · CAPE {{ f.cape }}{% endif %}
+      - name: "Ballon Abendfahrt"
+        unique_id: ballon_abendfahrt
+        icon: >
+          {% set f = fenster[1] if fenster | count > 1 else none %}
+          {{ 'mdi:airballoon' if f and f.ampel == 'grün' else ('mdi:airballoon-outline' if f and f.ampel == 'gelb' else 'mdi:weather-windy') }}
+        state: >
+          {% set f = fenster[1] if fenster | count > 1 else none %}
+          {% if f %}{{ {'grün': '🟢 fahrbar', 'gelb': '🟡 grenzwertig', 'rot': '🔴 nicht fahrbar'}[f.ampel] }} {{ f.start }}–{{ f.ende }}: {{ f.grund if f.grund else 'Boden ' ~ f.boden ~ ' kt, Böen ' ~ f.boeen ~ ' kt, alle Werte im Rahmen' }}{% else %}keine Daten{% endif %}
+        attributes:
+          ampel: "{{ fenster[1].ampel if fenster | count > 1 else none }}"
+          details: >
+            {% set f = fenster[1] if fenster | count > 1 else none %}
+            {% if f %}Boden {{ f.boden }} kt aus {{ f.richtung }}° · Böen {{ f.boeen }} kt · 750 m {{ f.hoehe750 }} kt aus {{ f.richtung750 }}° · 1500 m {{ f.hoehe1500 }} kt · Regen {{ f.regen }} % · Sicht {{ f.sicht_km }} km · CAPE {{ f.cape }}{% endif %}
+
+input_boolean:
+  dash_wetter_karte:
+    name: "Dashboard: Windy-Karte offen"
+  dash_ballon:
+    name: "Dashboard: Ballonwetter offen"

@@ -1,0 +1,46 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+knx: !include knx.yaml
+
+browser_mod:
+  prefix: "browser_mod_"
+
+template:
+  - binary_sensor:
+      - name: "Anwesenheit"
+        state: "{{ is_state('device_tracker.smartphone_tobi', 'home') or is_state('device_tracker.unknown', 'home') or is_state('device_tracker.huawei_p30_pro_77a945e099', 'home') }}"
+        device_class: occupancy
+
+  #Müll-Template
+  - sensor:
+      - name: "Mülltonne nächster Termin"
+        state: >
+          {% set termine = state_attr('sensor.waste_collection_schedule_next', 'date') %}
+          {% if termine %}
+            {{ as_timestamp(termine) | timestamp_custom('%d.%m.%Y') }}
+          {% else %}
+            Keine Abholung
+          {% endif %}
+        attributes:
+          muellart: "{{ state_attr('sensor.waste_collection_schedule_next', 'type') }}"
+
+miele:
+  client_id: ca3b6b65-769b-4e55-a6f2-266fb7971a7c
+  client_secret: 5j8maQ6jDReLjUMDbzQgTghdVUpk2ywD
+  lang: de
+  #cache_path: <optional. where to store the cached access token>
+
+#Müllkalender
+waste_collection_schedule:
+  sources:
+    - name: ics
+      args:
+        file: "/config/www/Abfallkalender.ics"

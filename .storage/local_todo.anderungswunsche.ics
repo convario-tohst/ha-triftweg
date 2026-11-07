@@ -1,0 +1,956 @@
+BEGIN:VCALENDAR
+PRODID:-//homeassistant.io//local_todo 2.0//EN
+VERSION:2.0
+BEGIN:VTODO
+DTSTAMP:20261011T140358Z
+UID:a27fdf60-c57b-11f1-8b5e-d83addc0128c
+COMPLETED:20261011T140358Z
+CREATED:20261011T135702Z
+DESCRIPTION:Per Sprache am 11.10.2026 15:57\nErledigt 11.10.: HA 
+ vorbereitet\; ETS-Liste 6e (absolut dimmen Theben) nötig
+DTSTART;TZID=Europe/Berlin:20261011T155702
+LAST-MODIFIED:20261011T140358Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Das Die Dämmung per Sprache oben im Schlafzimmer nicht funktioniert
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261011T140358Z
+UID:128ba546-c57c-11f1-8b5e-d83addc0128c
+COMPLETED:20261011T140358Z
+CREATED:20261011T140010Z
+DESCRIPTION:Erledigt 11.10.: gehörte zum Musik-Raum-Wunsch
+DTSTART;TZID=Europe/Berlin:20261011T160010
+LAST-MODIFIED:20261011T140358Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Dann stell das mal bitte
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261011T140358Z
+UID:1fae4828-c57c-11f1-8b5e-d83addc0128c
+COMPLETED:20261011T140358Z
+CREATED:20261011T140032Z
+DESCRIPTION:Erledigt 11.10.: per Sprache umschaltbar + Raum-Knöpfe im 
+ Dashboard
+DTSTART;TZID=Europe/Berlin:20261011T160032
+LAST-MODIFIED:20261011T140358Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Musik-Raum Selector sollte per Sprache umschaltbar sein
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261011T150213Z
+UID:fbc2c9f0-c582-11f1-8b5e-d83addc0128c
+COMPLETED:20261011T150213Z
+CREATED:20261011T144938Z
+DESCRIPTION:11.10.: Befehle kommen richtig an (EVG 13)\; Status fehlt -> 
+ ETS-Liste Schritt 4\, HA vorbereitet
+DTSTART;TZID=Europe/Berlin:20261011T164938
+LAST-MODIFIED:20261011T150213Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Dimmer Flur OG funktioniert nicht
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261011T150213Z
+UID:82e988b0-c583-11f1-8b5e-d83addc0128c
+COMPLETED:20261011T150213Z
+CREATED:20261011T145325Z
+DESCRIPTION:Erledigt 11.10.: Lautstärkeregler bei allen Playern im 
+ Dashboard
+DTSTART;TZID=Europe/Berlin:20261011T165325
+LAST-MODIFIED:20261011T150213Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Lautstärkeregler auf das Dashboard
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261012T082536Z
+UID:89ea7746-c58d-11f1-8b5e-d83addc0128c
+COMPLETED:20261012T082536Z
+CREATED:20261011T160512Z
+DESCRIPTION:Erledigt 12.10.: Sauna Decke als Lampe mit Zustand aus Dimmwert
+  (0/2/22) neu angelegt\, per Sprache/App getestet
+DTSTART;TZID=Europe/Berlin:20261011T180512
+LAST-MODIFIED:20261012T082536Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Licht Sauna Decke geht nicht aus bei Sprachbefehl
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261012T083541Z
+UID:557c69b8-c60c-11f1-a5da-d83addc0128c
+COMPLETED:20261012T083541Z
+CREATED:20261012T071250Z
+DESCRIPTION:Erledigt 12.10.: beim Wechsel auf Tag (automatisch oder von 
+ Hand) werden eingeschaltete Flurlampen auf 100 % gesetzt
+DTSTART;TZID=Europe/Berlin:20261012T091250
+LAST-MODIFIED:20261012T083541Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Nachtmodus ausschalten hat das Licht im Flur nicht heller gemacht
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261012T083541Z
+UID:45ca863e-c60d-11f1-a5da-d83addc0128c
+COMPLETED:20261012T083541Z
+CREATED:20261012T071933Z
+DESCRIPTION:12.10.: Ursache HA-Ausfall 06:30-09:10\; jetzt Aufstehzeit 8/9 
+ Uhr + Nachholen nach Neustart
+DTSTART;TZID=Europe/Berlin:20261012T091933
+LAST-MODIFIED:20261012T083541Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Bewegungsmelder Schlafzimmer und Lara Flur sind heute morgen nicht 
+ automatisch angegangen
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261012T083541Z
+UID:6f95e92c-c60d-11f1-a5da-d83addc0128c
+COMPLETED:20261012T083541Z
+CREATED:20261012T072043Z
+DESCRIPTION:Erledigt 12.10.: Automatik-Schalter\, Tag/Nacht EG/OG\, 
+ Lux-Schwelle und Zeiten in der Ansicht Zeiten
+DTSTART;TZID=Europe/Berlin:20261012T092043
+LAST-MODIFIED:20261012T083541Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Gerne den Tag und Nachtmodus oben und unten mit in der 
+ Karteikarte\, wo man alle Zeiten einstellt\, haben möchte
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:c81bc30a-c60d-11f1-a5da-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261012T072311Z
+DESCRIPTION:Erledigt 14.10.: Ring-Ruhezeit 08:00–19:30 (nur wenn jemand zu 
+ Hause) eingeschaltet\; Zeiten auf Seite Automatik → Ring
+DTSTART;TZID=Europe/Berlin:20261012T092311
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Ringkameras: Stille-Modus morgens 08:00–19:30 Uhr\, nur wenn wir zu
+  Hause sind
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:4c8dd826-c60e-11f1-a5da-d83addc0128c
+CREATED:20261012T072654Z
+DESCRIPTION:In Arbeit: Wächter läuft\; offen: Samba-Add-on auf 
+ 192.168.11.127 starten (Tobias)\, dann Backups dorthin
+DTSTART;TZID=Europe/Berlin:20261012T092654
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:NEEDS-ACTION
+SUMMARY:Zweiter Raspberry Pi als Backup für Home Assistant einrichten
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:35156e6e-c624-11f1-bcbf-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261012T100343Z
+DESCRIPTION:Erledigt 14.10.: Wand geht beim Betreten auf 30 % (Decke laut 
+ neuerem Wunsch nicht\, dafür Stripe)
+DTSTART;TZID=Europe/Berlin:20261012T120343
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Beim Betreten der Sauna: Wand- und Deckenbeleuchtung gehen nicht 
+ an\, sollten auf 30% sein
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:bed86a2c-c63b-11f1-bcbf-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261012T125213Z
+DESCRIPTION:Erledigt 12./13.10.: stumm/laut\, stumm bis Uhrzeit/für 
+ Minuten\, Bewegungserkennung\, Sirene\, Kameralicht\, Lautstärke\, Status
+DTSTART;TZID=Europe/Berlin:20261012T145213
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Ringkameras müssen vollständig über Sprache steuerbar sein
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:32c4e20a-c658-11f1-aabc-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261012T161553Z
+DESCRIPTION:Erledigt 12.10.: Beim Betreten Wand + Stripe\, Decke bleibt aus
+  (Präsenz über 0/2/29)
+DTSTART;TZID=Europe/Berlin:20261012T181553
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Sauna Strip geht nicht an\, wenn man den Raum betritt. 
+ Deckenbeleuchtung muss nicht angehen\, Wand geht mit an. Stattdessen 
+ Stripe in der Sauna aktivieren.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T094133Z
+UID:8ed722a8-c679-11f1-aabc-d83addc0128c
+COMPLETED:20261018T094133Z
+CREATED:20261012T201441Z
+DESCRIPTION:Erledigt 18.10.: oxxify-Lüfter in HA (fan.sauna_luftung)\, 
+ Bedarfssteuerung nach Feuchte/Außentemperatur
+DTSTART;TZID=Europe/Berlin:20261012T221441
+LAST-MODIFIED:20261018T094133Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Improve Home Luftsteuerung Sauna (2 Ventilatoren) in Home Assistant
+  integrieren
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:c9ae8488-c6ca-11f1-aabc-d83addc0128c
+CREATED:20261013T055609Z
+DESCRIPTION:Ursache: Melder 1.1.23 Obj. 15 → 1/0/111. In der ETS entfernt\,
+  aber 1.1.23 noch nicht programmiert (Tobias)
+DTSTART;TZID=Europe/Berlin:20261013T075609
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:NEEDS-ACTION
+SUMMARY:Die Steckdosen schalten immer noch im Wohnzimmer
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:c34172f2-c6e5-11f1-aabc-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261013T090915Z
+DESCRIPTION:Erledigt 14.10.: Skript 'Fehler für Tobias notieren' – Claude 
+ trägt Fehler hier als 'Fehler: …' ein
+DTSTART;TZID=Europe/Berlin:20261013T110915
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Bei Fehlgeschlagenen Befehlen sollte Claude das dokumentieren\, 
+ damit Tobias es prüfen kann
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:cea59110-c6e9-11f1-aabc-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261013T093812Z
+DESCRIPTION:Erledigt 14.10.: 'Mach die Musik im Schlafzimmer aus' wird 
+ jetzt lokal erkannt (Musik aus)\; Claude-Anweisung: Ausschalten nur mit 
+ 'Musik aus'
+DTSTART;TZID=Europe/Berlin:20261013T113812
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Fehler: script__musik_wunsch_abspielen mit "die Musik im 
+ Schlafzimmer aus" funktioniert nicht\, script__musik_aus mit 
+ raum=Schlafzimmer funktioniert
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:d40747ea-c71e-11f1-aac2-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261013T155744Z
+DESCRIPTION:Erledigt 14.10.: Claude auf Haiku 5.5\, Denkaufwand niedrig\, 
+ Prompt-Caching automatisch → ca. 3–7 s
+DTSTART;TZID=Europe/Berlin:20261013T175744
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Die Antworten dauern manchmal ziemlich lange\, das muss 
+ beschleunigt werden
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:215dfd6a-c79a-11f1-aac2-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261014T064022Z
+DESCRIPTION:Erledigt 14.10.: Morgenmusik = Bremen NEXT\, Startlautstärke 25
+  % (vorher 20 %)
+DTSTART;TZID=Europe/Berlin:20261014T084022
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Morgens beim Betreten des Wohnzimmers: Bremen NEXT starten und 5% 
+ lauter
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T082522Z
+UID:33776a18-c79a-11f1-aac2-d83addc0128c
+COMPLETED:20261014T082522Z
+CREATED:20261014T064052Z
+DESCRIPTION:Erledigt 14.10.: 'Morgens soll Bremen Vier laufen'\, 'Stell die
+  Morgenmusik auf Überraschung'\, 'Stell die Lautstärke der Morgenmusik auf
+  25 Prozent'\, 'Was läuft morgens?'
+DTSTART;TZID=Europe/Berlin:20261014T084052
+LAST-MODIFIED:20261014T082522Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Per Sprache einstellen können: Welcher Sender morgens anspringt und
+  die Startlautstärke
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T111730Z
+UID:d8bafeb0-c7c0-11f1-aac2-d83addc0128c
+CREATED:20261014T111730Z
+DESCRIPTION:Musik im Schlafzimmer stoppt automatisch (Player im Status 
+ idle). Ursache unklar\, Präsenz Schlafzimmer Automation ist an. Bitte 
+ prüfen. – 14.10.2026 13:17
+DTSTART;TZID=Europe/Berlin:20261014T131730
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Wieso ist die Musik im Schlafzimmer wieder aus?
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T130358Z
+UID:b7f3def4-c7cf-11f1-aac2-d83addc0128c
+CREATED:20261014T130358Z
+DESCRIPTION:Lautstärke im Wohnzimmer auf 40% hat geklappt. Die Szene Dinner
+  im Wohnzimmer ließ sich nicht aktivieren (Fehler IntentUnexpectedError 
+ bei SzeneAktivieren). – 14.10.2026 15:03
+DTSTART;TZID=Europe/Berlin:20261014T150358
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Lautstärke im Wohnzimmer auf 40% reduzieren und Dinner 
+ Szene
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T164725Z
+UID:ef4ed4a2-c7ee-11f1-aac2-d83addc0128c
+CREATED:20261014T164725Z
+DESCRIPTION:Kein Gerät namens Datenlicht gefunden (nicht exponiert oder 
+ falscher Name) – 14.10.2026 18:47
+DTSTART;TZID=Europe/Berlin:20261014T184725
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Macht das Datenlicht an
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T173540Z
+UID:acac2e5e-c7f5-11f1-aac2-d83addc0128c
+CREATED:20261014T173540Z
+DTSTART;TZID=Europe/Berlin:20261014T193540
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Ballonfahrtwetter: Ampel funktioniert nicht mehr
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261014T211110Z
+UID:d274c000-c80a-11f1-aac2-d83addc0128c
+COMPLETED:20261014T211110Z
+CREATED:20261014T200703Z
+DESCRIPTION:Erledigt 14.10.: Termine waren korrekt\, Push kam 18/21 Uhr. 
+ Neu: Küchen-Stripe blinkt bis Bestätigung\, Durchsage 20 % beim Betreten 
+ Wohnzimmer (18–19:30 / 6:30–8)\, Bestätigungsknopf auf Startseite. Test am
+  15.10. früh.
+DTSTART;TZID=Europe/Berlin:20261014T220703
+LAST-MODIFIED:20261014T211110Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Müll-Erinnerung für alle Abfalltonnen (inkl. Mülltonne) ist einen 
+ Tag zu spät. Gewünscht: Erinnerung schon am Abend vorher.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T091333Z
+UID:e126e008-c817-11f1-81e6-d83addc0128c
+COMPLETED:20261026T091333Z
+CREATED:20261014T214031Z
+DESCRIPTION:Erledigt 26.10.: Button auf Home + Sprache 'Ich gehe ins 
+ Bett'/'Gute Nacht'.
+DTSTART;TZID=Europe/Berlin:20261014T234031
+LAST-MODIFIED:20261026T091333Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Button "Ich gehe ins Bett": schaltet unten (Erdgeschoss) und 
+ draußen alle Lichter aus. Giebel nicht unbedingt nötig\, der geht 
+ automatisch um 23:00 Uhr aus. Zusätzlich muss die Sauna ausgehen: alle 
+ Saunalichter und der Saunaofen.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T100744Z
+UID:8b006d7a-c8bc-11f1-823b-d83addc0128c
+COMPLETED:20261018T100744Z
+CREATED:20261015T171913Z
+DTSTART;TZID=Europe/Berlin:20261015T191913
+LAST-MODIFIED:20261018T100744Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Auf gar keinen Fall mehr 80er-Jahre-Musik abspielen (Wunsch der 
+ Familie)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T093022Z
+UID:f484538a-c950-11f1-823b-d83addc0128c
+COMPLETED:20261018T093022Z
+CREATED:20261016T110136Z
+DESCRIPTION:Geprüft 16.10.: war 09:38–13:00 aktiv\, Rückkehr hat es korrekt
+  beendet
+DTSTART;TZID=Europe/Berlin:20261016T130136
+LAST-MODIFIED:20261018T093022Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Unsicher\, ob "Haus verlassen" die ganze Zeit aktiv war: Familie 
+ war weg und ist wieder angekommen\, aber der Button "Haus verlassen" ist 
+ nicht mehr an. Bitte prüfen.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T091323Z
+UID:ccedae68-c98f-11f1-823b-d83addc0128c
+COMPLETED:20261026T091323Z
+CREATED:20261016T183128Z
+DESCRIPTION:Erledigt 26.10.: rotes Abzeichen + Kachel auf Home ab 14 Tagen 
+ vorher\, Push. Fällig 01.11.!
+DTSTART;TZID=Europe/Berlin:20261016T203128
+LAST-MODIFIED:20261026T091323Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:In der Titelleiste einen Hinweis anzeigen\, wenn der Filter der 
+ Lüftungsanlage (Vallox) ausgetauscht werden muss
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T091323Z
+UID:f591f82e-c98f-11f1-823b-d83addc0128c
+COMPLETED:20261026T091323Z
+CREATED:20261016T183236Z
+DESCRIPTION:Erledigt 26.10.: Button auf Home + 'Mach alles aus'.
+DTSTART;TZID=Europe/Berlin:20261016T203236
+LAST-MODIFIED:20261026T091323Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Einen Button "Alles aus" unten (in der Oberfläche) hinzufügen
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T093022Z
+UID:fdb55988-c98f-11f1-823b-d83addc0128c
+COMPLETED:20261018T093022Z
+CREATED:20261016T183249Z
+DESCRIPTION:Erledigt 18.10.: Überschriften je Player\, Musik-Block oben auf
+  Startseite
+DTSTART;TZID=Europe/Berlin:20261016T203249
+LAST-MODIFIED:20261018T093022Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Lautstärkeregler: Beschriftung "Wohnzimmer" und "Schlafzimmer" 
+ fehlt wieder\, wieder anzeigen. Außerdem die Regler ganz nach oben 
+ verschieben (Schnellzugriff).
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261017T080012Z
+UID:c7aba600-ca00-11f1-823b-d83addc0128c
+CREATED:20261017T080012Z
+DESCRIPTION:"Sandstein live" nicht verstanden\; nur Schlafzimmer Decke auf 
+ 20% gesetzt – 17.10.2026 10:00
+DTSTART;TZID=Europe/Berlin:20261017T100012
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Nicht Im Schlafzimmer bitte einmal 20% Sandstein live
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:7ad5731c-ca03-11f1-823b-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261017T081931Z
+DESCRIPTION:Erledigt 24.10.: CSV-Protokoll 
+ /config/protokoll/praesenz_JJJJ-MM.csv.
+DTSTART;TZID=Europe/Berlin:20261017T101931
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Langfristig Listen/Protokolle über Präsenzen in den Räumen führen 
+ (morgens\, abends usw.)\, um die Automationen zu verbessern
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T093022Z
+UID:efcddbaa-ca03-11f1-823b-d83addc0128c
+COMPLETED:20261018T093022Z
+CREATED:20261017T082248Z
+DESCRIPTION:Erledigt 18.10.: +/- Tasten an beiden Playern (Start- und 
+ Musikseite)
+DTSTART;TZID=Europe/Berlin:20261017T102248
+LAST-MODIFIED:20261018T093022Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Startseite: Lautstärke-Buttons (Plus/Minus) fehlen. Man kann die 
+ Lautstärke zwar ändern\, aber es gibt keine Plus-/Minus-Tasten.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T081054Z
+UID:cc443c9e-cac9-11f1-823b-d83addc0128c
+COMPLETED:20261018T081054Z
+CREATED:20261018T075908Z
+DESCRIPTION:Erledigt 18.10.: Liste angelegt
+DTSTART;TZID=Europe/Berlin:20261018T095908
+LAST-MODIFIED:20261018T081054Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Fehler: Leg eine neue Liste Weihnachtsgeschenke an und nimm Switch 
+ Controller auf
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T081054Z
+UID:d6d5975c-cac9-11f1-823b-d83addc0128c
+COMPLETED:20261018T081054Z
+CREATED:20261018T075926Z
+DESCRIPTION:Erledigt 18.10.: Liste Weihnachtsgeschenke mit Switch 
+ Controller + Nintendo Switch 2
+DTSTART;TZID=Europe/Berlin:20261018T095926
+LAST-MODIFIED:20261018T081054Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Weihnachtsgeschenke: Switch Controller
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:d7202538-cac9-11f1-823b-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261018T081054Z
+DESCRIPTION:Erledigt 25.10.: Zugangsschlüssel eingetragen\, 'Leg eine Liste
+  … an' funktioniert.
+DTSTART;TZID=Europe/Berlin:20261018T095927
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:2
+STATUS:COMPLETED
+SUMMARY:Wir möchten eigene Listen erstellen können\, z. B. eine Liste 
+ Weihnachtsgeschenke
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T083345Z
+UID:a2409e88-cace-11f1-bcdd-d83addc0128c
+CREATED:20261018T083345Z
+DESCRIPTION:Spotify-Limit von 1 Stream erreicht\, auch nach Musik aus 
+ Schlafzimmer und Beide\; Verursacher unbekannt (evtl. anderes Gerät/Handy)
+  – 18.10.2026 10:33
+DTSTART;TZID=Europe/Berlin:20261018T103345
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Mach schöne leicht elektronische Musik im Wohnzimmer an
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T095916Z
+UID:9470bd86-cada-11f1-9f40-d83addc0128c
+CREATED:20261018T095916Z
+DESCRIPTION:Unklarer\, vermutlich falsch erkannter Befehl – 18.10.2026 
+ 11:59
+DTSTART;TZID=Europe/Berlin:20261018T115916
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: wo rldwide dm
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261023T084013Z
+UID:b1b5667a-cadb-11f1-9f40-d83addc0128c
+COMPLETED:20261023T084013Z
+CREATED:20261018T100715Z
+DTSTART;VALUE=DATE:20261026
+DUE;VALUE=DATE:20261027
+LAST-MODIFIED:20261023T084013Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Voice PE einrichten (Raum\, Nachtlautstärke\, Durchsagen\, Timer\, 
+ Weckwort)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T130632Z
+UID:bd6b4ba6-caf4-11f1-9f40-d83addc0128c
+CREATED:20261018T130632Z
+DTSTART;TZID=Europe/Berlin:20261018T150632
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Beim Einschalten der Musik läuft der Fade-in und Fade-out nicht 
+ (manchmal auch nicht beim Ändern der Lautstärke)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T172356Z
+UID:b309761e-cb18-11f1-bb09-d83addc0128c
+CREATED:20261018T172356Z
+DESCRIPTION:Dinner-Skript lief ohne Fehler\, aber Player blieb idle\, keine
+  Musik. Erst nach erneutem Start buffering. Bitte prüfen. – 18.10.2026 
+ 19:23
+DTSTART;TZID=Europe/Berlin:20261018T192356
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Die Musik im Wohnzimmer etwas leiser und auch Dinner Musik 
+ wechseln
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:1387c7fc-cb19-11f1-bb09-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261018T172638Z
+DESCRIPTION:Erledigt 24.10.: TABU in Musik-KI und Prompt.
+DTSTART;TZID=Europe/Berlin:20261018T192638
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Wunsch nach 80er-Jahre-Musik soll noch abfälliger verneint werden
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T173018Z
+UID:964fe444-cb19-11f1-bb09-d83addc0128c
+CREATED:20261018T173018Z
+DTSTART;TZID=Europe/Berlin:20261018T193018
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Musikgeschmack: Familie mag es nicht so ruhig\, lieber Pep\, 
+ Sound\, Beat und Stimmung bei Musikvorschlägen
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T091323Z
+UID:8eed6c2a-cb3d-11f1-bb09-d83addc0128c
+COMPLETED:20261026T091323Z
+CREATED:20261018T214747Z
+DESCRIPTION:Erledigt 26.10.: aus nach 60 min am Stück und um 23 Uhr (kein 
+ Melder in HA).
+DTSTART;TZID=Europe/Berlin:20261018T234747
+LAST-MODIFIED:20261026T091323Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Werkstatt-Licht geht abends bzw. nach Bewegung nicht automatisch 
+ aus
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261018T214816Z
+UID:a02e0cd8-cb3d-11f1-bb09-d83addc0128c
+CREATED:20261018T214816Z
+DTSTART;TZID=Europe/Berlin:20261018T234816
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Grünes Männchen wird angezeigt bei Wohnen/Küche und 
+ Obergeschossflur (Heizung)\, vermutlich Fehler
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:aa3db4aa-cbf4-11f1-bb09-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261019T193831Z
+DESCRIPTION:Erledigt 24.10.: HA setzt Sperre/Zwang selbst um (Außenlicht + 
+ LED).
+DTSTART;TZID=Europe/Berlin:20261019T213831
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Melder Sauna außen: Sperren funktioniert nicht
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:c3de4730-cbf4-11f1-bb09-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261019T193914Z
+DESCRIPTION:Erledigt 24.10.: nachts 20 % (packages/licht_nacht.yaml).
+DTSTART;TZID=Europe/Berlin:20261019T213914
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Bad Yvonne Deckenlicht wird im Nachtmodus nicht abgesenkt\, wie im 
+ Flur und Gästebad
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:e50b4d86-cc4e-11f1-bb09-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261020T062424Z
+DESCRIPTION:Erledigt 24.10.: Wohnbereich-Präsenz + Lux-Logik repariert.
+DTSTART;TZID=Europe/Berlin:20261020T082424
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Präsenzmelder Wohnzimmer schaltet morgens das Licht nicht ein\, und
+  die Morgenmusik startet auch nicht mehr
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261023T093124Z
+UID:837b9a80-cec4-11f1-8fd4-d83addc0128c
+CREATED:20261023T093124Z
+DTSTART;VALUE=DATE:20261024
+DUE;VALUE=DATE:20261025
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Startwort Ludwig: Wortmodell trainieren (Colab) und nach 
+ /config/www/ludwig/ kopieren
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090845Z
+UID:c19b1ac0-d086-11f1-9fcd-d83addc0128c
+COMPLETED:20261026T090845Z
+CREATED:20261025T151421Z
+DESCRIPTION:Erledigt 25.10.: Effekt-Skript + Schnellbefehl 'Küchenstripe 
+ auf Regenbogen'.
+DTSTART;TZID=Europe/Berlin:20261025T161421
+LAST-MODIFIED:20261026T090845Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Fehler: Auf Regenbogenfarben
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T091323Z
+UID:f4482b38-d08c-11f1-9fcd-d83addc0128c
+COMPLETED:20261026T091323Z
+CREATED:20261025T155843Z
+DESCRIPTION:Erledigt 26.10.: Push nach 2 min auf 100 % mit Profil/Grund\, 
+ max. alle 30 min.
+DTSTART;TZID=Europe/Berlin:20261025T165843
+LAST-MODIFIED:20261026T091323Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Ich hätte ganz gerne eine Erkennung bzw. Meldung\, wenn die 
+ Lüftungsanlage auf 100 % geht
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261025T161847Z
+UID:6791b7da-d08d-11f1-9fcd-d83addc0128c
+COMPLETED:20261025T161847Z
+CREATED:20261025T160157Z
+DESCRIPTION:Erledigt 25.10.: Quelle + Starter + Uhrzeit werden gemerkt\; 
+ Frage 'Woher kommt die Musik?' + Anzeige im Dashboard (Musik).
+DTSTART;TZID=Europe/Berlin:20261025T170157
+LAST-MODIFIED:20261025T161847Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Wir wollen sehen\, woher die laufende Playlist kommt bzw. von wem 
+ sie gestartet wurde
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261025T161848Z
+UID:c20f16ba-d08f-11f1-9fcd-d83addc0128c
+COMPLETED:20261025T161848Z
+CREATED:20261025T161847Z
+DESCRIPTION:Erledigt 25.10.: 'Das Lied gefällt mir' → Liste Musik 
+ Lieblingslieder + Favorit\; 'Spiel unsere Lieblingslieder'.
+DTSTART;TZID=Europe/Berlin:20261025T171847
+LAST-MODIFIED:20261025T161848Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Lied per Sprache auf Playlist speichern\, wenn es gefällt (mit 
+ Quelle)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T091323Z
+UID:5fcddc32-d0a0-11f1-9fcd-d83addc0128c
+COMPLETED:20261026T091323Z
+CREATED:20261025T181744Z
+DESCRIPTION:Erledigt 26.10.: 'Schalte oben schlafen ein' / 'Schlafmodus 
+ oben an/aus' lokal.
+DTSTART;TZID=Europe/Berlin:20261025T191744
+LAST-MODIFIED:20261026T091323Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Fehler: Schalte oben schlafen ein ein
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T090250Z
+UID:059dfab8-d11c-11f1-9fcd-d83addc0128c
+CREATED:20261026T090250Z
+DESCRIPTION:Gemerkt 26.10. – bis dahin Sicherheitsnetz 20 min 
+ (packages/flur_og_sicherheitsnetz.yaml)
+DTSTART;TZID=Europe/Berlin:20261026T100250
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Flur OG Melder 1.1.24 umbauen: nur Präsenz melden\, HA schaltet 
+ (wie HWR/Ankleide)\; Melder erkennt Dauerbewegung
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T162121Z
+UID:47ba59e0-d159-11f1-9fcd-d83addc0128c
+CREATED:20261026T162121Z
+DESCRIPTION:Entschieden 26.10. (Weg 2). To-do: Kabel anschließen (Tobias)\,
+  Voice PE in Music Assistant als Player 'Wohnzimmer'\, 
+ Skripte/Automationen von media_player.ma_wohnzimmer umstellen\, 
+ Ducking-Automation (voice_ducking.yaml) prüfen/abschalten\, WiiM-Raum 
+ festlegen\, Systemtest anpassen.
+DTSTART;TZID=Europe/Berlin:20261026T172121
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Wohnzimmer-Audio umbauen: Voice PE per 3\,5-mm-Klinke an den 
+ Verstärker\, Musik über Voice PE (Music Assistant)\, WiiM in anderen Raum
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T061010Z
+UID:b0cbc628-d1ca-11f1-9fcd-d83addc0128c
+COMPLETED:20261027T060955Z
+CREATED:20261027T060955Z
+DTSTART;TZID=Europe/Berlin:20261027T065310
+LAST-MODIFIED:20261027T061010Z
+SEQUENCE:2
+STATUS:COMPLETED
+SUMMARY:Café del Mar nie wieder abspielen
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T060532Z
+UID:6b268ab6-d1cc-11f1-9fcd-d83addc0128c
+CREATED:20261027T060532Z
+DESCRIPTION:Tobias 27.10. per Chat
+DTSTART;TZID=Europe/Berlin:20261027T070532
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Änderungswunsch: Kinder oben rufen können (Durchsage in 
+ Maltes/Laras Zimmer bzw. OG)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T165755Z
+UID:8e4d9538-d227-11f1-992d-d83addc0128c
+CREATED:20261027T165755Z
+DTSTART;TZID=Europe/Berlin:20261027T175755
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:WhatsApp-Versand per Sprache: Nachricht und Empfänger funktionieren
+  nicht richtig (freie Nummer nicht möglich)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T165851Z
+UID:afa2af70-d227-11f1-992d-d83addc0128c
+CREATED:20261027T165851Z
+DTSTART;TZID=Europe/Berlin:20261027T175851
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Schnell-Button "Mittagsschlaf" oben im Schlafzimmer (genaue 
+ Funktion noch offen)
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T192503Z
+UID:1beaac8c-d23c-11f1-992d-d83addc0128c
+CREATED:20261027T192503Z
+DTSTART;TZID=Europe/Berlin:20261027T202503
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Licht Ankleide Tobias ist irgendwie angeblieben
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T225851Z
+UID:f9fbf28e-d259-11f1-992d-d83addc0128c
+CREATED:20261027T225851Z
+DTSTART;TZID=Europe/Berlin:20261027T235851
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Nachts bleibt oben irgendwo Licht an (z. B. Laras Deckenlicht) – 
+ prüfen
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261028T174254Z
+UID:01369354-d2f7-11f1-992d-d83addc0128c
+CREATED:20261028T174254Z
+DTSTART;TZID=Europe/Berlin:20261028T184254
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Müll-Erinnerung: Küchenstripe blinkt\, geht aber aus\, sobald eine 
+ Szene aktiviert wird. Das Blinken soll anbleiben\, bis man es selbst 
+ ausschaltet bzw. Müll rausgestellt ist.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261028T174331Z
+UID:1764544a-d2f7-11f1-992d-d83addc0128c
+CREATED:20261028T174331Z
+DTSTART;TZID=Europe/Berlin:20261028T184331
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Müll rausgestellt-Button: Küchenstripe soll danach nicht ausgehen\,
+  sondern auf die vorherige Szene zurückgehen.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261028T174403Z
+UID:2a41dea2-d2f7-11f1-992d-d83addc0128c
+CREATED:20261028T174403Z
+DTSTART;TZID=Europe/Berlin:20261028T184403
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Flurlicht prüfen: Im Flur EG war das Licht beim Nachhausekommen an 
+ (sollte es nicht?)\, im Flur OG funktioniert das Licht/die Präsenz häufig 
+ gar nicht. Bitte untersuchen.
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261028T184118Z
+UID:2a0f4098-d2ff-11f1-992d-d83addc0128c
+CREATED:20261028T184118Z
+DESCRIPTION:Gerät Naboo nicht gefunden\; Sprachgerät-Lautstärke ließ sich 
+ nicht ändern – 28.10.2026 19:41
+DTSTART;TZID=Europe/Berlin:20261028T194118
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Erhöhe die Lautstärke von Naboo deutlich
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261103T162253Z
+UID:d2414e1c-d7a2-11f1-8aaf-d83addc0128c
+CREATED:20261103T162253Z
+DTSTART;TZID=Europe/Berlin:20261103T172253
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Beim Haus verlassen soll das Giebellicht anbleiben
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261103T162350Z
+UID:f42e7e46-d7a2-11f1-8aaf-d83addc0128c
+CREATED:20261103T162350Z
+DTSTART;TZID=Europe/Berlin:20261103T172350
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Carport-Licht geht bei Ankunft nicht an\, Automation Licht bei 
+ Ankunft prüfen und reparieren
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261103T182117Z
+UID:5c962e10-d7b3-11f1-8aaf-d83addc0128c
+CREATED:20261103T182117Z
+DTSTART;TZID=Europe/Berlin:20261103T192117
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Licht im Erdgeschoss ist angeblieben\, als wir nach Hause gekommen 
+ sind
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261103T182418Z
+UID:c86e29d0-d7b3-11f1-8aaf-d83addc0128c
+CREATED:20261103T182418Z
+DTSTART;TZID=Europe/Berlin:20261103T192418
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Musik soll nie so laut angehen\, sondern immer mit 20 % Lautstärke 
+ starten
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261103T202346Z
+UID:78e91aa8-d7c4-11f1-8aaf-d83addc0128c
+CREATED:20261103T202346Z
+DESCRIPTION:Gerät "Bibellicht" nicht erkannt\, auch nach Rückfrage nicht 
+ geklärt – 03.11.2026 21:23
+DTSTART;TZID=Europe/Berlin:20261103T212346
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Mach mal das Bibellicht an
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261104T161359Z
+UID:bdf53400-d86a-11f1-8aaf-d83addc0128c
+CREATED:20261104T161359Z
+DESCRIPTION:Skript Musik Gefällt mir: TemplateError startswith – 04.11.2026
+  17:13
+DTSTART;TZID=Europe/Berlin:20261104T171359
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Aktuellen Track im Wohnzimmer zu Lieblingsliedern 
+ hinzufügen
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261104T180239Z
+UID:ec65d614-d879-11f1-8aaf-d83addc0128c
+CREATED:20261104T180239Z
+DTSTART;TZID=Europe/Berlin:20261104T190239
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Müll-Erinnerung am Küchen-Stripe: Licht soll schneller blinken\, 
+ immer rot-weiß\, für alle Müllsorten gleich (Wunsch von Malte)
+END:VTODO
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+BEGIN:STANDARD
+DTSTART:20101031T030000
+TZOFFSETTO:+0100
+TZOFFSETFROM:+0200
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20100328T020000
+TZOFFSETTO:+0200
+TZOFFSETFROM:+0100
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+END:VCALENDAR

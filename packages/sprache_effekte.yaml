@@ -1,0 +1,139 @@
+# Licht-Effekte per Sprache (WLED-Stripes) – Wunsch Tobias 25.10.
+# HAs eingebaute Lichtbefehle können keine Effekte → Claude ruft dieses Skript auf.
+# Deutsche Begriffe werden auf WLED-Effekte abgebildet, sonst Teilwort-Suche in der Effektliste des Stripes.
+
+script:
+  licht_effekt:
+    alias: "Licht-Effekt einstellen"
+    icon: mdi:auto-fix
+    mode: parallel
+    description: >
+      Stellt an einem LED-Stripe (WLED: Küche Stripe, Flur EG Stripe, Lara OG Stripe, Sauna, Außensauna, Bad-Yvonne)
+      einen Effekt ein und schaltet ihn dabei ein. effekt = deutscher oder englischer Effektname, z. B. Regenbogen,
+      Feuer, Kerze, Herzschlag, Funkeln, Glitzern, Atmen, Lauflicht, Farbwechsel, Feuerwerk, Meer, Polarlicht, Schnee,
+      Disco, Blinken, Party, Romantisch, Musik/Beat/Bass/Tanzen/Equalizer (reagiert auf Musik, nur Stripe Bad Yvonne hat ein Mikrofon), oder "aus"/"normal" für einfarbig. Optional farbe (deutsch, z. B. rot, warmweiß),
+      helligkeit in Prozent, tempo (langsam, normal, schnell). Für mehrere Stripes mehrmals aufrufen.
+      Antwortet mit dem eingestellten Effekt oder einem Fehler.
+    fields:
+      licht: { name: Stripe, required: true, description: "Name des Stripes, z. B. Küche, Flur, Lara, Sauna, Außensauna, Bad Yvonne", selector: { text: } }
+      effekt: { name: Effekt, required: true, selector: { text: } }
+      farbe: { name: Farbe, selector: { text: } }
+      helligkeit: { name: Helligkeit (%), selector: { number: { min: 1, max: 100 } } }
+      tempo: { name: Tempo, selector: { select: { options: [langsam, normal, schnell] } } }
+    variables:
+      # Claude kennt nur Namen, keine Entity-IDs (25.10.: riet light.kuchenstripe …) → Name auf Stripe abbilden
+      eingabe: "{{ licht | lower | replace('ä', 'ae') | replace('ü', 'ue') | replace('ö', 'oe') | replace('ß', 'ss') }}"
+      stripe: >
+        {% set karte = [['aussensauna', 'light.aussensauna'], ['draussen', 'light.aussensauna'], ['aussen', 'light.aussensauna'],
+                        ['kueche', 'light.wled_kuche'], ['kuech', 'light.wled_kuche'], ['kuch', 'light.wled_kuche'],
+                        ['flur', 'light.wled_2'], ['lara', 'light.wled'], ['bad', 'light.bad_yvonne'], ['yvonne', 'light.bad_yvonne'],
+                        ['sauna', 'light.sauna']] %}
+        {% if licht in states | map(attribute='entity_id') | list %}{{ licht }}
+        {% else %}{{ (karte | selectattr('0', 'in', eingabe) | map(attribute='1') | list + [''])[0] }}{% endif %}
+      liste: "{{ state_attr(stripe, 'effect_list') or [] if stripe else [] }}"
+      # nur diese Stripes haben ein Mikrofon (Audio-Reaktion an, geprüft 25.10.); Musik-Effekte sonst sinnlos
+      mit_mikro: [light.bad_yvonne]
+      musik_effekte: [Gravcenter, Puddlepeak, Gravimeter, DJ Light, GEQ, Waterfall, Freqwave, Ripple Peak, Noisemeter, Juggles, Blurz, Plasmoid, Midnoise, Pixelwave, Rocktaves, Swirl, Waverly, Puddles, Matripix, Freqmap, Freqmatrix, Freqpixels, Gravcentric, Noisefire]
+      synonyme:
+        regenbogen: Rainbow
+        musik: Gravcenter
+        beat: Puddlepeak
+        bass: Gravimeter
+        tanzen: DJ Light
+        equalizer: GEQ
+        wasserfall: Waterfall
+        regenbogenfarben: Rainbow
+        feuer: Fire 2012
+        fire: Fire 2012
+        kamin: Fire 2012
+        kerze: Candle
+        kerzen: Candle Multi
+        herz: Heartbeat
+        herzschlag: Heartbeat
+        funkeln: Twinkle
+        glitzern: Glitter
+        atmen: Breathe
+        pulsieren: Breathe
+        lauflicht: Running
+        farbwechsel: Colorloop
+        feuerwerk: Fireworks
+        meer: Pacifica
+        ozean: Pacifica
+        wellen: Pacifica
+        polarlicht: Aurora
+        nordlicht: Aurora
+        schnee: Sparkle
+        sterne: Twinklefox
+        disco: Rainbow Runner
+        party: Colorful
+        blinken: Blink
+        blitz: Lightning
+        gewitter: Lightning
+        romantisch: Candle
+        ruhig: Breathe
+        aus: Solid
+        normal: Solid
+        einfarbig: Solid
+        kein: Solid
+      farben:
+        rot: "255 0 0"
+        grün: "0 255 0"
+        gruen: "0 255 0"
+        blau: "0 0 255"
+        gelb: "255 200 0"
+        orange: "255 100 0"
+        lila: "150 0 255"
+        violett: "150 0 255"
+        pink: "255 0 150"
+        rosa: "255 120 180"
+        türkis: "0 220 200"
+        weiß: "255 255 255"
+        weiss: "255 255 255"
+        warmweiß: "255 160 60"
+        warmweiss: "255 160 60"
+        kaltweiß: "200 220 255"
+        kaltweiss: "200 220 255"
+      e0: "{{ effekt | lower | trim }}"
+      gesucht: "{{ synonyme.get(e0, e0) }}"
+      treffer: >
+        {% set ns = namespace(t='') %}
+        {% for x in liste %}{% if not ns.t and x | lower == gesucht | lower %}{% set ns.t = x %}{% endif %}{% endfor %}
+        {% for x in liste %}{% if not ns.t and gesucht | lower in x | lower %}{% set ns.t = x %}{% endif %}{% endfor %}
+        {{ ns.t }}
+      rgb_text: "{{ farben.get((farbe | default('') | lower | trim), '') }}"
+      rgb: "{{ rgb_text.split(' ') | map('int') | list if rgb_text else none }}"
+      tempo_wert: "{{ {'langsam': 60, 'normal': 128, 'schnell': 220}.get(tempo | default(''), none) }}"
+      tempo_entity: >
+        {{ (device_entities(device_id(stripe)) if stripe else []) | select('match', 'number\..*_(speed|geschwindigkeit)$') | first | default('') }}
+    sequence:
+      - if: "{{ not liste }}"
+        then:
+          - variables: { r: { ergebnis: "Stripe '{{ licht }}' nicht gefunden oder ohne Effekte. Stripes: Küche, Flur, Lara, Sauna, Außensauna, Bad Yvonne." } }
+          - stop: ""
+            response_variable: r
+      - if: "{{ not treffer }}"
+        then:
+          - variables: { r: { ergebnis: "Effekt '{{ effekt }}' gibt es nicht." } }
+          - stop: ""
+            response_variable: r
+      - if: "{{ treffer in musik_effekte and stripe not in mit_mikro }}"
+        then:
+          - variables: { r: { ergebnis: "Der Stripe hat kein Mikrofon, Musik-Effekte gehen nur im Bad Yvonne." } }
+          - stop: ""
+            response_variable: r
+      - action: light.turn_on
+        target: { entity_id: "{{ stripe }}" }
+        data: >
+          {% set d = {'effect': treffer} %}
+          {% if rgb %}{% set d = dict(d, rgb_color=rgb) %}{% endif %}
+          {% if helligkeit is defined and helligkeit %}{% set d = dict(d, brightness_pct=helligkeit | int) %}{% endif %}
+          {{ d }}
+      - if: "{{ tempo_wert is not none and tempo_entity != '' }}"
+        then:
+          - action: number.set_value
+            continue_on_error: true
+            target: { entity_id: "{{ tempo_entity }}" }
+            data: { value: "{{ tempo_wert }}" }
+      - variables: { r: { ergebnis: "{{ state_attr(stripe, 'friendly_name') }}: Effekt {{ treffer }}" } }
+      - stop: ""
+        response_variable: r

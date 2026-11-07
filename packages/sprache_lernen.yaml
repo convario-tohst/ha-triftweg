@@ -1,0 +1,165 @@
+# Sprachassistent: schnell durch Lernen
+# - Eindeutige Befehle (eigene Sätze, exakte HA-Sätze, gelernte Kurzbefehle) laufen lokal (< 1 s).
+# - Alles andere fängt der Auffangsatz "AnClaude" (custom_sentences/de/gelernt.yaml) und reicht es an Claude weiter.
+# - Claude meldet erfolgreich ausgeführte, eindeutige und wiederholbare Befehle über "Kurzbefehl lernen".
+#   Ab der 2. Verwendung desselben Satzes wird er zum lokalen Kurzbefehl (Liste "Gelernte Sprachbefehle").
+# - "Vergiss den Befehl …" / Eintrag in der Liste löschen oder abhaken → wieder über Claude.
+
+input_text:
+  sprache_raum:
+    name: "Sprache: Raum des Sprachgeräts (Raum|Zeit)"
+    max: 80
+  sprache_gespraech:
+    name: "Sprache: laufendes Gespräch (ID|Zeit)"
+    max: 120
+
+shell_command:
+  gelernt_erzeugen: "python3 /config/claude_tools/gelernt.py"
+
+script:
+  kurzbefehl_lernen:
+    alias: "Kurzbefehl lernen"
+    description: >
+      Nach einem ERFOLGREICH ausgeführten, eindeutigen und wiederholbaren Befehl aufrufen, damit derselbe
+      Satz künftig sofort lokal funktioniert. Nicht für Fragen, nicht für Befehle, die vom Zusammenhang abhängen
+      ("wieder aus", "wärmer", "das da"), nicht für sicherheitsrelevantes (Saunaofen, Haus verlassen, Urlaub,
+      Sirene). Felder: satz = genauer Wortlaut des Nutzers, dienst = ausgeführte Aktion (z. B. light.turn_on),
+      ziel = Liste der Entity-IDs, daten = Zusatzdaten als Objekt (z. B. {"brightness_pct": 50}) oder {},
+      antwort = kurze Bestätigung, die künftig gesprochen wird.
+    icon: mdi:school
+    mode: queued
+    fields:
+      satz: { name: Satz, required: true, selector: { text: } }
+      dienst: { name: Dienst, required: true, selector: { text: } }
+      ziel: { name: Ziel-Entitäten, required: true, selector: { object: } }
+      daten: { name: Daten, selector: { object: } }
+      antwort: { name: Antwort, selector: { text: } }
+    variables:
+      s: >
+        {{ (satz | lower | regex_replace('[^a-z0-9äöüß% ]+', ' ') | regex_replace('\\s+', ' ')) | trim }}
+      # Claude übergibt ziel oft als {"entity_id": [...]} → sonst wurde nur "entity_id" gespeichert (Fehler bis 25.10.)
+      z: >
+        {% set x = ziel.entity_id if ziel is mapping and ziel.entity_id is defined else ziel %}
+        {{ [x] if x is string else (x | list) }}
+    sequence:
+      - condition: template
+        # nur echte, vorhandene Entitäten lernen (25.10.: Claude lernte ziel "entity_id" → Kurzbefehl tat nichts)
+        value_template: "{{ s | length > 3 and 'saunaofen' not in (z | join(' ')) and z | count > 0 and z | reject('has_value') | list | count == 0 }}"
+      - action: todo.get_items
+        response_variable: liste
+        target: { entity_id: todo.gelernte_sprachbefehle }
+      - variables:
+          vorhanden: "{{ liste['todo.gelernte_sprachbefehle']['items'] | selectattr('summary', 'eq', s) | list }}"
+          alt: "{{ (vorhanden[0].description | default('{}') | from_json) if vorhanden else {} }}"
+          neu:
+            dienst: "{{ dienst }}"
+            ziel: "{{ z }}"
+            daten: "{{ daten | default({}) }}"
+            antwort: "{{ antwort | default('Erledigt.') }}"
+            anzahl: "{{ (alt.anzahl | default(0) | int) + 1 }}"
+      - if: "{{ vorhanden | count > 0 }}"
+        then:
+          - action: todo.update_item
+            target: { entity_id: todo.gelernte_sprachbefehle }
+            data: { item: "{{ s }}", description: "{{ neu | to_json }}" }
+        else:
+          - action: todo.add_item
+            target: { entity_id: todo.gelernte_sprachbefehle }
+            data: { item: "{{ s }}", description: "{{ neu | to_json }}" }
+
+  kurzbefehle_neu_erzeugen:
+    alias: "Kurzbefehle neu erzeugen"
+    icon: mdi:refresh
+    mode: single
+    sequence:
+      - delay: 2
+      - action: shell_command.gelernt_erzeugen
+      - action: conversation.reload
+
+automation:
+
+  # Welches Sprachgerät hört gerade zu → Raum merken (für Befehle ohne Raumangabe)
+  - id: sprache_raum_merken
+    alias: "Sprache: Raum des Sprachgeräts merken"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [assist_satellite.home_assistant_voice_0adb1a_assist_satellit]
+        to: listening
+    actions:
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_raum }
+        data:
+          value: "{{ area_name(trigger.entity_id) or 'unbekannt' }}|{{ as_timestamp(now()) | int }}"
+  - id: kurzbefehle_bei_aenderung_neu
+    alias: "Sprache: gelernte Kurzbefehle aktualisieren"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: todo.gelernte_sprachbefehle
+      # Zähler-Änderungen ändern den Listenstand nicht → zusätzlich regelmäßig
+      - trigger: time_pattern
+        minutes: "/15"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: script.kurzbefehle_neu_erzeugen
+
+intent_script:
+  GelernterBefehl:
+    description: "Interner, gelernter Kurzbefehl (nicht selbst aufrufen)."
+    action:
+      - action: "{{ dienst }}"
+        target: { entity_id: "{{ ziel | from_json }}" }
+        data: "{{ daten | from_json }}"
+      # für Folgesätze ("wieder aus") merken, was gerade lokal geschaltet wurde (23.10.: sonst schaltete Claude die Musik aus)
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_kontext }
+        data:
+          value: >
+            {{ {'text': antwort ~ ' (' ~ dienst ~ ' auf ' ~ (ziel | from_json | join(', ')) ~ ')', 'ts': as_timestamp(now()) | int} | to_json | truncate(250, true, '') }}
+    speech:
+      text: "{{ antwort }}"
+  AnClaude:
+    description: "Interne Weiterleitung an Claude (nicht selbst aufrufen)."
+    action:
+      - action: conversation.process
+        response_variable: antwort
+        data:
+          agent_id: conversation.claude_conversation
+          language: de
+          # Gesprächsgedächtnis: gleiche ID, solange zwischen zwei Sätzen < 5 min liegen (danach neu)
+          conversation_id: >
+            {% set g = states('input_text.sprache_gespraech').split('|') %}
+            {{ g[0] if g | count == 2 and (as_timestamp(now()) - g[1] | float(0)) < 300 else 'haus_' ~ (as_timestamp(now()) | int) }}
+          # lokal ausgeführte Befehle kennt Claude nicht → letzten Befehl (max. 5 min alt) als Kontext mitgeben
+          text: >
+            {{ state_attr('sensor.sprache_zustand', 'text') }}
+            {% set s = states('input_text.sprache_kontext') %}
+            {% set k = s | from_json if s.startswith('{') else {} %}
+            {% if k.ts is defined and (as_timestamp(now()) - k.ts | float(0)) < 300 and k.text is defined %}(Vorheriger Befehl vor {{ (as_timestamp(now()) - k.ts | float(0)) | int }} s: {{ k.text }}) {% endif %}{% set rr = states('input_text.sprache_raum').split('|') %}{% if rr | count == 2 and (as_timestamp(now()) - rr[1] | float(0)) < 90 %}(Gesprochen über das Sprachgerät im Raum {{ rr[0] }} – Befehle ohne Raumangabe und "hier" meinen diesen Raum.) {% endif %}ANFRAGE: {{ satz }}
+      # API-Fehler (z. B. 400, wenn sich die Werkzeuge mitten im Gespräch ändern – 25.10.) → einmal mit NEUEM Gespräch wiederholen
+      - if: "{{ 'API error' in (antwort.response.speech.plain.speech | default('')) or (antwort.response.response_type | default('')) == 'error' }}"
+        then:
+          - action: conversation.process
+            response_variable: antwort2
+            data:
+              agent_id: conversation.claude_conversation
+              language: de
+              conversation_id: "{{ 'haus_neu_' ~ (as_timestamp(now()) | int) }}"
+              text: >
+                {{ state_attr('sensor.sprache_zustand', 'text') }}
+                {% set s = states('input_text.sprache_kontext') %}
+                {% set k = s | from_json if s.startswith('{') else {} %}
+                {% if k.ts is defined and (as_timestamp(now()) - k.ts | float(0)) < 300 and k.text is defined %}(Vorheriger Befehl vor {{ (as_timestamp(now()) - k.ts | float(0)) | int }} s: {{ k.text }}) {% endif %}{% set rr = states('input_text.sprache_raum').split('|') %}{% if rr | count == 2 and (as_timestamp(now()) - rr[1] | float(0)) < 90 %}(Gesprochen über das Sprachgerät im Raum {{ rr[0] }} – Befehle ohne Raumangabe und "hier" meinen diesen Raum.) {% endif %}ANFRAGE: {{ satz }}
+          - variables:
+              antwort: "{{ antwort2 }}"
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_gespraech }
+        data: { value: "{{ antwort.conversation_id | default('haus_0') }}|{{ as_timestamp(now()) | int }}" }
+      - variables:
+          r: { text: "{{ antwort.response.speech.plain.speech | default('Das habe ich nicht verstanden.') }}" }
+      - stop: ok
+        response_variable: r
+    speech:
+      text: "{{ action_response.text if action_response is mapping else 'Das habe ich nicht verstanden.' }}"

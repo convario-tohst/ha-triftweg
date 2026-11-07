@@ -1,0 +1,53 @@
+# Netzwerk-Übersicht (UniFi Cloud Gateway Max): Gesamt-Durchsatz, Top-Verbraucher, Geräte
+# Die Verkehrs-Sensoren je Gerät (sensor.*_rx / *_tx, MB/s) werden NICHT aufgezeichnet (Datenbank-Last auf dem Pi),
+# nur die Summen hier (Ausschluss steht in packages/recorder.yaml).
+
+template:
+  # nur alle 30 s rechnen: "states.sensor" würde sonst bei JEDER Sensoränderung neu rechnen
+  # (25.10.: Schleife, > 4600 Neuberechnungen, Pi ausgebremst)
+  - triggers:
+      - trigger: time_pattern
+        seconds: "/30"
+      - trigger: homeassistant
+        event: start
+    sensor:
+      - name: "Netz Download"
+        unique_id: netz_download
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+        icon: mdi:download-network
+        # rx = vom Gerät empfangen? UniFi: rx = Gerät sendet, tx = Gerät empfängt (Sicht des Zugangspunkts) → Download = Summe tx
+        state: >
+          {{ (states.sensor | selectattr('entity_id', 'search', '_tx$') | map(attribute='state') | select('is_number') | map('float') | sum * 8) | round(1) }}
+      - name: "Netz Upload"
+        unique_id: netz_upload
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+        icon: mdi:upload-network
+        state: >
+          {{ (states.sensor | selectattr('entity_id', 'search', '_rx$') | map(attribute='state') | select('is_number') | map('float') | sum * 8) | round(1) }}
+      - name: "Netz Top-Verbraucher"
+        unique_id: netz_top
+        icon: mdi:podium
+        state: >
+          {% set ns = namespace(l=[]) %}
+          {% for s in states.sensor | selectattr('entity_id', 'search', '_tx$') %}
+            {% set rx = states(s.entity_id[:-3] ~ '_rx') | float(0) %}
+            {% set ges = (s.state | float(0) + rx) * 8 %}
+            {% if ges > 0.05 %}{% set ns.l = ns.l + [[ges, s.name | replace(' TX', '') | replace(' Tx', '')]] %}{% endif %}
+          {% endfor %}
+          {{ (ns.l | sort(reverse=true) | first)[1] if ns.l else 'kein Verkehr' }}
+        attributes:
+          liste: >
+            {% set ns = namespace(l=[]) %}
+            {% for s in states.sensor | selectattr('entity_id', 'search', '_tx$') %}
+              {% set rx = states(s.entity_id[:-3] ~ '_rx') | float(0) %}
+              {% set dl = s.state | float(0) * 8 %}{% set ul = rx * 8 %}
+              {% if dl + ul > 0.01 %}{% set ns.l = ns.l + [{'name': s.name | replace(' TX', '') | replace(' Tx', ''), 'down': dl | round(2), 'up': ul | round(2), 'summe': (dl + ul) | round(2)}] %}{% endif %}
+            {% endfor %}
+            {{ (ns.l | sort(attribute='summe', reverse=true))[:12] }}
+  - sensor:
+      - name: "Netz Geräte online"
+        unique_id: netz_geraete_online
+        icon: mdi:devices
+        state: "{{ states('sensor.cloud_gateway_max_tobias_clients') }}"

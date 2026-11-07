@@ -1,0 +1,83 @@
+language: de
+# Timer per Sprache (27.10.): eigene Sätze für HAs eingebaute Timer-Absichten (läuft auf dem Voice PE, klingelt dort).
+# Nötig, weil der Auffangsatz AnClaude sonst alles an Claude schickt – Claude kann keine Gerätetimer stellen.
+intents:
+  HassStartTimer:
+    data:
+      - sentences:
+          - "(stell|stelle|setz|setze|starte|start|mach|mache) [mir] [bitte] [(einen|den|nen)] timer (auf|für|von|über|mit) <dauer> [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "(stell|stelle|setz|setze|starte|start|mach|mache) [mir] [bitte] [(einen|den|nen)] timer [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}] (auf|für|von|über|mit) <dauer>"
+          - "[(einen|ein)] timer [(auf|für|von|über)] <dauer> [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "<dauer> timer [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "(stell|stelle|starte|start) [mir] [bitte] [(einen|ein)] <dauer> timer [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "(erinnere|weck|wecke) mich in <dauer> [(an|für|wegen) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          # beliebiger Satzanfang ("Kannst du mir …", "Ich brauche …") – Hauptsache "Timer" + Dauer
+          - "{timer_vorspann} timer (auf|für|von|über|mit) <dauer> [(stellen|starten|machen|stellen bitte)] [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "{timer_vorspann} <dauer> timer [(stellen|starten|machen)] [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+      - sentences:
+          - "(stell|stelle|setz|setze|starte|start|mach|mache) [mir] [bitte] [(einen|den)] timer (auf|für|von) (eine|einer) halbe[n] stunde [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "[(einen|ein)] timer [(auf|für|von)] (eine|einer) halbe[n] stunde"
+          - "(erinnere|weck|wecke) mich in (einer|eine) halben stunde [(an|für|wegen) [(den|die|das|meine|meinen)] {timer_name:name}]"
+        slots:
+          minutes: 30
+      - sentences:
+          - "(stell|stelle|setz|setze|starte|start|mach|mache) [mir] [bitte] [(einen|den)] timer (auf|für|von) (eine|einer) viertel stunde [(für|namens) [(den|die|das|meine|meinen)] {timer_name:name}]"
+          - "[(einen|ein)] timer [(auf|für|von)] (eine|einer) viertelstunde"
+        slots:
+          minutes: 15
+  HassCancelTimer:
+    data:
+      - sentences:
+          - "(stopp|stoppe|stop|beende|lösch|lösche|brich|stornier|storniere|cancel) [(den|meinen|diesen)] timer [ab]"
+          - "(stopp|stoppe|stop|beende|lösch|lösche|brich) [(den|meinen)] timer (für|von) {timer_name:name} [ab]"
+          - "timer (aus|stopp|stop|abbrechen|beenden|löschen)"
+  HassCancelAllTimers:
+    data:
+      - sentences:
+          - "(stopp|stoppe|stop|beende|lösch|lösche|brich) alle timer [ab]"
+  HassTimerStatus:
+    data:
+      - sentences:
+          - "wie lange (läuft|dauert|braucht) [(der|mein|dein)] timer noch"
+          - "wie (lange|viel zeit) (hat|ist) [(der|mein)] timer noch"
+          - "wie viel zeit (ist|bleibt) noch [auf dem timer]"
+          - "(timer status|status [(der|des)] timer)"
+          - "welche timer laufen [gerade]"
+          - "läuft [(noch|gerade)] ein timer"
+  HassPauseTimer:
+    data:
+      - sentences:
+          - "(pausier|pausiere|halt|halte|unterbrich) [(den|meinen)] timer [an]"
+          - "timer pausieren"
+  HassUnpauseTimer:
+    data:
+      - sentences:
+          - "(setz|setze) [(den|meinen)] timer fort"
+          - "timer (fortsetzen|weiter|weiterlaufen lassen)"
+          - "(lass|lasse) [(den|meinen)] timer weiterlaufen"
+  HassIncreaseTimer:
+    data:
+      - sentences:
+          - "(verlängere|verlänger) [(den|meinen)] timer um <dauer>"
+          - "<dauer> (mehr|länger) [auf den timer]"
+          - "(gib|mach) [(dem|den)] timer <dauer> (mehr|dazu)"
+  HassDecreaseTimer:
+    data:
+      - sentences:
+          - "(verkürze|verkürz) [(den|meinen)] timer um <dauer>"
+          - "<dauer> weniger [auf dem timer]"
+expansion_rules:
+  dauer: "({timer_zahl:hours} (stunde|stunden) [und {timer_zahl:minutes} (minute|minuten)]|{timer_eins:hours} stunde [und {timer_zahl:minutes} (minute|minuten)]|{timer_zahl:minutes} (minute|minuten) [[und] {timer_zahl:seconds} [(sekunde|sekunden)]]|{timer_eins:minutes} minute [und {timer_zahl:seconds} (sekunde|sekunden)]|{timer_zahl:seconds} (sekunde|sekunden))"
+lists:
+  timer_zahl:
+    range:
+      from: 1
+      to: 300
+  timer_eins:
+    values:
+      - in: "(eine|einer|ein|1)"
+        out: 1
+  timer_name:
+    wildcard: true
+  timer_vorspann:
+    wildcard: true

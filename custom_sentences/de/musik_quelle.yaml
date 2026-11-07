@@ -1,0 +1,25 @@
+language: de
+# "Das gefällt mir", Lieblingslieder, Musik-Quelle (25.10.) – Logik in packages/musik_quelle.yaml
+intents:
+  MusikGefaelltMir:
+    data:
+      - sentences:
+          - "[oh] [(das|dieses|der|den)] (lied|song|titel|stück) gefällt mir [(gut|sehr gut|richtig gut)]"
+          - "[oh] [das] gefällt mir [(gut|sehr gut|richtig gut)]"
+          - "(speicher|speichere|merk dir|merke dir) [mal] (das|dieses|den|diesen) (lied|song|titel|stück) [auf (die|der) (lieblingsliste|lieblingslieder)]"
+          - "[(das|den)] (lied|song|titel) auf die (lieblingsliste|lieblingslieder)"
+          - "(super|tolles|geiles|cooles|schönes|klasse) (lied|song|stück)"
+          - "(das|den) (lied|song) (mag ich|finde ich gut|ist super|ist gut)"
+  MusikLieblingslieder:
+    data:
+      - sentences:
+          - "(spiel|spiele|starte|mach) [mal] (unsere|die|meine) (lieblingslieder|lieblingssongs|lieblingsliste) [(an)] [(im|in der) {musikraum}]"
+  MusikQuelle:
+    data:
+      - sentences:
+          - "woher kommt (die|diese) musik"
+          - "(welche|was für eine) (playlist|liste) (ist das|läuft [da|gerade])"
+          - "(welcher|was für ein) sender (ist das|läuft [da|gerade])"
+          - "wer hat (die|diese) musik (angemacht|gestartet|an gemacht)"
+          - "was läuft (da|gerade) [für musik]"
+          - "was ist das für (ein lied|ein song|musik)"

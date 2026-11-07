@@ -1,0 +1,56 @@
+# Disco-Modus zum Spielen: bunte Streifen, Malte-LED Party, Raumlicht gedimmt, Musik.
+# Aus = vorheriger Zustand. Endet automatisch nach 30 Minuten.
+
+input_boolean:
+  disco:
+    name: "Disco"
+    icon: mdi:party-popper
+
+automation:
+  - id: disco_an_aus
+    alias: "Disco: an / aus"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.disco
+        to: ["on", "off"]
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_boolean.disco
+            state: "on"
+        then:
+          - action: scene.create
+            data:
+              scene_id: vor_disco
+              snapshot_entities:
+                - light.wled
+                - light.wled_2
+                - light.dimmer_wohnzimmer_esstisch
+                - light.dimmer_wand_sofa
+                - light.dimmer_kuche_decke_2
+          - action: light.turn_on
+            continue_on_error: true
+            target: { entity_id: [light.wled, light.wled_2] }
+            data: { effect: "Rainbow", brightness_pct: 100 }
+          - action: light.turn_on
+            continue_on_error: true
+            target: { entity_id: [light.dimmer_wohnzimmer_esstisch, light.dimmer_wand_sofa, light.dimmer_kuche_decke_2] }
+            data: { brightness_pct: 10 }
+          - action: input_select.select_option
+            target: { entity_id: input_select.malte_led_profil }
+            data: { option: "Party" }
+          - action: script.turn_on
+            target: { entity_id: script.musik_bremen_next }
+          - delay: "00:30:00"
+          - action: input_boolean.turn_off
+            target: { entity_id: input_boolean.disco }
+        else:
+          - action: input_select.select_option
+            target: { entity_id: input_select.malte_led_profil }
+            data: { option: "Aus" }
+          - action: scene.turn_on
+            continue_on_error: true
+            target: { entity_id: scene.vor_disco }
+          - action: script.turn_on
+            target: { entity_id: script.musik_aus }

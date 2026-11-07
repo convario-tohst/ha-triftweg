@@ -1,0 +1,59 @@
+# Lüftung (Vallox): Stoßlüften, wenn ein Bad benutzt wird
+# Bad belegt = Präsenz Gästebad (0/7/3) oder Deckenlicht Bad Yvonne / Bad OG an.
+# Beim Betreten und beim Verlassen läuft Boost für die eingestellte Dauer,
+# danach kehrt die Vallox selbst ins vorherige Profil zurück.
+
+input_boolean:
+  lueftung_bad_automatik:
+    name: "Bad-Lüftung automatisch"
+    icon: mdi:fan-auto
+
+input_number:
+  lueftung_bad_dauer:
+    name: "Bad-Lüftung Dauer"
+    icon: mdi:timer-outline
+    min: 5
+    max: 60
+    step: 5
+    unit_of_measurement: min
+
+template:
+  - binary_sensor:
+      - name: "Bad belegt"
+        unique_id: bad_belegt
+        device_class: occupancy
+        # Helligkeit statt An/Aus: das DALI-Gateway meldet bei Bad OG "an", obwohl der Dimmwert 0 ist
+        # (16.10.: stündliche Abfrage → Boost während alle weg waren)
+        # Bad Yvonne läuft seit 18.10. über die Feuchte (packages/raumklima_nutzung.yaml), Gästebad bleibt Präsenz (WC)
+        state: >
+          {{ is_state('binary_sensor.prasenz_gastebad', 'on')
+             or (state_attr('light.og_bad_tobias_decke', 'brightness') | int(0)) > 0 }}
+
+automation:
+  - id: lueftung_bad_boost
+    alias: "Lüftung: Boost bei Badbenutzung"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.bad_belegt
+        from: "off"
+        to: "on"
+      - trigger: state
+        entity_id: binary_sensor.bad_belegt
+        from: "on"
+        to: "off"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.lueftung_bad_automatik
+        state: "on"
+      # Kamin-Profil nicht überschreiben
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: sensor.vallox_aktuelles_profil
+            state: "Fireplace"
+    actions:
+      - action: vallox.set_profile
+        data:
+          profile: boost
+          duration: "{{ states('input_number.lueftung_bad_dauer') | int(15) }}"

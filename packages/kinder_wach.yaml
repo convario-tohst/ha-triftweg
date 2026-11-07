@@ -1,0 +1,161 @@
+# Kinder-wach-Alarm (Wunsch Tobias 14.10.)
+# Schalter "Kinder-wach-Alarm" an → bei Bewegung oben blinkt 1 Minute lang die Sauna-Decke (2-s-Takt) und der
+# Außensauna-Stripe schnell rot/weiß (Wunsch 24.10.). Danach Zustand wie vorher. Abbruch: Schalter aus.
+# Auslöser: Bewegung Flur OG (Melder 1.1.24: 0/1/6, Präsenz 0/7/4) oder Bad OG (Melder 1.1.18: 0/1/7).
+# Scharf automatisch, wenn "Schlafmodus OG" an ist – aber erst ab input_datetime.kinder_wach_ab (21:00, Wunsch 27.10.).
+# Fehlalarm-Schutz (27.10.): Melder 1.1.24 sendet beim Tag/Nacht-Umschalten (switch.tag_nacht_og) sofort 0/1/6 → 60 s ignorieren.
+
+rest_command:
+  wled_aussensauna_alarm:
+    url: "http://192.168.11.192/json/state"
+    method: post
+    content_type: "application/json"
+    payload: >
+      {"on": true, "bri": 255, "transition": 0,
+       "seg": [{"id": 0, "fx": 1, "sx": 235, "ix": 128, "col": [[255, 0, 0], [255, 255, 255], [0, 0, 0]]}]}
+
+input_boolean:
+  kinder_wach_alarm:
+    name: "Kinder-wach-Alarm"
+    icon: mdi:baby-face-outline
+
+input_datetime:
+  kinder_wach_ab:
+    name: "Kinder-wach-Alarm: scharf ab"
+    icon: mdi:clock-start
+    has_date: false
+    has_time: true
+    initial: "21:00:00"
+
+automation:
+  # vergessen auszuschalten → morgens um 6 Uhr automatisch aus
+  - id: kinder_wach_alarm_morgens_aus
+    alias: "Kinder-wach-Alarm: morgens um 6 Uhr aus"
+    triggers:
+      - trigger: time
+        at: "06:00:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.kinder_wach_alarm
+        state: "on"
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.kinder_wach_alarm }
+
+  # scharf ab 21:00, wenn der Schlafmodus OG an ist (vorher sind die Kinder noch unterwegs → Fehlalarme); aus mit dessen Ende
+  - id: kinder_wach_mit_schlafmodus
+    alias: "Kinder-wach-Alarm: mit Schlafmodus OG scharf (ab 21 Uhr)"
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.schlafmodus_og
+        to: ["on", "off"]
+      - trigger: time
+        at: input_datetime.kinder_wach_ab
+    variables:
+      # direkt vergleichen: als eigene Variable wird die Uhrzeit zu Text (Fehler 27./28.10.: Alarm wurde nicht scharf)
+      nacht: "{{ now() >= today_at(states('input_datetime.kinder_wach_ab')) or now().hour < 6 }}"
+    actions:
+      - choose:
+          - conditions: "{{ is_state('input_boolean.schlafmodus_og', 'off') }}"
+            sequence:
+              - action: input_boolean.turn_off
+                target: { entity_id: input_boolean.kinder_wach_alarm }
+          - conditions: "{{ nacht }}"
+            sequence:
+              - action: input_boolean.turn_on
+                target: { entity_id: input_boolean.kinder_wach_alarm }
+
+  - id: kinder_wach_alarm
+    alias: "Kinder-wach-Alarm: Sauna-Decke blinkt bei Bewegung Flur OG"
+    # nur echte Bewegung (Melder Flur OG 1.1.24 und Bad OG 1.1.18), nicht mehr beim manuellen Einschalten des Flurlichts (23.10.)
+    mode: single
+    max_exceeded: silent
+    triggers:
+      # Melder 1.1.24 sendet bei Bewegung seinen Dimmwert auf 0/1/6 – nachts 0 % (Licht bleibt aus!),
+      # deshalb auf jedes Telegramm des Melders reagieren statt auf das Flurlicht
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/1/6", source: "1.1.24" }
+      # Melder Bad OG 1.1.18 (Bewegung → Dimmwert auf 0/1/7)
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/1/7", source: "1.1.18" }
+      - trigger: state
+        entity_id: binary_sensor.prasenz_flur_og
+        from: "off"
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.kinder_wach_alarm
+        state: "on"
+      - "{{ trigger.platform != 'event' or trigger.event.data.telegramtype == 'GroupValueWrite' }}"
+      # Tag/Nacht-Umschaltung: Melder 1.1.24 sendet dabei sofort 0/1/6 – keine Bewegung (Fehlalarm 24./26./27.10. jeweils :30:05)
+      - "{{ (now() - states.switch.tag_nacht_og.last_changed).total_seconds() > 60 }}"
+      # nicht direkt erneut (z. B. durch das Ende-Telegramm des Melders): 3 min Pause nach einem Alarm
+      - "{{ this.attributes.last_triggered is none or (now() - this.attributes.last_triggered).total_seconds() > 180 }}"
+    actions:
+      - variables:
+          war_an: "{{ is_state('light.sauna_decke', 'on') }}"
+          helligkeit: "{{ state_attr('light.sauna_decke', 'brightness') | int(255) }}"
+          aussen_an: "{{ is_state('light.dimmer_aussenbeleuchtung_sauna', 'on') }}"
+          aussen_hell: "{{ state_attr('light.dimmer_aussenbeleuchtung_sauna', 'brightness') | int(255) }}"
+          stripe_an: "{{ is_state('light.aussensauna', 'on') }}"
+          stripe_hell: "{{ state_attr('light.aussensauna', 'brightness') | int(128) }}"
+      - action: logbook.log
+        data:
+          name: "Kinder-wach-Alarm"
+          message: >
+            Bewegung {{ 'Bad OG (1.1.18)' if trigger.platform == 'event' and trigger.event.data.source == '1.1.18'
+               else ('Flur OG Melder 1.1.24, Wert ' ~ trigger.event.data.data if trigger.platform == 'event' else 'Präsenz Flur OG') }}
+            – Sauna-Decke + Außenlicht Sauna blinken 1 Minute
+      # Außensauna-Stripe blinkt schnell rot/weiß (läuft im Stripe selbst, die ganze Minute)
+      - action: rest_command.wled_aussensauna_alarm
+        continue_on_error: true
+      - repeat:
+          # 15 Durchgänge à 4 s = 1 Minute
+          count: 15
+          sequence:
+            - condition: state
+              entity_id: input_boolean.kinder_wach_alarm
+              state: "on"
+            - action: light.turn_on
+              continue_on_error: true
+              target: { entity_id: light.sauna_decke }
+              data: { brightness_pct: 100 }
+            - delay: 2
+            - action: light.turn_off
+              continue_on_error: true
+              target: { entity_id: light.sauna_decke }
+            - delay: 2
+      # vorherigen Zustand wiederherstellen
+      - if: "{{ war_an }}"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.sauna_decke }
+            data: { brightness: "{{ helligkeit }}" }
+        else:
+          - action: light.turn_off
+            target: { entity_id: light.sauna_decke }
+      - if: "{{ stripe_an }}"
+        then:
+          - action: light.turn_on
+            continue_on_error: true
+            target: { entity_id: light.aussensauna }
+            data: { effect: "Solid", rgb_color: [255, 160, 60], brightness: "{{ stripe_hell }}" }
+        else:
+          # erst Blink-Effekt im Stripe zurücksetzen, sonst blinkt er beim nächsten Einschalten weiter (Fehler 24.10.)
+          - action: light.turn_on
+            continue_on_error: true
+            target: { entity_id: light.aussensauna }
+            data: { effect: "Solid", rgb_color: [255, 160, 60] }
+          - action: light.turn_off
+            continue_on_error: true
+            target: { entity_id: light.aussensauna }
+      - if: "{{ aussen_an }}"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.dimmer_aussenbeleuchtung_sauna }
+            data: { brightness: "{{ aussen_hell }}" }
+        else:
+          - action: light.turn_off
+            target: { entity_id: light.dimmer_aussenbeleuchtung_sauna }

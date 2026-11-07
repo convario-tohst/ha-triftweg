@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_resources",
+  "data": {
+    "items": [
+      {
+        "id": "a21fe8ca7a6b45e1a2c79ca2ba6205cd",
+        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=444350375522",
+        "type": "module"
+      },
+      {
+        "id": "138521298b2f450f9ea6b4fafdd00d2b",
+        "url": "/browser_mod.js?automatically-added&3.2.2",
+        "type": "module"
+      },
+      {
+        "id": "6e8e4044976843f786896d933fc0dac0",
+        "url": "/hacsfiles/lovelace-card-mod/card-mod.js?hacstag=190927524421",
+        "type": "module"
+      }
+    ]
+  }
+}

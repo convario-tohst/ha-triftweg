@@ -1,0 +1,92 @@
+# Sauna-Präsenz über HA. Melder 1.1.40 sendet seinen Licht-Status auf 0/2/29 (= Präsenz erkannt);
+# 0/7/5 (Obj. 15 Präsenz, ETS-Aufgabe) wird zusätzlich ausgewertet, sobald es verknüpft ist.
+# Schaltet Decke + Wand + Stripe (WLED "Sauna") gemeinsam. Ersetzt die alte Blueprint-Automation
+# "Sauna Präsenz", die den Stripe schon nach 20 s wieder ausgeschaltet hat.
+automation:
+  - id: sauna_praesenz_licht
+    alias: "Sauna: Licht nach Präsenz"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: [binary_sensor.prasenzmelder_sauna, binary_sensor.prasenz_sauna]
+        from: "off"
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: [binary_sensor.prasenzmelder_sauna, binary_sensor.prasenz_sauna]
+        from: "on"
+        to: "off"
+        for: "00:03:00"
+        id: aus
+    actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'an' }}"
+            sequence:
+              # Beim Betreten nur Wand + Stripe (Decke bleibt aus – Wunsch Tobias 12.10.)
+              - action: light.turn_on
+                continue_on_error: true
+                target: { entity_id: light.licht_sauna_wand }
+                data: { brightness_pct: "{{ 30 if is_state('switch.tag_nacht_eg', 'on') else 80 }}" }
+              - action: light.turn_on
+                continue_on_error: true
+                target: { entity_id: light.sauna }
+          - conditions: >
+              {{ trigger.id == 'aus'
+                 and is_state('binary_sensor.prasenzmelder_sauna', 'off')
+                 and is_state('binary_sensor.prasenz_sauna', 'off') }}
+            sequence:
+              - action: light.turn_off
+                continue_on_error: true
+                target: { entity_id: [light.sauna_decke, light.licht_sauna_wand, light.sauna] }
+
+  # Außensauna: LED-Streifen (WLED "Außensauna") folgt dem Präsenzmelder Sauna außen (1.1.38, Licht-Status 0/2/27)
+  - id: aussensauna_led_praesenz
+    alias: "Außensauna: LED nach Präsenz"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.prasenzmelder_aussensauna
+        from: "off"
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: binary_sensor.prasenzmelder_aussensauna
+        from: "on"
+        to: "off"
+        for: "00:02:00"
+        id: aus
+    actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'an' }}"
+            sequence:
+              - action: light.turn_on
+                continue_on_error: true
+                target: { entity_id: light.aussensauna }
+        default:
+          - action: light.turn_off
+            continue_on_error: true
+            target: { entity_id: light.aussensauna }
+            data: { transition: 5 }
+
+# Sauna Decke (DALI Gruppe 12): Es gibt nur eine Dimmwert-Rückmeldung (0/2/22), keine Ein/Aus-Rückmeldung.
+# Deshalb eine Template-Lampe, deren Zustand aus dem Dimmwert abgeleitet wird.
+
+template:
+  - light:
+      - name: "Sauna Decke"
+        unique_id: sauna_decke_template
+        icon: mdi:ceiling-light
+        state: "{{ states('sensor.sauna_decke_dimmwert') | float(0) > 0 }}"
+        level: "{{ ((states('sensor.sauna_decke_dimmwert') | float(0)) * 2.55) | round(0) | int }}"
+        turn_on:
+          - action: knx.send
+            data: { address: "0/0/19", payload: 1 }
+        turn_off:
+          - action: knx.send
+            data: { address: "0/0/19", payload: 0 }
+        set_level:
+          - action: knx.send
+            data:
+              address: "0/1/24"
+              type: percent
+              payload: "{{ ((brightness | int(0)) / 2.55) | round(0) | int }}"

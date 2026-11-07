@@ -1,0 +1,154 @@
+# Roborock: S7 Triftweg (zu Hause), S7 Büro (Donnerschweer Straße), Qrevo S Pro (Am Markt 16)
+# - Push an Tobias bei Fehler, Wasserknappheit, verbrauchten Bürsten/Filtern
+# - Triftweg: optional automatisch saugen, wenn alle weg sind (Schalter, Standard aus)
+
+input_boolean:
+  sauger_triftweg_bei_abwesenheit:
+    name: "Staubsauger Triftweg: saugen, wenn alle weg"
+    icon: mdi:robot-vacuum
+
+script:
+  sauger_raeume:
+    alias: "Staubsauger: bestimmte Räume saugen"
+    description: >
+      Saugt einzelne Räume mit dem Roborock S7 Triftweg auf der gerade geladenen Karte (Etage, auf der er steht).
+      raeume = Liste von Raumnamen, z. B. ["Malte", "Flur"]. Bekannte Räume OG: Ankleide Tobi, Schlafzimmer, Malte,
+      Lara, Flur, Bad Tobi. Ganze Etage: vacuum.start auf vacuum.roborock_s7_triftweg.
+    icon: mdi:robot-vacuum-variant
+    mode: single
+    fields:
+      raeume: { name: Räume, required: true, selector: { object: } }
+    sequence:
+      - action: roborock.get_maps
+        target: { entity_id: vacuum.roborock_s7_triftweg }
+        response_variable: karten
+      - variables:
+          aktuell: "{{ states('select.roborock_s7_triftweg_ausgewahlte_karte') }}"
+          liste: "{{ raeume if raeume is list else (raeume | string).split(',') }}"
+          zimmer: >
+            {% set ns = namespace(z={}) %}
+            {% for k in karten['vacuum.roborock_s7_triftweg'].maps if k.name == aktuell %}{% set ns.z = k.rooms %}{% endfor %}
+            {{ ns.z }}
+          ids: >
+            {% set ns = namespace(i=[]) %}
+            {% for wunsch in liste %}{% for sid, name in zimmer.items()
+                 if (wunsch | trim | lower) in (name | lower) or (name | lower) in (wunsch | trim | lower) %}
+              {% set ns.i = ns.i + [sid | int] %}{% endfor %}{% endfor %}
+            {{ ns.i | unique | list }}
+      - if: "{{ ids | count == 0 }}"
+        then:
+          - stop: "Raum auf der Karte {{ aktuell }} nicht gefunden"
+            error: true
+      - action: vacuum.send_command
+        target: { entity_id: vacuum.roborock_s7_triftweg }
+        data:
+          command: app_segment_clean
+          params: [{ "segments": "{{ ids }}", "repeat": 1 }]
+      - variables:
+          erg: { karte: "{{ aktuell }}", raeume: "{{ ids }}" }
+      - stop: ok
+        response_variable: erg
+
+automation:
+  - id: sauger_fehler_melden
+    alias: "Staubsauger: Fehler melden"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [sensor.roborock_s7_triftweg_staubsauger_fehler, sensor.roborock_s7_buro_staubsauger_fehler, sensor.qrevo_s_pro_series_staubsauger_fehler]
+        not_to: ["none", "unavailable", "unknown"]
+      - trigger: state
+        entity_id: [binary_sensor.roborock_s7_triftweg_wasserknappheit, binary_sensor.roborock_s7_buro_wasserknappheit, binary_sensor.qrevo_s_pro_series_wasserknappheit]
+        to: "on"
+        for: "00:10:00"
+    actions:
+      - action: script.system_melden
+        data:
+          titel: "{{ trigger.to_state.name | replace(' Staubsauger-Fehler', '') | replace(' Wasserknappheit', '') }}"
+          text: >
+            {% if 'fehler' in trigger.entity_id %}Fehler: {{ trigger.to_state.state | replace('_', ' ') }}
+            {% else %}Wasser nachfüllen.{% endif %}
+          kennung: "sauger_{{ trigger.entity_id }}"
+
+  # Wartung: Bürsten/Filter/Sensoren überfällig (negativer Restwert) – montags 9 Uhr Sammelmeldung
+  - id: sauger_wartung_melden
+    alias: "Staubsauger: Wartung fällig (montags)"
+    triggers:
+      - trigger: time
+        at: "09:00:00"
+    conditions:
+      - condition: time
+        weekday: [mon]
+    variables:
+      faellig: >
+        {% set ns = namespace(l=[]) %}
+        {% for s in states.sensor if s.entity_id is search('^sensor\\.(roborock_s7_|qrevo_).*verbleibende')
+             and is_number(s.state) and s.state | float < 0 %}
+          {% set ns.l = ns.l + [s.name | replace('Verbleibende ', '') | replace('Zeit der ', '')] %}
+        {% endfor %}
+        {{ ns.l }}
+    actions:
+      - condition: "{{ faellig | count > 0 }}"
+      - action: script.system_melden
+        data:
+          titel: "Staubsauger: Wartung fällig"
+          text: "{{ faellig | join(', ') }}"
+          kennung: sauger_wartung
+
+  - id: sauger_triftweg_abwesend
+    alias: "Staubsauger Triftweg: saugen, wenn alle weg"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.jemand_im_haus
+        to: "off"
+        for: "00:10:00"
+      - trigger: state
+        entity_id: input_boolean.haus_abwesend
+        to: "on"
+        for: "00:02:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.sauger_triftweg_bei_abwesenheit
+        state: "on"
+      - condition: time
+        after: "07:00:00"
+        before: "21:00:00"
+      - condition: state
+        entity_id: vacuum.roborock_s7_triftweg
+        state: docked
+      # höchstens einmal am Tag
+      - "{{ (now() - as_datetime(states('sensor.roborock_s7_triftweg_letzter_reinigungsbeginn'))).total_seconds() > 20 * 3600 }}"
+    actions:
+      - action: vacuum.start
+        target: { entity_id: vacuum.roborock_s7_triftweg }
+
+  # Wer nach Hause kommt, während er saugt → zurück zur Station
+  - id: sauger_triftweg_rueckkehr
+    alias: "Staubsauger Triftweg: bei Rückkehr zur Station"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.jemand_im_haus
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.sauger_triftweg_bei_abwesenheit
+        state: "on"
+      - condition: state
+        entity_id: vacuum.roborock_s7_triftweg
+        state: cleaning
+    actions:
+      - action: vacuum.return_to_base
+        target: { entity_id: vacuum.roborock_s7_triftweg }
+
+# Sauger unterwegs (fährt, kehrt zurück, oder erst vor < 5 min angedockt): seine Fahrt löst Präsenzmelder aus.
+# Bei "Haus abwesend" werden Melder dann ignoriert (26.10.: Sauger löste Wohnzimmer-Melder aus → Licht an,
+# "Rückkehr" erkannt → Sauger brach ab).
+template:
+  - binary_sensor:
+      - name: "Sauger unterwegs"
+        unique_id: sauger_unterwegs
+        icon: mdi:robot-vacuum
+        state: >
+          {% set v = 'vacuum.roborock_s7_triftweg' %}
+          {{ states(v) in ['cleaning', 'returning', 'paused'] or
+             (is_state(v, 'docked') and (now() - states[v].last_changed).total_seconds() < 300) }}

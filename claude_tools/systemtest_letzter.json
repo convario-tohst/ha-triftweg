@@ -1,0 +1,3950 @@
+[
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Flur OG hängt nicht auf 'besetzt'",
+"s": "fehler",
+"i": "seit 106 h ununterbrochen besetzt – Melder prüfen"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Entfeuchter (Schlafzimmer) Dehumidifier",
+"s": "fehler",
+"i": "unavailable"
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Schlafzimmer (Music Assistant)",
+"s": "fehler",
+"i": "unavailable"
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Roborock S7 Triftweg",
+"s": "fehler",
+"i": "unavailable"
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Anwesenheit hängt nicht auf 'besetzt'",
+"s": "warnung",
+"i": "seit 106 h ununterbrochen besetzt – Melder prüfen"
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Jemand im Haus hängt nicht auf 'besetzt'",
+"s": "warnung",
+"i": "seit 14 h ununterbrochen besetzt – Melder prüfen"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Lara aktuell",
+"s": "warnung",
+"i": "unknown, 106 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Malte aktuell",
+"s": "warnung",
+"i": "8.86, 106 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Schlafzimmer aktuell",
+"s": "warnung",
+"i": "7.39, 16 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Gästebad aktuell",
+"s": "warnung",
+"i": "50.6, 6 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Lara aktuell",
+"s": "warnung",
+"i": "49.24, 61 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Malte aktuell",
+"s": "warnung",
+"i": "48.64, 58 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Schlafzimmer aktuell",
+"s": "warnung",
+"i": "40.2, 17 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Ankleide aktuell",
+"s": "warnung",
+"i": "1.0, 16 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Bad Yvonne aktuell",
+"s": "warnung",
+"i": "8.0, 86 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Flur EG aktuell",
+"s": "warnung",
+"i": "2.0, 10 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Flur OG aktuell",
+"s": "warnung",
+"i": "1.0, 8 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Gästebad aktuell",
+"s": "warnung",
+"i": "0.36, 8 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Gästebad Wand aktuell",
+"s": "warnung",
+"i": "1.0, 13 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit HWR aktuell",
+"s": "warnung",
+"i": "3.0, 10 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Lara aktuell",
+"s": "warnung",
+"i": "1.0, 100 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Malte aktuell",
+"s": "warnung",
+"i": "1.0, 30 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Sauna Aufenthaltsraum aktuell",
+"s": "warnung",
+"i": "1.0, 6 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Schlafzimmer aktuell",
+"s": "warnung",
+"i": "184.0, 15 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Wohnzimmer aktuell",
+"s": "warnung",
+"i": "1.0, 6 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Gästebad aktuell",
+"s": "warnung",
+"i": "8.39, 7 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Lara aktuell",
+"s": "warnung",
+"i": "unknown, 106 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Malte aktuell",
+"s": "warnung",
+"i": "unknown, 106 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Schlafzimmer aktuell",
+"s": "warnung",
+"i": "7.2, 16 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Schlafzimmer aktuell",
+"s": "warnung",
+"i": "unknown, 106 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "System",
+"t": "Keine neuen Fehler im HA-Log (2 h)",
+"s": "warnung",
+"i": "homeassistant.components.command_line: Command failed (with return code 1): python3 /config/claude_tools/oxxify.py status | homeassistant.components.roborock.coordinator: Error fetching roborock data: Failed to update da"
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Stripe Bad Yvonne: Mikrofon für Musik-Effekte aktiv",
+"s": "warnung",
+"i": "PDM digital  - quiet"
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Keine nicht erreichbaren Geräte für Sprache freigegeben",
+"s": "warnung",
+"i": "['binary_sensor.browser_mod_5bc0dd37_30fa0ee0', 'binary_sensor.waschtrockner_door', 'humidifier.entfeuchter_og', 'media_player.browser_mod_5bc0dd37_30fa0ee0', 'media_player.ma_schlafzimmer', 'media_player.tv_samsung_6_se"
+},
+{
+"p": 2,
+"k": "Anwesenheit",
+"t": "Handy Malte Ohst meldet sich",
+"s": "info",
+"i": "seit 2.0 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
+},
+{
+"p": 2,
+"k": "Anwesenheit",
+"t": "Handy Yvonne Ohst meldet sich",
+"s": "info",
+"i": "seit 8.3 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Aktivieren Bewegung Einfahrt Licht Küche“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Aktivieren Präsenz Lara“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Aktivieren Präsenz Malte“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Aktivieren Präsenz Schlafzimmer“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Bewegung Einfahrt Licht Küche“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Deaktivieren Bewegung Einfahrt Licht Küche“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Deaktivieren Präsenz Lara“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Deaktivieren Präsenz Malte“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Deaktivieren Präsenz Schlafzimmer“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Einfahrt Bewegung Küche “ ist ausgeschaltet",
+"s": "info",
+"i": "fehlende Entitäten: binary_sensor.einfahrt_bewegung, light.data"
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Erinnerung: Voice PE einrichten (26.10.)“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Giebel Beleuchtung bei Bewegung (tagsüber)“ ist ausgeschaltet",
+"s": "info",
+"i": "fehlende Entitäten: binary_sensor.einfahrt_bewegung, binary_sensor.front_door_bewegung"
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Lüftung: Boost bei Badbenutzung“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Präsenz Malte“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Präsenz Lara“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Präsenz Schlafzimmer“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 3,
+"k": "Ausgeschaltete Automationen",
+"t": "„Staubsauger Triftweg: saugen, wenn alle weg“ ist ausgeschaltet",
+"s": "info",
+"i": ""
+},
+{
+"p": 1,
+"k": "Integrationen",
+"t": "knx: Automatic",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Anwesenheit verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Bad belegt verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Jemand im Haus verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Pr?senz Sauna au?en verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Ankleide Tobias verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Flur OG verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Gästebad verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz HWR verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Wohnbereich verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Wohnzimmer verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder Außensauna verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder EG Flur Decke verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Lara Decke verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Malte Decke verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Schlafzimmer Decke verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder Sauna verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder Außensauna antwortet am Bus (0/2/27)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder Sauna antwortet am Bus (0/2/29)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder EG Flur Decke antwortet am Bus (0/2/9)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Malte Decke antwortet am Bus (0/7/0)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Lara Decke antwortet am Bus (0/7/1)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Schlafzimmer Decke antwortet am Bus (0/7/2)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Gästebad antwortet am Bus (0/7/3)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Flur OG antwortet am Bus (0/7/4)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Pr?senz Sauna au?en antwortet am Bus (0/7/5)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Wohnzimmer antwortet am Bus (0/7/6)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz HWR antwortet am Bus (0/7/8)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Ankleide Tobias antwortet am Bus (0/7/9)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Bad belegt meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Pr?senz Sauna au?en meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Ankleide Tobias meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Gästebad meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz HWR meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Wohnbereich meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Wohnzimmer meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder Außensauna meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder EG Flur Decke meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Lara Decke meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Malte Decke meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder OG Schlafzimmer Decke meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenzmelder Sauna meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Anwesenheit (Jemand im Haus) verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Alle 40 Lichter erreichbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Außensauna-Stripe ohne Alarm-Blinkeffekt",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Jemand im Haus",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Tag-Nacht EG",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Tag-Nacht OG",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Melder Sauna außen",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Wohnbereich",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Flur OG: Licht spätestens nach Zeit aus",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Sauger unterwegs",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Ankleide Tobias: Licht nach Präsenz“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Ankleide Tobias: Licht nach Präsenz“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Ankleide Tobias: Licht nach Präsenz“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Anwesenheit: Rückkehr erkannt“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Anwesenheit: Rückkehr erkannt“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Außensauna: LED nach Präsenz“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Außensauna: LED nach Präsenz“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Außensauna: LED nach Präsenz“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Gästebad: Licht nach Präsenz“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Gästebad: Licht nach Präsenz“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Gästebad: Licht nach Präsenz“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„HWR: Licht nach Präsenz“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„HWR: Licht nach Präsenz“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„HWR: Licht nach Präsenz“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Kinder-wach-Alarm: Sauna-Decke blinkt bei Bewegung Flur OG“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Kinder-wach-Alarm: Sauna-Decke blinkt bei Bewegung Flur OG“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Kinder-wach-Alarm: Sauna-Decke blinkt bei Bewegung Flur OG“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz: beim Aktivieren sofort Licht, wenn jemand da ist“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz: beim Aktivieren sofort Licht, wenn jemand da ist“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz: beim Aktivieren sofort Licht, wenn jemand da ist“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz EG Flur“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz EG Flur“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz EG Flur“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz: Raum leer -> Licht aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz: Raum leer -> Licht aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Präsenz: Raum leer -> Licht aus“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Sauna: Licht nach Präsenz“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Sauna: Licht nach Präsenz“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Sauna: Licht nach Präsenz“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Wohnzimmer: Licht nach Präsenz“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Wohnzimmer: Licht nach Präsenz“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "„Wohnzimmer: Licht nach Präsenz“: lief zuletzt erfolgreich (72 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "11 Präsenz-Licht-Automationen erkannt",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Melder Flur EG: Taster-Sperre wird automatisch aufgehoben",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Melder Flur EG nicht gesperrt",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Flur OG: Sicherheitsnetz schneidet tagsüber nicht ab (sonst geht das Licht nicht mehr)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "System",
+"t": "Konfiguration gültig",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "System",
+"t": "KNX: alle Aktoren/Melder verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Anwesenheit",
+"t": "Handy Tobias Ohst meldet sich",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Alles an: einschalten / vorherigen Zustand wiederherstellen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Alles an: einschalten / vorherigen Zustand wiederherstellen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Anwesenheit: Haus verlassen automatisch“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Anwesenheit: Haus verlassen automatisch“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Aufgaben: aus Archiv wiederherstellen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Aufgaben: aus Archiv wiederherstellen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Aufgaben: gelöschte ins Archiv“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Aufgaben: gelöschte ins Archiv“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Ankunftslicht aus (Timer)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Ankunftslicht aus (Timer)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Bewegung im Garten = Kinder draußen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Bewegung im Garten = Kinder draußen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Kameralampen an lassen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Kameralampen an lassen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Kinder draußen beendet (Timer)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Kinder draußen beendet (Timer)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Licht bei Ankunft“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Licht bei Ankunft“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Licht für Kinder draußen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außen: Licht für Kinder draußen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außenlicht: an bei Dunkelheit“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außenlicht: an bei Dunkelheit“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außenlicht: aus zur Uhrzeit oder bei Helligkeit“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außenlicht: aus zur Uhrzeit oder bei Helligkeit“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außensauna: Beleuchtung nachts dimmen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außensauna: Beleuchtung nachts dimmen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außensauna: Sperre / Zwang umsetzen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Außensauna: Sperre / Zwang umsetzen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Bad-Lüftung: Boost nach Feuchte (Duschen)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Bad-Lüftung: Boost nach Feuchte (Duschen)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Bad Yvonne: Decke nachts abgesenkt“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Bad Yvonne: Decke nachts abgesenkt“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Bad Yvonne: LED-Leiste folgt Deckenlicht“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Bad Yvonne: LED-Leiste folgt Deckenlicht“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Disco: an / aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Disco: an / aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Dosen Wohnzimmer: Abschaltung melden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Dosen Wohnzimmer: Abschaltung melden“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„EG Yvonne Bad Spiegel nach 30 Minuten aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„EG Yvonne Bad Spiegel nach 30 Minuten aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Einfahrt: nachts Licht bei fremder Bewegung“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Einfahrt: nachts Licht bei fremder Bewegung“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Einkauf: Vorschlag abgehakt -> Einkaufsliste“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Einkauf: Vorschlag abgehakt -> Einkaufsliste“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Einkauf: Vorschläge täglich neu“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Einkauf: Vorschläge täglich neu“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Entfeuchter OG: nach Feuchte regeln“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Entfeuchter OG: nach Feuchte regeln“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Entfeuchter OG: Tank voll melden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Entfeuchter OG: Tank voll melden“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Erinnerung: Startwort Ludwig trainieren“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Erinnerung: Startwort Ludwig trainieren“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Flur OG: Licht aus, wenn niemand da oder nachts zu lange (Sicherheitsnetz)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Flur OG: Licht aus, wenn niemand da oder nachts zu lange (Sicherheitsnetz)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Heizung: lange abwesend → Standby“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Heizung: lange abwesend → Standby“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Kinder-wach-Alarm: mit Schlafmodus OG scharf (ab 21 Uhr)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Kinder-wach-Alarm: mit Schlafmodus OG scharf (ab 21 Uhr)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Kinder-wach-Alarm: morgens um 6 Uhr aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Kinder-wach-Alarm: morgens um 6 Uhr aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Klingel: Lichter blinken“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Klingel: Lichter blinken“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Küche: Stripe folgt Szene“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Küche: Stripe folgt Szene“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„LED-Streifen: Stromversorgung immer an“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„LED-Streifen: Stromversorgung immer an“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Licht vergessen: aus bei genug Tageslicht“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Licht vergessen: aus bei genug Tageslicht“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Lüftung: Filterwechsel-Hinweis“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Lüftung: Filterwechsel-Hinweis“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Lüftung: Meldung bei 100 %“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Lüftung: Meldung bei 100 %“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Malte LED: aus -> Profil stoppen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Malte LED: aus -> Profil stoppen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Malte LED: Profil gewechselt“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Malte LED: Profil gewechselt“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder Flur EG: Sperre durch Taster automatisch aufheben“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder Flur EG: Sperre durch Taster automatisch aufheben“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Sperre/Zwangsführung melden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Sperre/Zwangsführung melden“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Durchsage beim Betreten des Wohnzimmers“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Durchsage beim Betreten des Wohnzimmers“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Erinnerung am Abholtag“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Erinnerung am Abholtag“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Erinnerung Vorabend“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Erinnerung Vorabend“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Erledigt gedrückt“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Erledigt gedrückt“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Status nach Abholtag zurücksetzen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Status nach Abholtag zurücksetzen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Stripe-Blinken halten“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Stripe-Blinken halten“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Stripe-Erinnerung beenden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Stripe-Erinnerung beenden“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Stripe-Erinnerung starten“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: Stripe-Erinnerung starten“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: zweite Erinnerung“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Müll: zweite Erinnerung“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musik: morgens automatisch starten“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musik: morgens automatisch starten“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musik: Quelle und Starter merken“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musik: Quelle und Starter merken“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musik: Wunsch im Textfeld → Vorschläge / Link“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musik: Wunsch im Textfeld → Vorschläge / Link“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musiklisten: abgehakt = abspielen / neu = bei Spotify suchen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musiklisten: abgehakt = abspielen / neu = bei Spotify suchen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Präsenz: Protokoll schreiben“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Präsenz: Protokoll schreiben“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Raumfeuchte: Lüftung nach Taupunkt regeln“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Raumfeuchte: Lüftung nach Taupunkt regeln“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Raumfeuchte: Warnung bei dauerhaft zu feucht“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Raumfeuchte: Warnung bei dauerhaft zu feucht“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: Kameras stumm an/aus (Ruhezeit)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: Kameras stumm an/aus (Ruhezeit)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: Ruhemodus an/aus → Lautstärken“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: Ruhemodus an/aus → Lautstärken“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: Ruhezeit automatisch (wenn jemand zu Hause)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: Ruhezeit automatisch (wenn jemand zu Hause)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: stumm bis … → wieder laut“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Ring: stumm bis … → wieder laut“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Sauna-Lüftung: nach Bedarf (Feuchte/Temperatur)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Sauna-Lüftung: nach Bedarf (Feuchte/Temperatur)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Saunaofen aus nach Zeit“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Saunaofen aus nach Zeit“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Schlafmodus OG: 19:30 an, 7:00 aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Schlafmodus OG: 19:30 an, 7:00 aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Schlafmodus OG: Flur oben 5 %“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Schlafmodus OG: Flur oben 5 %“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Spiegellicht Gästebad 30 Minuten aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Spiegellicht Gästebad 30 Minuten aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Sprache: gelernte Kurzbefehle aktualisieren“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Sprache: gelernte Kurzbefehle aktualisieren“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Sprache: Raum des Sprachgeräts merken“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Sprache: Raum des Sprachgeräts merken“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Staubsauger: Fehler melden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Staubsauger: Fehler melden“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Staubsauger Triftweg: bei Rückkehr zur Station“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Staubsauger Triftweg: bei Rückkehr zur Station“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Staubsauger: Wartung fällig (montags)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Staubsauger: Wartung fällig (montags)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Backup überfällig“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Backup überfällig“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Gerät nicht erreichbar“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Gerät nicht erreichbar“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Gerät wieder erreichbar“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Gerät wieder erreichbar“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: HA-Neustart zählen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: HA-Neustart zählen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Pi-Warnung (Temperatur, Speicher, Unterspannung)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Pi-Warnung (Temperatur, Speicher, Unterspannung)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Systemtest kritischer Fehler melden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Systemtest kritischer Fehler melden“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Systemtest täglich und nach Neustart“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Systemtest täglich und nach Neustart“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Wochenbericht (Sonntag 18 Uhr)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„System: Wochenbericht (Sonntag 18 Uhr)“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: Bewegung Einfahrt nachts“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: Bewegung Einfahrt nachts“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: Heizung absenken / Komfort“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: Heizung absenken / Komfort“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: nachts alles aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: nachts alles aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: zufällig Licht an“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Urlaub: zufällig Licht an“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Voice: Lautstärke Tag/Nacht“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Voice: Lautstärke Tag/Nacht“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Voice: Musik beim Zuhören leiser“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Voice: Musik beim Zuhören leiser“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Voice: Sprechpausen-Erkennung geduldig halten“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Voice: Sprechpausen-Erkennung geduldig halten“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Werkstatt: Licht nach max. Dauer aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Werkstatt: Licht nach max. Dauer aus“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Präsenzmelder Kinder & Schlafzimmer“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Präsenzmelder Kinder & Schlafzimmer“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Präsenzmelder nach Neustart nachholen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Präsenzmelder nach Neustart nachholen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Tag manuell -> Flur hell“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Tag manuell -> Flur hell“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Tag/Nacht EG + OG“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Zeit: Tag/Nacht EG + OG“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Vallox",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Entfeuchter OG Soll",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Sauna Lüftung",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Taupunkt innen",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Taupunkt außen",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Lüftung Feuchte-Modus",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Temperatur Wohnzimmer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Schlafmodus OG",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Vallox Filter Resttage",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung Ankleide",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung Bad Yvonne",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung Flur EG",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung HWR",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung Obergeschoss",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung Sauna",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Heizung Heizung Wohnzimmer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Bad Yvonne aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Flur EG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Flur OG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Gästebad aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte HWR aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Sauna Aufenthaltsraum aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Absolute Feuchte Wohnzimmer aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Bad Yvonne aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Flur EG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Flur OG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte HWR aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Sauna Aufenthaltsraum aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Wohnzimmer aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Außen aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Werkstatt aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Bad Yvonne aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Flur EG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Flur OG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt HWR aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Sauna Aufenthaltsraum aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Wohnzimmer aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Bad OG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Bad Yvonne aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Flur EG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Gästebad aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur HWR aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Lara aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Malte aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur OG aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Sauna aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Sauna Aufenthaltsraum aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Temperatur Wohnzimmer aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "vallox: Vallox",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "mobile_app: Ipad-20210193",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "backup: Backup",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "mobile_app: t.ohst.2026.android",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "mobile_app: YvonneIphone2026",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "mobile_app: MalteAndroid2026",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Integrationen",
+"t": "midea_auto_cloud: t.ohst@convario.de | t.ohst's home",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Präsenz & Licht",
+"t": "Ankleide Tobias: Nachlauf ≤ 10 min",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Sicherheit",
+"t": "Kinder-wach-Alarm",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Sicherheit",
+"t": "Kinder-wach-Alarm: scharf ab",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Sicherheit",
+"t": "Kinder-wach-Alarm: ignoriert Tag/Nacht-Umschaltung des Melders",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Sicherheit",
+"t": "Kinder-wach-Alarm: scharf erst ab 21 Uhr (oder später)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Alle Lichter aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Alles aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Einkauf: Vorschläge aktualisieren“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Fehler für Tobias notieren“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Haus verlassen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Ich gehe ins Bett“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Klingel: Lichter 5× blinken“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Kurzbefehl lernen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Kurzbefehle neu erzeugen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Lautstärke sanft ändern“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Licht-Effekt einstellen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Neue Liste anlegen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Malte LED: Profil abspielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Müll: Erinnerung starten (Stripe blinkt)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Müll: Erinnerung beenden (Stripe zurück)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Müll: Durchsage Wohnzimmer“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Müll: erledigt, Meldungen entfernen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Müll: an alle Handys melden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Laufendes speichern“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik an (nach Tageszeit)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik aus“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Bremen NEXT“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Dinner (Radio Swiss Jazz)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Listeneintrag spielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Elektro (Sunshine Live) – Tobias“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: von der Blacklist nehmen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Gefällt mir (Titel speichern)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: HipHop (JAM FM) – Yvonne“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Lieblingslieder spielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Link abspielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Liste abspielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Listeneintrag per Name spielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: neuen Listeneintrag bei Spotify suchen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Morning (Radio Swiss Pop)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: nächster Titel (Lied gefällt nicht)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Sender abspielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: auf die Blacklist setzen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: suchen (Vorschläge)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Überrasch mich“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Wunsch abspielen (Claude)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Musik: Wunsch aus Textfeld abspielen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Ring wieder laut schalten“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Ring steuern“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Ring stumm schalten (bis Uhrzeit / für Minuten)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Staubsauger: bestimmte Räume saugen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „System: Meldung an Tobias“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Systemtest mit Sprachtest“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „Systemtest starten“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Skripte",
+"t": "Skript „WhatsApp senden“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "19 wichtige Dienste vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "36 Vorlagen-Sensoren liefern Werte",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "Keine Endlosschleifen in Vorlagen (30 min)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "DNS: Cloud-Adresse auflösbar (< 1 s)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "Cloud-Spracherkennung verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "Pi-Temperatur < 75 °C",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "Speicher < 85 % belegt",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "System",
+"t": "Backup jünger als 36 h",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "hassio: Supervisor",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "raspberry_pi: Raspberry Pi",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "sun: Sun",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "rpi_power: Raspberry Pi Power Supply Checker",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "bluetooth: Raspberry Pi Trading Ltd bcm43438-bt (D8:3A:DD:C0:12:8E)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "wled: WLED",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "met: Home",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "shopping_list: Shopping list",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "google_translate: Google Translate text-to-speech",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "radio_browser: Radio Browser",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "cloud: Home Assistant Cloud",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "wled: WLED",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "dlna_dmr: [TV] Samsung 6 Series (55)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "samsungtv: Samsung 6 Series (55) (UE55MU6170)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "hacs: ",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "dlna_dmr: JBL Boombox 3 Wi-Fi",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "wled: WLED",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "wled: Außensauna",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "ibeacon: iBeacon Tracker",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "go2rtc: go2rtc",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "dlna_dmr: Wohnzimmer 2",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "dlna_dms: AVM FRITZ!Mediaserver",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "onedrive: Tobias Ohst's OneDrive",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "browser_mod: Browser Mod",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "linkplay: Schlafzimmer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "dlna_dmr: Schlafzimmer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "wled: WLED",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "linkplay: Wohnzimmer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "wled: Bad-Yvonne",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "analytics: Analytics",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Haus & Garten",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "workday: Workday Sensor DE NI",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "workday: Workday Sensor DE NI",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Einkauf Vorschläge",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Archiv Aufgaben",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "anthropic: Claude",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Änderungswünsche",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "music_assistant: Music Assistant",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Morgen",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Chill",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Abend",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Deutsch",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Party",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Familie",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Radio",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Gelernte Sprachbefehle",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "systemmonitor: System Monitor",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "ping: 192.168.11.5",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "ping: 192.168.11.127",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Weihnachtsgeschenke",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "ring: t.ohst@convario.de",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Suche",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "esphome: Home Assistant Voice 0adb1a",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "roborock: t.ohst@convario.de",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "unifi: Default",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Lieblingslieder",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Integrationen",
+"t": "local_todo: Musik Blacklist",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Wohnzimmer (Music Assistant)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Voice Wohnzimmer Assist-Satellit",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Claude conversation",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Sprache Zustand",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik Lieblingslieder",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik-Quelle Wohnzimmer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik Quelle Text",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Netz Download",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik Blacklist",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik Blacklist",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik: zuletzt gespielt",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Sprach-Zustandsblock gefüllt",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Batterien > 20 %",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik-Blacklist: Prüfung erkennt 4 Einträge",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musik: Sprachwunsch spielt im Raum des Sprachgeräts",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Musikwahl: Abwechslung (gemischt, Verlauf, Blacklist im Prompt)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach das Gartenlicht an“ → LichtSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach das Gartenlicht an“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach das Carport Licht an“ → LichtSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach das Carport Licht an“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Schalte das Werkstattlicht aus“ → LichtSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Schalte das Werkstattlicht aus“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Flurlicht oben auf 30 Prozent“ → LichtHelligkeit",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Flurlicht oben auf 30 Prozent“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach den Küchenstripe an“ → LichtSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach den Küchenstripe an“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Wann geht das Gartenlicht aus“ → FrageAnClaude",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach im Küchenstripe einen Regenbogen“ → EffektSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stell den Flurstripe auf Herzschlag“ → EffektSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach in Maltes Zimmer die Jalousien hoch“ → RolloSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach in Maltes Zimmer die Jalousien hoch“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Fahr die Rollos oben runter“ → RolloSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Fahr die Rollos oben runter“: Lampen vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stripe im Bad auf Musik“ → EffektSchnell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Das Lied gefällt mir“ → MusikGefaelltMir",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Spiel unsere Lieblingslieder“ → MusikLieblingslieder",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Woher kommt die Musik“ → MusikQuelle",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Spiel das Lied“ → MusikWunsch",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Ich gehe ins Bett“ → IchGeheInsBett",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Mach alles aus“ → AllesAus",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Schalte oben schlafen ein“ → SchlafmodusOG",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Wie warm ist es im Wohnzimmer“ → TempWohnenKueche",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Setz das auf die Blacklist“ → MusikSperren",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Den Sender will ich nicht mehr hören“ → MusikSperren",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Nimm Café del Mar von der Blacklist“ → MusikEntsperren",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Was steht auf der Blacklist“ → MusikBlacklistAnzeigen",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Das Lied gefällt mir nicht“ → MusikNaechster",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stell einen Timer auf 5 Minuten“ → HassStartTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stelle einen Timer für 3 Minuten für die Nudeln“ → HassStartTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stell einen Timer auf eine halbe Stunde“ → HassStartTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Wie lange läuft der Timer noch“ → HassTimerStatus",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stopp den Timer“ → HassCancelTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Verlängere den Timer um 2 Minuten“ → HassIncreaseTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Kannst du einen Timer auf 8 Minuten stellen“ → HassStartTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Satz „Stelle den Timer auf 4 minuten 22 für Eier“ → HassStartTimer",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Gelernte Kurzbefehle haben gültige Ziele",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Effekt-Skript: 26 Effektnamen im WLED vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Voice PE: Sprechpausen-Erkennung geduldig (relaxed)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Voice PE: Weckwort aktiv (Ludwig oder Okay Nabu)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Voice PE: Nachtlautstärke erst ab 22 Uhr",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Voice PE: Nachtlautstärke hörbar (≥ 50 %)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Ludwig-Modell vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Sprache",
+"t": "Effekt-Skript für Sprache freigegeben",
+"s": "ok",
+"i": ""
+}
+]

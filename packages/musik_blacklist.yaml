@@ -1,0 +1,206 @@
+# Musik-Blacklist + Abwechslung (Tobias 27.10.: "chillig" spielte immer Café del Mar; Listen/Sender sperren können)
+# - todo.musik_blacklist: gesperrte Listen, Playlists, Sender, Künstler (Name, Beschreibung = URI|Datum)
+#   Wird nie mehr von Claude/Überraschung/Morgenmusik gewählt (Prüfung: custom_templates/musik.jinja → gesperrt()).
+# - Sprache: "Setz das auf die Blacklist", "Den Sender will ich nicht mehr hören", "Setz Café del Mar auf die Blacklist",
+#   "Nimm Café del Mar von der Blacklist", "Was steht auf der Blacklist", "Das Lied gefällt mir nicht" (= nächster Titel)
+# - input_text.musik_verlauf: zuletzt gespielte Quellen (script.musik_liste schreibt) → Claude wiederholt sich nicht.
+
+input_text:
+  musik_verlauf:
+    name: "Musik: zuletzt gespielt"
+    icon: mdi:history
+    max: 255
+
+template:
+  - triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: musik_blacklist_geaendert
+      - trigger: state
+        entity_id: todo.musik_blacklist
+      - trigger: time_pattern
+        minutes: "/10"
+    actions:
+      - action: todo.get_items
+        continue_on_error: true
+        target: { entity_id: todo.musik_blacklist }
+        data: { status: needs_action }
+        response_variable: bl
+    sensor:
+      - name: "Musik Blacklist"
+        unique_id: musik_blacklist
+        icon: mdi:playlist-remove
+        state: "{{ (bl | default({})).get('todo.musik_blacklist', {}).get('items', []) | count }}"
+        attributes:
+          eintraege: >
+            {% set ns = namespace(e=[]) %}
+            {% for i in (bl | default({})).get('todo.musik_blacklist', {}).get('items', []) %}
+              {% set ns.e = ns.e + [{'n': i.summary, 'u': (i.description | default('') or '').split('|')[0]}] %}
+            {% endfor %}
+            {{ ns.e }}
+          text: >
+            {{ (bl | default({})).get('todo.musik_blacklist', {}).get('items', []) | map(attribute='summary') | join(', ') }}
+
+script:
+  musik_sperren:
+    alias: "Musik: auf die Blacklist setzen"
+    description: >
+      Setzt eine Liste, Playlist, einen Sender oder Künstler auf die Musik-Blacklist – wird danach nie mehr automatisch
+      gespielt. Ohne name: die gerade laufende Quelle (und es läuft sofort etwas anderes).
+      Für "das will ich nicht mehr hören", "setz den Sender auf die Blacklist", "sperr Café del Mar".
+    icon: mdi:playlist-remove
+    mode: single
+    fields:
+      name: { name: "Name (leer = was gerade läuft)", selector: { text: } }
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer] } } }
+    variables:
+      roh: "{{ name | default('') | trim }}"
+      jetzt: >
+        {{ roh == '' or (roh | lower) is match('^(das|die|den|der|dies(e|en|es|er)?)( (hier|liste|playlist|sender|musik|radio|radiosender|lied|song|station|zeug))?( hier| da)?$') }}
+      p: >
+        {% set r = raum | default('') %}
+        {% if r == 'Schlafzimmer' %}media_player.ma_schlafzimmer
+        {% elif r == 'Wohnzimmer' %}media_player.ma_wohnzimmer
+        {% elif is_state('media_player.ma_wohnzimmer', 'playing') %}media_player.ma_wohnzimmer
+        {% elif is_state('media_player.ma_schlafzimmer', 'playing') %}media_player.ma_schlafzimmer
+        {% else %}media_player.ma_wohnzimmer{% endif %}
+      raumname: "{{ 'Schlafzimmer' if 'schlafzimmer' in p else 'Wohnzimmer' }}"
+      q: >
+        {% set x = states('input_text.musik_quelle_' ~ raumname | lower) %}
+        {{ x | from_json if x.startswith('{') else {} }}
+      aus_quelle: >
+        {% set n = q.n | default('') %}
+        {% if n.startswith('Suche „') %}{% set n = n[7:-1] %}{% endif %}
+        {{ n.split(' (Liste ')[0] | trim }}
+      n: "{{ (aus_quelle if jetzt else roh[:1] | upper ~ roh[1:]) | trim }}"
+      u: "{{ (q.u | default('')) if jetzt else '' }}"
+    sequence:
+      - if: "{{ not n or n == 'Lieblingslieder' or n.startswith('Spotify ') }}"
+        then:
+          - variables:
+              r: { ansage: "Ich weiß nicht, woher die Musik kommt. Sag den Namen dazu, zum Beispiel: Setz Café del Mar auf die Blacklist." }
+          - stop: ""
+            response_variable: r
+      - if: "{% from 'musik.jinja' import gesperrt %}{{ gesperrt(n, u) == 'True' }}"
+        then:
+          - variables: { r: { ansage: "{{ n }} steht schon auf der Blacklist." } }
+          - stop: ""
+            response_variable: r
+      - action: todo.add_item
+        target: { entity_id: todo.musik_blacklist }
+        data:
+          item: "{{ n[:100] }}"
+          description: "{{ u }}|gesperrt am {{ now().strftime('%d.%m.%Y') }}"
+      - event: musik_blacklist_geaendert
+      - delay: 2
+      # lief das gerade → sofort etwas anderes in ähnlicher Stimmung (im Hintergrund, Antwort kommt sofort)
+      - if: "{{ jetzt and is_state(p, 'playing') }}"
+        then:
+          - action: script.turn_on
+            target: { entity_id: script.musik_wunsch_abspielen }
+            data:
+              variables:
+                wunsch: "Ähnliche Stimmung wie {{ n }}, aber etwas ganz anderes (nicht {{ n }})"
+                raum: "{{ raumname }}"
+      - variables:
+          r:
+            ansage: "{{ n }} steht auf der Blacklist{{ ', ich spiele etwas anderes' if jetzt and is_state(p, 'playing') else '' }}."
+      - stop: ""
+        response_variable: r
+
+  musik_entsperren:
+    alias: "Musik: von der Blacklist nehmen"
+    description: "Nimmt eine Liste/einen Sender/Künstler wieder von der Musik-Blacklist. Feld name."
+    icon: mdi:playlist-check
+    mode: single
+    fields:
+      name: { name: Name, required: true, selector: { text: } }
+    sequence:
+      - action: todo.get_items
+        response_variable: l
+        target: { entity_id: todo.musik_blacklist }
+      - variables:
+          treffer: >
+            {% set w = name | default('') | lower | trim %}
+            {% set ns = namespace(t='') %}
+            {% for i in l['todo.musik_blacklist']['items'] if w and ns.t == '' and (i.summary | lower == w or w in i.summary | lower or i.summary | lower in w) %}
+              {% set ns.t = i.summary %}{% endfor %}{{ ns.t }}
+      - if: "{{ treffer == '' }}"
+        then:
+          - variables: { r: { ansage: "{{ name }} steht nicht auf der Blacklist." } }
+          - stop: ""
+            response_variable: r
+      - action: todo.remove_item
+        target: { entity_id: todo.musik_blacklist }
+        data: { item: "{{ treffer }}" }
+      - event: musik_blacklist_geaendert
+      - variables: { r: { ansage: "{{ treffer }} ist wieder freigegeben." } }
+      - stop: ""
+        response_variable: r
+
+  musik_naechster_titel:
+    alias: "Musik: nächster Titel (Lied gefällt nicht)"
+    icon: mdi:skip-next
+    mode: single
+    fields:
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer] } } }
+    variables:
+      p: >
+        {% set r = raum | default('') %}
+        {% if r == 'Schlafzimmer' %}media_player.ma_schlafzimmer
+        {% elif r == 'Wohnzimmer' %}media_player.ma_wohnzimmer
+        {% elif is_state('media_player.ma_wohnzimmer', 'playing') %}media_player.ma_wohnzimmer
+        {% else %}media_player.ma_schlafzimmer{% endif %}
+    sequence:
+      - if: "{{ not is_state(p, 'playing') }}"
+        then:
+          - variables: { r: { ansage: "Gerade läuft keine Musik." } }
+          - stop: ""
+            response_variable: r
+      - action: media_player.media_next_track
+        continue_on_error: true
+        target: { entity_id: "{{ p }}" }
+      - variables: { r: { ansage: "Okay, nächstes Lied. Wenn die ganze Liste nicht passt, sag: Das will ich nicht mehr hören." } }
+      - stop: ""
+        response_variable: r
+
+intent_script:
+  MusikSperren:
+    description: "Interner Schnellbefehl: Musikquelle sperren (nicht selbst aufrufen)."
+    action:
+      - action: script.musik_sperren
+        response_variable: erg
+        data:
+          name: "{{ musiksperre if musiksperre is defined else '' }}"
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+      - stop: ""
+        response_variable: erg
+    speech:
+      text: "{{ action_response.ansage if action_response is mapping and action_response.ansage is defined else 'Gesperrt.' }}"
+  MusikEntsperren:
+    description: "Interner Schnellbefehl: Musikquelle freigeben (nicht selbst aufrufen)."
+    action:
+      - action: script.musik_entsperren
+        response_variable: erg
+        data: { name: "{{ musiksperre }}" }
+      - stop: ""
+        response_variable: erg
+    speech:
+      text: "{{ action_response.ansage if action_response is mapping and action_response.ansage is defined else 'Freigegeben.' }}"
+  MusikBlacklistAnzeigen:
+    description: "Interner Schnellbefehl: Blacklist vorlesen (nicht selbst aufrufen)."
+    speech:
+      text: >
+        {% set t = state_attr('sensor.musik_blacklist', 'text') or '' %}
+        {{ 'Auf der Blacklist stehen: ' ~ t ~ '.' if t | trim else 'Die Blacklist ist leer.' }}
+  MusikNaechster:
+    description: "Interner Schnellbefehl: nächster Titel (nicht selbst aufrufen)."
+    action:
+      - action: script.musik_naechster_titel
+        response_variable: erg
+        data: { raum: "{{ musikraum if musikraum is defined else '' }}" }
+      - stop: ""
+        response_variable: erg
+    speech:
+      text: "{{ action_response.ansage if action_response is mapping and action_response.ansage is defined else 'Nächstes Lied.' }}"

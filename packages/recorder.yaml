@@ -1,0 +1,24 @@
+# Recorder: weniger Schreibzugriffe auf die SD-Karte (Stabilität/Lebensdauer)
+# - Schreibt nur alle 30 s gesammelt statt laufend
+# - Sehr gesprächige Entitäten ohne Nutzen für den Verlauf ausgeschlossen
+recorder:
+  commit_interval: 30
+  purge_keep_days: 10
+  exclude:
+    entity_globs:
+      - sensor.browser_mod_*
+      - binary_sensor.browser_mod_*
+      - light.browser_mod_*
+      - media_player.browser_mod_*
+      - sensor.*_letzte_aktivitat
+      - sensor.*_geschatzte_stromstarke
+      - sensor.*_geschatzter_strom
+      - button.*_aktuellen_titel_favorisieren
+      - sensor.*_ip
+      # UniFi-Verkehr je Gerät (nur Summen in packages/netzwerk.yaml werden aufgezeichnet)
+      - sensor.*_rx
+      - sensor.*_tx
+    entities:
+      - sensor.systemtest   # große Attribute (Testergebnis)
+    event_types:
+      - call_service

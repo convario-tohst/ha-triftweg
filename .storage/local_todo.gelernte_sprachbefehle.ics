@@ -1,0 +1,149 @@
+BEGIN:VCALENDAR
+PRODID:-//homeassistant.io//local_todo 2.0//EN
+VERSION:2.0
+BEGIN:VTODO
+DTSTAMP:20261025T150439Z
+UID:664b8390-d085-11f1-9fcd-d83addc0128c
+CREATED:20261025T150439Z
+DESCRIPTION:{"dienst":"cover.set_cover_position"\,"ziel":["cover.malte_roll
+ laden_links"\,"cover.malte_rollladen_rechts"]\,"daten":{"position":100}\,"
+ antwort":"Maltes Rollläden fahren hoch."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261025T160439
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:mach in maltes zimmer die jalousien hoch
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261025T181849Z
+UID:864afdd6-d0a0-11f1-9fcd-d83addc0128c
+CREATED:20261025T181849Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.schlafzimmer_decke"]\
+ ,"daten":{"brightness_pct":100}\,"antwort":"Schlafzimmerlicht ist auf 100 
+ Prozent."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261025T191849
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:schlafzimmer oben licht 100%
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261026T085633Z
+UID:24f20608-d11b-11f1-9fcd-d83addc0128c
+CREATED:20261026T085633Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.dimmer_flur_og"]\,"d
+ aten":{}\,"antwort":"Das Flurlicht oben ist aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261026T095633
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:schalte oben das flurlicht aus
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T165304Z
+UID:e068a962-d226-11f1-992d-d83addc0128c
+CREATED:20261027T165304Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.aussenbeleuchtung_ga
+ rten"\,"light.licht_decke"]\,"daten":{}\,"antwort":"Garten und Carport 
+ sind aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261027T175304
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:draußen wieder garten und carport aus licht
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261027T225837Z
+UID:f1d62728-d259-11f1-992d-d83addc0128c
+CREATED:20261027T225837Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.licht_lara_decke"]\,
+ "daten":{}\,"antwort":"Laras Deckenlicht ist aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261027T235837
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:mach mal bei lara das deckenlicht aus
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261028T143417Z
+UID:a78f46c6-d2dc-11f1-992d-d83addc0128c
+CREATED:20261028T143417Z
+DESCRIPTION:{"dienst":"cover.set_cover_position"\,"ziel":["cover.wohnzimmer
+ _rolladen"]\,"daten":{"position":50}\,"antwort":"Rollladen im Wohnzimmer 
+ steht auf 50 Prozent."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261028T153417
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:fahre die roller 50% herunter im wohnzimmer
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261029T165441Z
+UID:6f0e5a98-d3b9-11f1-992d-d83addc0128c
+CREATED:20261029T165441Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.licht_decke"]\,"daten
+ ":{}\,"antwort":"Carportlicht ist an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261029T175441
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:licht am carport an bitte
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261030T061503Z
+UID:3e94488a-d429-11f1-992d-d83addc0128c
+CREATED:20261030T061503Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.dimmer_kuche_decke_2"
+ ]\,"daten":{"brightness_pct":100}\,"antwort":"Küchenlicht ist auf 100 
+ Prozent."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261030T071503
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:mach nur das küchenlicht decker auf 100%
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261102T085123Z
+UID:950aa740-d69a-11f1-992d-d83addc0128c
+CREATED:20261102T085123Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.licht_wohnen_und_kuch
+ e"]\,"daten":{"brightness_pct":100}\,"antwort":"Licht unten ist auf 100 
+ Prozent."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261102T095123
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:mache licht im wohnzimmer und küche 100%
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261102T164121Z
+UID:3be8daaa-d6dc-11f1-992d-d83addc0128c
+CREATED:20261102T164121Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.licht_decke"\,"light.
+ aussenbeleuchtung_garten"]\,"daten":{}\,"antwort":"Carport und Garten sind
+  an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261102T174121
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:mach draußen bitte carport und gartenbeleuchtung an
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261103T191928Z
+UID:7d1fd976-d7bb-11f1-8aaf-d83addc0128c
+CREATED:20261103T191928Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.licht_schlafzimmer"]
+ \,"daten":{}\,"antwort":"Das Licht im Schlafzimmer ist aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261103T201928
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:lichter aus dem schlafzimmer
+END:VTODO
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+BEGIN:STANDARD
+DTSTART:20101031T030000
+TZOFFSETTO:+0100
+TZOFFSETFROM:+0200
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20100328T020000
+TZOFFSETTO:+0200
+TZOFFSETFROM:+0100
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+END:VCALENDAR

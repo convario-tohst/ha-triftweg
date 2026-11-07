@@ -1,0 +1,73 @@
+# Ankleide Tobias: Licht nach Präsenz über HA (Melder 1.1.20 meldet nur Präsenz auf 0/7/9, schaltet DALI-Gruppe 4 nicht mehr)
+# - Präsenz kommt → Licht an (tagsüber / nachts eigene Helligkeit); keine Präsenz für "Nachlauf" → aus
+# - Manuell ausgeschaltet bei Präsenz → bleibt aus, bis der Raum einmal leer war. Glastaster schalten weiter direkt.
+# Kein 1-Wire-Helligkeitssensor im Raum (innenliegend) → keine Lux-Bedingung.
+
+input_boolean:
+  ankleide_tobias_praesenz_licht:
+    name: "Ankleide Tobias: Licht nach Präsenz"
+    icon: mdi:motion-sensor
+
+input_number:
+  ankleide_tobias_nachlauf:
+    name: "Ankleide Tobias: Licht aus nach (ohne Präsenz)"
+    icon: mdi:timer-outline
+    min: 1
+    max: 60
+    step: 1
+    unit_of_measurement: min
+  ankleide_tobias_helligkeit_tag:
+    name: "Ankleide Tobias: Helligkeit tagsüber"
+    icon: mdi:brightness-6
+    min: 10
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+  ankleide_tobias_helligkeit_nacht:
+    name: "Ankleide Tobias: Helligkeit nachts"
+    icon: mdi:brightness-3
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+
+automation:
+  - id: ankleide_tobias_licht_praesenz
+    alias: "Ankleide Tobias: Licht nach Präsenz"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.prasenz_ankleide_tobias
+        from: "off"
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: binary_sensor.prasenz_ankleide_tobias
+        from: "on"
+        to: "off"
+        for: { minutes: "{{ states('input_number.ankleide_tobias_nachlauf') | int(3) }}" }
+        id: aus
+    conditions:
+      - condition: state
+        entity_id: input_boolean.ankleide_tobias_praesenz_licht
+        state: "on"
+    variables:
+      # Nacht = Nachtmodus-Zeiten OG
+      nacht: >
+        {% set b = states('input_datetime.nacht_og_beginn') %}{% set e = states('input_datetime.nacht_og_ende') %}
+        {% set t = now().strftime('%H:%M:%S') %}
+        {{ (t >= b or t < e) if b > e else (b <= t < e) }}
+    actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'an' }}"
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.dimmer_ankleidezimmer_tobi }
+                data:
+                  brightness_pct: >
+                    {{ states('input_number.ankleide_tobias_helligkeit_nacht' if nacht
+                              else 'input_number.ankleide_tobias_helligkeit_tag') | int(70) }}
+          - conditions: "{{ trigger.id == 'aus' }}"
+            sequence:
+              - action: light.turn_off
+                target: { entity_id: light.dimmer_ankleidezimmer_tobi }

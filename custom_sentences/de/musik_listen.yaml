@@ -1,0 +1,67 @@
+language: de
+intents:
+  MusikListeHinzu:
+    data:
+      - sentences:
+          - "(füge|füg|pack|packe|nimm|setz|setze) {musikeintrag} (zur|zu der|in die|auf die) (musikliste|musik liste|liste|playlist liste) {musikkategorie} [hinzu|auf|dazu]"
+          - "(füge|füg|pack|packe|nimm|setz|setze) {musikeintrag} (zur|zu der|in die|auf die) {musikkategorie} (musikliste|musik liste|liste) [hinzu|auf|dazu]"
+          - "(füge|füg|pack|packe|nimm) {musikeintrag} (zu den|in die) (musikvorschlägen|vorschlägen|musiklisten) {musikkategorie} [hinzu|auf]"
+  MusikListeEntfernen:
+    data:
+      - sentences:
+          - "(entferne|entfern|lösche|lösch|streiche|streich|nimm) {musikeintrag} (aus|von) der (musikliste|musik liste|liste) {musikkategorie} [raus]"
+          - "(entferne|entfern|lösche|lösch|streiche|streich|nimm) {musikeintrag} (aus|von) der {musikkategorie} (musikliste|musik liste|liste) [raus]"
+  MusikListeSpielen:
+    data:
+      - sentences:
+          - "(spiele|spiel|starte|start) [die] (liste|playlist|musikliste) {musikeintrag} [(im|in der|oben im|unten im) {musikraum}]"
+  MusikListenAnzeigen:
+    data:
+      - sentences:
+          - "welche (musiklisten|playlists|musikvorschläge|listen) (gibt es|haben wir) [(bei|in|für) [der|den]] [{musikkategorie}]"
+          - "was steht (in|auf) der (musikliste|liste) {musikkategorie}"
+          - "(zeig|nenn|nenne|lies) [mir] [die] (musiklisten|musikliste) [{musikkategorie}] [vor]"
+  MorgenMusikSetzen:
+    data:
+      - sentences:
+          - "(morgens|am morgen|morgenmusik) soll [immer] {morgenauswahl} (laufen|spielen|kommen|starten)"
+          - "(stell|stelle|setz|setze|ändere|änder) [die] morgenmusik auf {morgenauswahl} [um]"
+          - "morgenmusik {morgenauswahl}"
+  MorgenLautstaerke:
+    data:
+      - sentences:
+          - "(stell|stelle|setz|setze) [die] (lautstärke [der|für die] morgenmusik|morgenmusik lautstärke|morgenlautstärke) auf {morgenprozent} [prozent]"
+          - "morgenmusik [mit] {morgenprozent} prozent"
+          - "(morgenmusik|morgens) lautstärke {morgenprozent} [prozent]"
+  MorgenMusikAbfrage:
+    data:
+      - sentences:
+          - "was läuft morgens [für musik]"
+          - "welche (musik|morgenmusik) läuft morgens"
+          - "wie ist die morgenmusik eingestellt"
+
+lists:
+  morgenauswahl:
+    wildcard: true
+  morgenprozent:
+    range:
+      from: 5
+      to: 60
+  musikeintrag:
+    wildcard: true
+  musikkategorie:
+    values:
+      - in: "(morgen|morgens|kaffee|frühstück|morning)"
+        out: todo.musik_morgen
+      - in: "(chill|chillen|lounge|entspannt|entspannung)"
+        out: todo.musik_chill
+      - in: "(abend|abends|dinner|essen|jazz)"
+        out: todo.musik_abend
+      - in: "(deutsch|deutsche|deutsche musik)"
+        out: todo.musik_deutsch
+      - in: "(party|energie|feiern)"
+        out: todo.musik_party
+      - in: "(familie|kinder|unterwegs)"
+        out: todo.musik_familie
+      - in: "(radio|sender|radiosender)"
+        out: todo.musik_radio

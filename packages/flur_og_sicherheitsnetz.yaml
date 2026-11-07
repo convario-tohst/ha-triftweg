@@ -1,0 +1,61 @@
+# Flur OG: Sicherheitsnetz (26.10.) – der Melder 1.1.24 schaltet das Licht selbst, erkennt aber zeitweise
+# Dauerbewegung (Präsenz hing seit 24.10., Licht blieb 1,5 h an). HA schaltet aus, wenn niemand zu Hause ist
+# oder nachts (22–6 Uhr) nach max. X Minuten am Stück.
+# Später geplant: Melder auf "nur melden" umbauen, HA schaltet (wie HWR/Ankleide Tobias).
+
+input_boolean:
+  flur_og_sicherheitsnetz:
+    name: "Flur OG: Licht spätestens nach Zeit aus"
+    icon: mdi:timer-off-outline
+
+input_number:
+  flur_og_max_minuten:
+    name: "Flur OG: Licht max. an (Minuten)"
+    icon: mdi:timer-sand
+    min: 5
+    max: 120
+    step: 5
+    unit_of_measurement: min
+    mode: box
+
+automation:
+  # 29.10. umgebaut: Der Melder sieht im Flur (Durchgangsraum, Kinderzimmer) tagsüber fast dauernd Bewegung und hält
+  # sein Licht "an". Hat HA es nach 20 min ausgeschaltet, schaltete der Melder nie wieder ein → Flurlicht ging gar nicht mehr.
+  # Jetzt schneidet HA nur noch ab, wenn niemand zu Hause ist (sofort) oder nachts 22–6 Uhr (nach X min).
+  - id: flur_og_licht_max_dauer
+    alias: "Flur OG: Licht aus, wenn niemand da oder nachts zu lange (Sicherheitsnetz)"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: light.dimmer_flur_og
+        to: "on"
+        for:
+          minutes: "{{ states('input_number.flur_og_max_minuten') | int(20) }}"
+        id: lange
+      - trigger: state
+        entity_id: binary_sensor.jemand_im_haus
+        to: "off"
+        for: { minutes: 2 }
+        id: leer
+      - trigger: time
+        at: "22:00:00"
+        id: nacht
+    conditions:
+      - condition: state
+        entity_id: input_boolean.flur_og_sicherheitsnetz
+        state: "on"
+      - condition: state
+        entity_id: light.dimmer_flur_og
+        state: "on"
+      - "{{ is_state('binary_sensor.jemand_im_haus', 'off') or now().hour >= 22 or now().hour < 6 }}"
+      # um 22 Uhr nur, wenn es schon lange genug an ist
+      - "{{ trigger.id != 'nacht' or (now() - states.light.dimmer_flur_og.last_changed).total_seconds() / 60 >= states('input_number.flur_og_max_minuten') | int(20) }}"
+    actions:
+      - action: light.turn_off
+        target: { entity_id: light.dimmer_flur_og }
+      - action: logbook.log
+        data:
+          name: "Flur OG"
+          message: >
+            Licht ausgeschaltet (Sicherheitsnetz: {{ 'niemand zu Hause' if is_state('binary_sensor.jemand_im_haus', 'off')
+            else 'nachts länger als ' ~ states('input_number.flur_og_max_minuten') | int(20) ~ ' min an' }})

@@ -1,0 +1,229 @@
+# Systemwächter + Wochenbericht (Wunsch Tobias 14.10.)
+# Push nur an Tobias, normale Priorität (lautlos bleibt lautlos). Zusätzlich Meldung in HA (Glocke).
+#
+# Wächter:
+#  - wichtige Geräte länger als 15 min nicht erreichbar (und wieder da)
+#  - Pi: Temperatur > 75 °C (10 min), Arbeitsspeicher > 90 % (15 min), Speicher/SD > 85 %, Unterspannung
+#  - Backup: letztes erfolgreiches automatisches Backup älter als 36 h
+#  - HA-Neustarts werden gezählt (für den Wochenbericht)
+# Wochenbericht: Sonntag 18:00
+
+counter:
+  ha_neustarts_woche: { name: "HA-Neustarts diese Woche", icon: mdi:restart }
+  geraete_ausfaelle_woche: { name: "Geräte-Ausfälle diese Woche", icon: mdi:lan-disconnect }
+  system_warnungen_woche: { name: "System-Warnungen diese Woche", icon: mdi:alert }
+
+input_text:
+  system_ausfaelle_liste:
+    name: "Ausfälle diese Woche (Liste)"
+    max: 255
+
+script:
+  system_melden:
+    alias: "System: Meldung an Tobias"
+    icon: mdi:message-alert
+    mode: queued
+    fields:
+      titel: { name: Titel, required: true, selector: { text: } }
+      text: { name: Text, required: true, selector: { text: { multiline: true } } }
+      kennung: { name: Kennung, selector: { text: } }
+    sequence:
+      - action: notify.mobile_app_t_ohst_2026_android
+        continue_on_error: true
+        data:
+          title: "{{ titel }}"
+          message: "{{ text }}"
+          data:
+            tag: "system_{{ kennung | default('info') }}"
+            channel: System
+            notification_icon: mdi:home-alert
+      - action: persistent_notification.create
+        data:
+          notification_id: "system_{{ kennung | default('info') }}"
+          title: "{{ titel }}"
+          message: "{{ text }}"
+
+automation:
+  # ---------- Geräte nicht erreichbar ----------
+  - id: system_geraet_offline
+    alias: "System: Gerät nicht erreichbar"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id:
+          - light.wled_kuche
+          - light.wled_2
+          - light.wled
+          - light.sauna
+          - light.aussensauna
+          - media_player.ma_wohnzimmer
+          - media_player.ma_schlafzimmer
+          - fan.vallox
+          - climate.heizung_wohnzimmer
+        to: unavailable
+        for: "00:15:00"
+      - trigger: state
+        entity_id: [binary_sensor.timberwolf_erreichbar, binary_sensor.backup_pi_erreichbar]
+        to: "off"
+        for: "00:15:00"
+    actions:
+      - action: counter.increment
+        target: { entity_id: counter.geraete_ausfaelle_woche }
+      - action: input_text.set_value
+        target: { entity_id: input_text.system_ausfaelle_liste }
+        data:
+          value: >
+            {% set alt = states('input_text.system_ausfaelle_liste') %}
+            {% set alt = '' if alt in ['unknown', 'unavailable'] else alt %}
+            {{ (alt ~ (', ' if alt else '') ~ trigger.to_state.name ~ ' ' ~ now().strftime('%d.%m. %H:%M'))[-250:] }}
+      - action: script.system_melden
+        data:
+          kennung: "offline_{{ trigger.entity_id | replace('.', '_') }}"
+          titel: "⚠️ {{ trigger.to_state.name }} nicht erreichbar"
+          text: "Seit 15 Minuten nicht erreichbar ({{ now().strftime('%d.%m. %H:%M') }}). Strom/WLAN/Netzwerk prüfen."
+
+  - id: system_geraet_wieder_da
+    alias: "System: Gerät wieder erreichbar"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id:
+          - light.wled_kuche
+          - light.wled_2
+          - light.wled
+          - light.sauna
+          - light.aussensauna
+          - media_player.ma_wohnzimmer
+          - media_player.ma_schlafzimmer
+          - fan.vallox
+          - climate.heizung_wohnzimmer
+        from: unavailable
+      - trigger: state
+        entity_id: [binary_sensor.timberwolf_erreichbar, binary_sensor.backup_pi_erreichbar]
+        from: "off"
+        to: "on"
+    conditions:
+      # nur melden, wenn vorher eine Ausfall-Meldung existiert (Ausfall > 15 min)
+      - "{{ (trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds() > 900 }}"
+    actions:
+      - action: persistent_notification.dismiss
+        data: { notification_id: "system_offline_{{ trigger.entity_id | replace('.', '_') }}" }
+      - action: notify.mobile_app_t_ohst_2026_android
+        continue_on_error: true
+        data:
+          message: clear_notification
+          data: { tag: "system_offline_{{ trigger.entity_id | replace('.', '_') }}" }
+      - action: script.system_melden
+        data:
+          kennung: "wieder_{{ trigger.entity_id | replace('.', '_') }}"
+          titel: "✅ {{ trigger.to_state.name }} wieder erreichbar"
+          text: "Nach {{ ((trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds() / 60) | round(0) | int }} Minuten wieder da."
+
+  # ---------- Pi / Home Assistant ----------
+  - id: system_pi_warnung
+    alias: "System: Pi-Warnung (Temperatur, Speicher, Unterspannung)"
+    mode: queued
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.system_monitor_prozessortemperatur
+        above: 75
+        for: "00:10:00"
+        id: temperatur
+      - trigger: numeric_state
+        entity_id: sensor.system_monitor_arbeitsspeicherauslastung
+        above: 90
+        for: "00:15:00"
+        id: arbeitsspeicher
+      - trigger: numeric_state
+        entity_id: sensor.system_monitor_massenspeicher_auslastung
+        above: 85
+        id: speicher
+      - trigger: state
+        entity_id: binary_sensor.rpi_power_status
+        to: "on"
+        id: unterspannung
+    actions:
+      - action: counter.increment
+        target: { entity_id: counter.system_warnungen_woche }
+      - action: script.system_melden
+        data:
+          kennung: "pi_{{ trigger.id }}"
+          titel: >
+            {{ {'temperatur': '🌡️ Home-Assistant-Pi zu heiß', 'arbeitsspeicher': '🧠 Arbeitsspeicher fast voll',
+                'speicher': '💾 Speicher (SD-Karte) fast voll', 'unterspannung': '⚡ Unterspannung am Home-Assistant-Pi'}[trigger.id] }}
+          text: >
+            {% if trigger.id == 'temperatur' %}Prozessor seit 10 Minuten über 75 °C ({{ states('sensor.system_monitor_prozessortemperatur') }} °C) – Belüftung prüfen.
+            {% elif trigger.id == 'arbeitsspeicher' %}Arbeitsspeicher seit 15 Minuten über 90 % ({{ states('sensor.system_monitor_arbeitsspeicherauslastung') }} %).
+            {% elif trigger.id == 'speicher' %}Speicher zu {{ states('sensor.system_monitor_massenspeicher_auslastung') }} % belegt – alte Backups löschen.
+            {% else %}Das Netzteil liefert zu wenig Spannung – mögliche Absturzursache. Offizielles 27-W-Netzteil verwenden.{% endif %}
+
+  - id: system_backup_pruefen
+    alias: "System: Backup überfällig"
+    triggers:
+      - trigger: time
+        at: "09:00:00"
+    conditions:
+      - "{{ (now() - (states('sensor.backup_letztes_erfolgreiches_automatisches_backup') | as_datetime(now()))).total_seconds() > 36 * 3600 }}"
+    actions:
+      - action: counter.increment
+        target: { entity_id: counter.system_warnungen_woche }
+      - action: script.system_melden
+        data:
+          kennung: backup
+          titel: "💾 Backup überfällig"
+          text: >
+            Letztes erfolgreiches automatisches Backup: {{ as_timestamp(states('sensor.backup_letztes_erfolgreiches_automatisches_backup')) | timestamp_custom('%d.%m. %H:%M') }}.
+            Einstellungen → System → Backups prüfen.
+
+  - id: system_neustart_zaehlen
+    alias: "System: HA-Neustart zählen"
+    triggers:
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: counter.increment
+        target: { entity_id: counter.ha_neustarts_woche }
+
+  # ---------- Wochenbericht ----------
+  - id: system_wochenbericht
+    alias: "System: Wochenbericht (Sonntag 18 Uhr)"
+    triggers:
+      - trigger: time
+        at: "18:00:00"
+    conditions:
+      - condition: time
+        weekday: [sun]
+    actions:
+      - action: todo.get_items
+        response_variable: listen
+        target: { entity_id: [todo.anderungswunsche, todo.gelernte_sprachbefehle] }
+        data: { status: needs_action }
+      - variables:
+          wuensche: "{{ listen['todo.anderungswunsche']['items'] | list }}"
+          fehler: "{{ wuensche | selectattr('summary', 'search', '^Fehler:') | list }}"
+          gelernt: "{{ listen['todo.gelernte_sprachbefehle']['items'] | count }}"
+          offline_jetzt: >
+            {{ ['light.wled_kuche', 'light.wled_2', 'light.wled', 'light.sauna', 'light.aussensauna',
+                'media_player.ma_wohnzimmer', 'media_player.ma_schlafzimmer', 'fan.vallox']
+               | select('is_state', 'unavailable') | map('state_attr', 'friendly_name') | list }}
+          bericht: >
+            🏠 Wochenbericht Triftweg
+            • HA-Neustarts: {{ states('counter.ha_neustarts_woche') }}{{ ' ⚠️' if states('counter.ha_neustarts_woche') | int > 1 else '' }}
+            • Geräte-Ausfälle: {{ states('counter.geraete_ausfaelle_woche') }}{{ (' (' ~ states('input_text.system_ausfaelle_liste') ~ ')') if states('counter.geraete_ausfaelle_woche') | int > 0 else '' }}
+            • System-Warnungen: {{ states('counter.system_warnungen_woche') }}
+            {% if offline_jetzt %}• Gerade offline: {{ offline_jetzt | join(', ') }}
+            {% endif %}• Pi: {{ states('sensor.system_monitor_prozessortemperatur') }} °C, Speicher {{ states('sensor.system_monitor_massenspeicher_auslastung') }} %, RAM {{ states('sensor.system_monitor_arbeitsspeicherauslastung') }} %
+            • Letztes Backup: {{ as_timestamp(states('sensor.backup_letztes_erfolgreiches_automatisches_backup'), 0) | timestamp_custom('%d.%m. %H:%M') }}
+            • Offene Änderungswünsche: {{ wuensche | count }}{{ (' (davon ' ~ fehler | count ~ ' Fehler von Claude)') if fehler else '' }}
+            • Gelernte Sprachbefehle: {{ gelernt }}
+            • Nächster Müll: {{ states('sensor.mull_nachste_abholung') }}
+      - action: script.system_melden
+        data:
+          kennung: wochenbericht
+          titel: "🏠 Wochenbericht"
+          text: "{{ bericht }}"
+      - action: counter.reset
+        target: { entity_id: [counter.ha_neustarts_woche, counter.geraete_ausfaelle_woche, counter.system_warnungen_woche] }
+      - action: input_text.set_value
+        target: { entity_id: input_text.system_ausfaelle_liste }
+        data: { value: "" }

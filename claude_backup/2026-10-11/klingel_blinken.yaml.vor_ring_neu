@@ -1,0 +1,90 @@
+# Klingel-Signal per Licht (Wunsch Tobias 17.10.: Gong funktioniert nicht)
+# Klingelt es an der Ring-Haustürklingel, blinken die Deckenlichter 5× (1 s an / 1 s aus),
+# danach wieder wie vorher. Direkt über KNX-Schalt-GAs (Lampen-Dienste schickten nicht jedes Telegramm).
+
+input_boolean:
+  klingel_blinken:
+    name: "Klingel-Blinken"
+    icon: mdi:doorbell
+
+script:
+  klingel_lichtsignal:
+    alias: "Klingel: Lichter 5× blinken"
+    icon: mdi:alarm-light
+    mode: single
+    max_exceeded: silent
+    variables:
+      # Schalt-GA je Decke + HA-Entität (für den Zustand vorher)
+      # ga = Schalten (aus), dim = Dimmwert absolut (an mit 100 % – "Ein" würde nur den letzten Wert nehmen, z. B. 17 %)
+      lampen:
+        - { ga: "0/0/6", dim: "0/1/6", e: light.dimmer_flur_og }            # Flur oben
+        - { ga: "0/0/101", dim: "0/1/5", e: light.licht_eg_flur_decke }     # Flur unten
+        - { ga: "0/0/16", dim: "0/1/21", e: light.dimmer_wohnzimmer_esstisch }  # Wohnzimmer Decke (Esstisch)
+        - { ga: "0/0/4", dim: "0/1/26", e: light.dimmer_kuche_decke_2 }     # Küche Decke
+        - { ga: "0/0/12", dim: "0/1/27", e: light.licht_sauna_decke }       # HWR Decke
+        - { ga: "0/0/9", dim: "0/1/30", e: light.ankleide_yvonne_decke }    # Ankleide Yvonne
+        - { ga: "0/0/5", dim: "0/1/8", e: light.dimmer_ankleidezimmer_tobi }  # Ankleide Tobias
+        - { ga: "0/0/10", dim: "0/1/28", e: light.dimmer_yvonne_bad }       # Bad Yvonne Decke
+        - { ga: "0/0/19", dim: "0/1/24", e: light.sauna_decke }             # Sauna Decke
+        - { ga: "0/0/1", dim: "0/1/7", e: light.og_bad_tobias_decke }       # Bad oben
+      gas: "{{ lampen | map(attribute='ga') | list }}"
+      dims: "{{ lampen | map(attribute='dim') | list }}"
+      vorher: >
+        {% set ns = namespace(l=[]) %}
+        {% for x in lampen %}
+          {% set ns.l = ns.l + [{'ga': x.ga, 'e': x.e, 'an': is_state(x.e, 'on'),
+                                 'hell': state_attr(x.e, 'brightness') | int(255)}] %}
+        {% endfor %}{{ ns.l }}
+    sequence:
+      - repeat:
+          count: 5
+          sequence:
+            - repeat:
+                for_each: "{{ dims }}"
+                sequence:
+                  - action: knx.send
+                    continue_on_error: true
+                    data: { address: "{{ repeat.item }}", payload: 100, type: percent }
+            - delay: 2
+            - repeat:
+                for_each: "{{ gas }}"
+                sequence:
+                  - action: knx.send
+                    continue_on_error: true
+                    data: { address: "{{ repeat.item }}", payload: 0 }
+            - delay: 2
+      # Zustand von vorher wiederherstellen (aus bleibt aus)
+      - repeat:
+          for_each: "{{ vorher | selectattr('an') | list }}"
+          sequence:
+            - action: light.turn_on
+              continue_on_error: true
+              target: { entity_id: "{{ repeat.item.e }}" }
+              data: { brightness: "{{ repeat.item.hell }}" }
+
+automation:
+  - id: klingel_lichtsignal
+    alias: "Klingel: Lichter blinken"
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id: event.front_door_klingeln
+        not_from: ["unavailable", "unknown"]
+      - trigger: state
+        entity_id: binary_sensor.front_door_klingeln
+        from: "off"
+        to: "on"
+      # Rückfall: Ring meldet Klingeln teils nur per Abfrage (bis ~2 min verzögert)
+      - trigger: state
+        entity_id: sensor.front_door_letztes_klingeln
+        not_from: ["unavailable", "unknown"]
+        not_to: ["unavailable", "unknown"]
+    conditions:
+      - condition: state
+        entity_id: input_boolean.klingel_blinken
+        state: "on"
+      # doppelte Auslösung (Event + Sensor) innerhalb 30 s ignorieren
+      - "{{ this.attributes.last_triggered is none or (now() - this.attributes.last_triggered).total_seconds() > 30 }}"
+    actions:
+      - action: script.klingel_lichtsignal

@@ -1,0 +1,33 @@
+language: de
+# Musik-Blacklist (27.10.) – Logik in packages/musik_blacklist.yaml
+intents:
+  MusikSperren:
+    data:
+      - sentences:
+          - "(setz|setze|pack|packe|tu|tue|schreib|schreibe) {musiksperre} auf die (blacklist|black list|schwarze liste|sperrliste)"
+          - "{musiksperre} (will|möchte|mag) ich nicht mehr hören"
+          - "(ich will|ich möchte) {musiksperre} nicht mehr hören"
+          - "nie wieder {musiksperre}"
+          - "(die liste|die playlist|der sender|dieser sender|diese musik|die musik|das radio) gefällt mir nicht [mehr]"
+          - "(sperr|sperre) (die liste|die playlist|den sender|diesen sender|diese musik|die musik) [für immer]"
+  MusikEntsperren:
+    data:
+      - sentences:
+          - "(nimm|nehme|hol|hole|streich|streiche) {musiksperre} (von|aus) der (blacklist|black list|schwarzen liste|sperrliste) [runter|raus]"
+          - "(entsperr|entsperre) {musiksperre}"
+          - "{musiksperre} (wieder freigeben|ist wieder erlaubt|darf wieder laufen)"
+  MusikBlacklistAnzeigen:
+    data:
+      - sentences:
+          - "was steht auf der (blacklist|black list|schwarzen liste|sperrliste)"
+          - "(lies|zeig) [mir] die (blacklist|black list|schwarze liste|sperrliste) [vor]"
+          - "welche (musik|listen|sender) (ist|sind) gesperrt"
+  MusikNaechster:
+    data:
+      - sentences:
+          - "[(das|dieses|der|den)] (lied|song|titel|stück) gefällt mir nicht [(so|mehr)]"
+          - "(nächstes|anderes) (lied|song|stück) [bitte]"
+          - "(überspring|überspringe|skip) [(das|dieses|den)] [(lied|song|titel)]"
+lists:
+  musiksperre:
+    wildcard: true

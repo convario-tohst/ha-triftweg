@@ -1,0 +1,52 @@
+# WhatsApp-Benachrichtigungen über CallMeBot (privat, kostenlos)
+# Nummern + Schlüssel stehen in secrets.yaml. Pro Person ein Schalter "WhatsApp an …" –
+# erst einschalten, wenn die eigenen Daten eingetragen sind.
+# Aufruf aus anderen Automationen:  action: script.whatsapp_senden  data: { text: "…" }
+
+rest_command:
+  whatsapp_tobias:
+    url: !secret whatsapp_tobias
+    method: get
+    timeout: 20
+  whatsapp_yvonne:
+    url: !secret whatsapp_yvonne
+    method: get
+    timeout: 20
+  whatsapp_malte:
+    url: !secret whatsapp_malte
+    method: get
+    timeout: 20
+
+input_boolean:
+  whatsapp_tobias: { name: "WhatsApp an Tobias", icon: mdi:whatsapp }
+  whatsapp_yvonne: { name: "WhatsApp an Yvonne", icon: mdi:whatsapp }
+  whatsapp_malte: { name: "WhatsApp an Malte", icon: mdi:whatsapp }
+
+script:
+  whatsapp_senden:
+    alias: "WhatsApp senden"
+    icon: mdi:whatsapp
+    mode: queued
+    fields:
+      text:
+        name: Text
+        required: true
+        selector: { text: { multiline: true } }
+      an:
+        name: Empfänger (leer = alle eingeschalteten)
+        selector:
+          select:
+            multiple: true
+            options: [tobias, yvonne, malte]
+    sequence:
+      - repeat:
+          for_each: "{{ an if an is defined and an else ['tobias', 'yvonne', 'malte'] }}"
+          sequence:
+            - if: "{{ is_state('input_boolean.whatsapp_' ~ repeat.item, 'on') }}"
+              then:
+                - action: "rest_command.whatsapp_{{ repeat.item }}"
+                  continue_on_error: true
+                  data:
+                    text: "{{ text }}"
+                # CallMeBot: nicht mehrere Nachrichten in derselben Sekunde
+                - delay: 2

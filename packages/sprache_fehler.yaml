@@ -1,0 +1,26 @@
+# Fehlgeschlagene Sprachbefehle dokumentieren (Wunsch Tobias 13.10.)
+# Claude (Sprachassistent) ruft dieses Skript auf, wenn ein Befehl nicht klappt oder nicht verstanden wird.
+# Die Einträge landen auf der Liste "Änderungswünsche" mit Präfix "Fehler:" – ich arbeite sie dann ab.
+script:
+  fehler_notieren:
+    alias: "Fehler für Tobias notieren"
+    description: >
+      Notiert einen fehlgeschlagenen oder nicht verstandenen Sprachbefehl auf der Liste Änderungswünsche,
+      damit Tobias bzw. Claude es später prüfen kann. Felder: gesagt = was der Nutzer gesagt hat,
+      problem = was schiefging (kurz).
+    icon: mdi:alert-circle-outline
+    mode: queued
+    fields:
+      gesagt:
+        name: Gesagt
+        required: true
+        selector: { text: }
+      problem:
+        name: Problem
+        selector: { text: }
+    sequence:
+      - action: todo.add_item
+        target: { entity_id: todo.anderungswunsche }
+        data:
+          item: "Fehler: {{ gesagt[:120] }}"
+          description: "{{ problem | default('') }} – {{ now().strftime('%d.%m.%Y %H:%M') }}"

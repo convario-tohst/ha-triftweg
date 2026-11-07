@@ -1,0 +1,46 @@
+# Einmalige Erinnerungen per Push an Tobias (Datum + Uhrzeit; nach dem Termin wirkungslos)
+
+automation:
+  - id: erinnerung_voice_pe_einrichten
+    alias: "Erinnerung: Voice PE einrichten (26.10.)"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "18:00:00"
+    conditions:
+      - "{{ now().date() | string == '2026-10-26' }}"
+    actions:
+      - action: script.system_melden
+        data:
+          titel: "Voice PE einrichten"
+          text: >
+            Der Home Assistant Voice Preview Edition sollte heute angekommen sein.
+            Einstecken, in der HA-App unter Geräte hinzufügen, dann Claude Bescheid geben:
+            Raum, Nachtlautstärke, Durchsagen, Timer, Weckwort.
+          kennung: voice_pe
+
+  # Startwort "Ludwig": Wortmodell trainieren (Colab) – täglich 19 Uhr erinnern, bis die Dateien da sind
+  - id: erinnerung_ludwig_wortmodell
+    alias: "Erinnerung: Startwort Ludwig trainieren"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "19:00:00"
+    conditions:
+      - "{{ now().date() | string >= '2026-10-24' and now().date() | string <= '2026-11-07' }}"
+      - condition: state
+        entity_id: input_boolean.ludwig_modell_fertig
+        state: "off"
+    actions:
+      - action: script.system_melden
+        data:
+          titel: "Startwort „Ludwig“"
+          text: >
+            Wortmodell noch nicht trainiert: Colab-Notebook microWakeWord öffnen (GPU), Wort „Ludwig“, alles ausführen,
+            ludwig.tflite + ludwig.json nach \\192.168.11.18\config\www\ludwig\ kopieren, dann Claude Bescheid geben.
+          kennung: ludwig
+
+input_boolean:
+  ludwig_modell_fertig:
+    name: "Startwort Ludwig: Modell trainiert"
+    icon: mdi:account-voice

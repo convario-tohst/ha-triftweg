@@ -1,0 +1,291 @@
+# Musik-Vorschlagslisten – selbst pflegbar (Dashboard oder Sprache)
+# Die Listen sind normale HA-Listen: todo.musik_morgen, _chill, _abend, _deutsch, _party, _familie, _radio
+#   - Eintrag hinzufügen (Dashboard oder „Füge Coldplay zur Musikliste Chill hinzu“) → HA sucht ihn
+#     automatisch bei Spotify/TuneIn und merkt sich den Treffer in der Beschreibung (typ|uri).
+#   - Eintrag abhaken = abspielen (Haken wird danach automatisch wieder entfernt).
+#   - Entfernen: „Entferne Coldplay aus der Musikliste Chill“ oder im Dashboard löschen.
+# Raum = input_select.musik_raum.
+
+script:
+  musik_liste:
+    alias: "Musik: Liste abspielen"
+    icon: mdi:playlist-music
+    mode: restart
+    fields:
+      uri: { name: Music-Assistant-URI oder Name, required: true, selector: { text: } }
+      typ: { name: Typ, default: playlist, selector: { select: { options: [playlist, artist, album, track, radio] } } }
+      titel: { name: Anzeigename, selector: { text: } }
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+      lautstaerke: { name: Start-Lautstärke, selector: { number: { min: 0.05, max: 1, step: 0.05 } } }
+    variables:
+      # Raum: angegeben > Raum des Sprachgeräts (letzte 90 s) > Musikraum (27.10.: Wunsch im Wohnzimmer landete im Schlafzimmer)
+      r: "{% set rr = states('input_text.sprache_raum').split('|') %}{% if raum is defined and raum %}{{ raum }}{% elif rr | count == 2 and (as_timestamp(now()) - rr[1] | float(0)) < 90 and rr[0] in ['Wohnzimmer', 'Schlafzimmer'] %}{{ rr[0] }}{% else %}{{ states('input_select.musik_raum') }}{% endif %}"
+      player: >
+        {% if r == 'Schlafzimmer' %}{{ ['media_player.ma_schlafzimmer'] }}
+        {% elif r == 'Beide' %}{{ ['media_player.ma_wohnzimmer', 'media_player.ma_schlafzimmer'] }}
+        {% else %}{{ ['media_player.ma_wohnzimmer'] }}{% endif %}
+      t: "{{ typ | default('playlist') }}"
+    sequence:
+      # Lautstärke nur anfassen, wenn der Lautsprecher gerade nicht spielt (laufende Lautstärke bleibt)
+      - action: media_player.volume_set
+        continue_on_error: true
+        target:
+          entity_id: "{{ player | reject('is_state', 'playing') | list or 'none' }}"
+        data: { volume_level: "{{ lautstaerke | default(0.25) | float(0.25) }}" }
+      - action: music_assistant.play_media
+        target: { entity_id: "{{ player }}" }
+        data:
+          media_id: "{{ uri }}"
+          media_type: "{{ t }}"
+          enqueue: replace
+          radio_mode: "{{ t in ['artist', 'track'] }}"
+      - if: "{{ t == 'playlist' }}"
+        then:
+          - action: media_player.shuffle_set
+            continue_on_error: true
+            target: { entity_id: "{{ player }}" }
+            data: { shuffle: true }
+      - action: input_text.set_value
+        target: { entity_id: input_text.musik_letzter_vorschlag }
+        data: { value: "{{ (titel | default(uri)) ~ ' – ' ~ r }}" }
+      # Verlauf der letzten 10 Quellen (für Abwechslung, packages/musik_blacklist.yaml)
+      - action: input_text.set_value
+        continue_on_error: true
+        target: { entity_id: input_text.musik_verlauf }
+        data:
+          value: >
+            {% set alt = states('input_text.musik_verlauf') %}
+            {% set alt = [] if alt in ['unknown', 'unavailable', ''] else alt.split(' · ') %}
+            {% set n = (titel | default(uri) | string)[:40] %}
+            {{ ([n] + alt | reject('eq', n) | list)[:10] | join(' · ') | truncate(250, true, '') }}
+
+  musik_eintrag_spielen:
+    alias: "Musik: Listeneintrag spielen"
+    icon: mdi:play-box
+    mode: restart
+    fields:
+      name: { name: Name, required: true, selector: { text: } }
+      beschreibung: { name: "Beschreibung (typ|uri)", selector: { text: } }
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+      lautstaerke: { name: Start-Lautstärke, selector: { number: { min: 0.05, max: 1, step: 0.05 } } }
+    variables:
+      teile: "{{ (beschreibung | default('')).split('|') }}"
+      gueltig: "{{ teile | count == 2 and teile[0] in ['playlist', 'artist', 'album', 'track', 'radio'] }}"
+    sequence:
+      - action: script.musik_liste
+        data:
+          uri: "{{ teile[1] if gueltig else name }}"
+          typ: "{{ teile[0] if gueltig else 'playlist' }}"
+          titel: "{{ name }}"
+          raum: "{{ raum | default('') }}"
+          lautstaerke: "{{ lautstaerke | default(0.25) }}"
+
+  musik_liste_per_name:
+    alias: "Musik: Listeneintrag per Name spielen"
+    icon: mdi:playlist-play
+    mode: restart
+    fields:
+      name: { name: Name, required: true, selector: { text: } }
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+      lautstaerke: { name: Start-Lautstärke, selector: { number: { min: 0.05, max: 1, step: 0.05 } } }
+    sequence:
+      - action: todo.get_items
+        response_variable: listen
+        target:
+          entity_id: [todo.musik_morgen, todo.musik_chill, todo.musik_abend, todo.musik_deutsch,
+                      todo.musik_party, todo.musik_familie, todo.musik_radio]
+        data: { status: needs_action }
+      - variables:
+          treffer: >
+            {% set ns = namespace(t=none, f=none) %}
+            {% for eid, v in listen.items() %}{% for i in v['items'] %}
+              {% if ns.t is none and i.summary | lower == name | lower %}{% set ns.t = i %}{% endif %}
+              {% if ns.f is none and name | lower in i.summary | lower %}{% set ns.f = i %}{% endif %}
+            {% endfor %}{% endfor %}
+            {{ ns.t or ns.f }}
+      # gesperrt (Blacklist) → nicht spielen, stattdessen etwas Ähnliches (auch für feste Morgenmusik)
+      - if: "{% from 'musik.jinja' import gesperrt %}{{ treffer is mapping and gesperrt(treffer.summary) == 'True' }}"
+        then:
+          - action: script.musik_wunsch_abspielen
+            data: { wunsch: "Ähnliche Stimmung wie {{ treffer.summary }}, aber nicht {{ treffer.summary }}", raum: "{{ raum | default('') }}", lautstaerke: "{{ lautstaerke | default(0.25) }}" }
+          - variables: { antwort: { gefunden: false, gesperrt: true, name: "{{ treffer.summary }}" } }
+          - stop: "gesperrt"
+            response_variable: antwort
+      - if: "{{ treffer is mapping }}"
+        then:
+          - action: script.musik_eintrag_spielen
+            data: { name: "{{ treffer.summary }}", beschreibung: "{{ treffer.description | default('') }}", raum: "{{ raum | default('') }}", lautstaerke: "{{ lautstaerke | default(0.25) }}" }
+          - variables: { antwort: { gefunden: true, name: "{{ treffer.summary }}" } }
+        else:
+          - action: script.musik_wunsch_abspielen
+            data: { wunsch: "{{ name }}", raum: "{{ raum | default('') }}", lautstaerke: "{{ lautstaerke | default(0.25) }}" }
+          - variables: { antwort: { gefunden: false, name: "{{ name }}" } }
+      - stop: "ok"
+        response_variable: antwort
+
+  musik_listen_eintrag_aufloesen:
+    alias: "Musik: neuen Listeneintrag bei Spotify suchen"
+    icon: mdi:magnify
+    mode: queued
+    fields:
+      liste: { name: Liste, required: true, selector: { entity: { domain: todo } } }
+      name: { name: Eintrag, required: true, selector: { text: } }
+    variables:
+      ist_radio: "{{ liste == 'todo.musik_radio' }}"
+    sequence:
+      - action: music_assistant.search
+        response_variable: such
+        data:
+          config_entry_id: "{{ config_entry_id('media_player.ma_wohnzimmer') }}"
+          name: "{{ name }}"
+          media_type: "{{ ['radio'] if ist_radio else ['playlist', 'artist', 'album', 'track'] }}"
+          limit: 5
+      - variables:
+          n: "{{ name | lower }}"
+          ergebnis: >
+            {% set s = such %}
+            {% set pl = s.playlists | default([]) %}{% set ar = s.artists | default([]) %}
+            {% set al = s.albums | default([]) %}{% set tr = s.tracks | default([]) %}{% set ra = s.radio | default([]) %}
+            {% set ns = namespace(pe=[], ae=[]) %}
+            {% for x in pl if x.name | lower == n %}{% set ns.pe = ns.pe + [x] %}{% endfor %}
+            {% for x in ar if x.name | lower == n %}{% set ns.ae = ns.ae + [x] %}{% endfor %}
+            {% set pe = ns.pe %}{% set ae = ns.ae %}
+            {% if ist_radio and ra %}radio|{{ ra[0].uri }}
+            {% elif pe %}playlist|{{ pe[0].uri }}
+            {% elif ae %}artist|{{ ae[0].uri }}
+            {% elif pl %}playlist|{{ pl[0].uri }}
+            {% elif ar %}artist|{{ ar[0].uri }}
+            {% elif al %}album|{{ al[0].uri }}
+            {% elif tr %}track|{{ tr[0].uri }}
+            {% else %}nicht gefunden{% endif %}
+      - action: todo.update_item
+        target: { entity_id: "{{ liste }}" }
+        data: { item: "{{ name }}", description: "{{ ergebnis | trim }}" }
+
+automation:
+  - id: musik_listen_abgehakt_abspielen
+    alias: "Musiklisten: abgehakt = abspielen / neu = bei Spotify suchen"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [todo.musik_morgen, todo.musik_chill, todo.musik_abend, todo.musik_deutsch,
+                    todo.musik_party, todo.musik_familie, todo.musik_radio, todo.musik_suche]
+    conditions:
+      - "{{ trigger.from_state is not none and trigger.from_state.state not in ['unknown', 'unavailable']
+            and trigger.to_state.state not in ['unknown', 'unavailable'] }}"
+    actions:
+      - action: todo.get_items
+        response_variable: alle
+        target: { entity_id: "{{ trigger.entity_id }}" }
+      - variables:
+          items: "{{ alle[trigger.entity_id]['items'] }}"
+          erledigt: "{{ items | selectattr('status', 'eq', 'completed') | list }}"
+          neu: "{{ items | selectattr('status', 'eq', 'needs_action') | rejectattr('description', 'defined') | list
+                  + items | selectattr('status', 'eq', 'needs_action') | selectattr('description', 'defined')
+                    | selectattr('description', 'eq', '') | list }}"
+      # abgehakt → spielen, Haken wieder raus
+      - repeat:
+          for_each: "{{ erledigt }}"
+          sequence:
+            - action: todo.update_item
+              target: { entity_id: "{{ trigger.entity_id }}" }
+              data: { item: "{{ repeat.item.summary }}", status: needs_action }
+      - if: "{{ erledigt | count > 0 }}"
+        then:
+          - action: script.musik_eintrag_spielen
+            data:
+              name: "{{ erledigt[-1].summary }}"
+              beschreibung: "{{ erledigt[-1].description | default('') }}"
+      # neue Einträge ohne Treffer → suchen
+      - repeat:
+          for_each: "{{ neu }}"
+          sequence:
+            - action: script.musik_listen_eintrag_aufloesen
+              continue_on_error: true
+              data: { liste: "{{ trigger.entity_id }}", name: "{{ repeat.item.summary }}" }
+
+intent_script:
+  MorgenMusikSetzen:
+    description: "Legt fest, welche Musik morgens beim ersten Betreten des Wohnzimmers startet (Sender, Liste oder Überraschung)."
+    action:
+      - action: input_text.set_value
+        target: { entity_id: input_text.musik_morgen_auswahl }
+        data:
+          value: >
+            {% set a = morgenauswahl | default('') | trim %}
+            {{ 'Überraschung' if a | lower in ['überraschung', 'überrasch mich', 'claude', 'irgendwas', 'was passendes', 'zufall']
+               else (a[:1] | upper ~ a[1:]) }}
+    speech:
+      text: >
+        {% set a = states('input_text.musik_morgen_auswahl') %}
+        {{ 'Morgens suche ich jetzt jeden Tag etwas Passendes aus.' if a == 'Überraschung'
+           else 'Morgens läuft jetzt ' ~ a ~ '.' }}
+  MorgenLautstaerke:
+    description: "Startlautstärke der Morgenmusik in Prozent einstellen."
+    action:
+      - action: input_number.set_value
+        target: { entity_id: input_number.musik_morgens_lautstaerke }
+        data: { value: "{{ [[morgenprozent | int(20), 5] | max, 50] | min / 100 }}" }
+    speech:
+      text: "Die Morgenmusik startet jetzt mit {{ [[morgenprozent | int(20), 5] | max, 50] | min }} Prozent."
+  MorgenMusikAbfrage:
+    speech:
+      text: >
+        {% set a = states('input_text.musik_morgen_auswahl') %}
+        Morgens läuft {{ 'jeden Tag etwas anderes, von mir ausgesucht' if a in ['Überraschung', '', 'unknown'] else a }},
+        mit {{ (states('input_number.musik_morgens_lautstaerke') | float(0) * 100) | round(0) | int }} Prozent Lautstärke,
+        {{ 'beim ersten Betreten des Wohnzimmers.' if is_state('input_boolean.musik_morgens_automatisch', 'on') else 'aber die Automatik ist gerade aus.' }}
+  MusikListeHinzu:
+    action:
+      - action: todo.add_item
+        target: { entity_id: "{{ musikkategorie }}" }
+        data: { item: "{{ musikeintrag[:1] | upper }}{{ musikeintrag[1:] }}" }
+    speech:
+      text: "{{ musikeintrag[:1] | upper }}{{ musikeintrag[1:] }} steht jetzt in der Musikliste {{ state_attr(musikkategorie, 'friendly_name') | replace('Musik ', '') }}. Ich suche den passenden Treffer raus."
+  MusikListeEntfernen:
+    action:
+      - action: todo.get_items
+        response_variable: l
+        target: { entity_id: "{{ musikkategorie }}" }
+      - variables:
+          treffer: >
+            {% set ns = namespace(t='') %}
+            {% for i in l[musikkategorie]['items'] if ns.t == '' and (i.summary | lower == musikeintrag | lower or musikeintrag | lower in i.summary | lower) %}
+              {% set ns.t = i.summary %}{% endfor %}{{ ns.t }}
+      - condition: template
+        value_template: "{{ treffer != '' }}"
+      - action: todo.remove_item
+        target: { entity_id: "{{ musikkategorie }}" }
+        data: { item: "{{ treffer }}" }
+    speech:
+      text: "{{ musikeintrag }} ist aus der Musikliste {{ state_attr(musikkategorie, 'friendly_name') | replace('Musik ', '') }} entfernt."
+  MusikListeSpielen:
+    action:
+      - action: script.musik_liste_per_name
+        response_variable: erg
+        data:
+          name: "{{ musikeintrag }}"
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+      - stop: ok
+        response_variable: erg
+    speech:
+      text: "{{ action_response.name ~ ' steht auf der Blacklist, ich spiele etwas Ähnliches.' if action_response is mapping and action_response.gesperrt is defined else (action_response.name ~ ' läuft.' if action_response is mapping and action_response.gefunden else 'Ich suche ' ~ musikeintrag ~ '.') }}"
+  MusikListenAnzeigen:
+    action:
+      - action: todo.get_items
+        response_variable: l
+        target:
+          entity_id: >
+            {{ [musikkategorie] if musikkategorie is defined else
+               ['todo.musik_morgen', 'todo.musik_chill', 'todo.musik_abend', 'todo.musik_deutsch',
+                'todo.musik_party', 'todo.musik_familie', 'todo.musik_radio'] }}
+        data: { status: needs_action }
+      - variables:
+          antwort:
+            text: >
+              {% for eid, v in l.items() %}{{ state_attr(eid, 'friendly_name') | replace('Musik ', '') }}:
+              {{ v['items'] | map(attribute='summary') | join(', ') }}. {% endfor %}
+      - stop: ok
+        response_variable: antwort
+    speech:
+      text: "{{ action_response.text if action_response is mapping else 'Hier sind eure Musiklisten.' }}"

@@ -1,0 +1,150 @@
+# Urlaub: Anwesenheitssimulation
+# Schalter "Urlaub jetzt" -> abends/morgens bei Dunkelheit gehen zufällig Lichter an und aus,
+# bei Bewegung in der Einfahrt nachts zusätzlich Carport und Kinderzimmer.
+
+input_boolean:
+  urlaub:
+    name: "Urlaub jetzt"
+    icon: mdi:airplane
+
+input_datetime:
+  urlaub_rueckkehr:
+    name: "Urlaub: Rückkehr"
+    has_date: true
+    has_time: true
+    icon: mdi:home-import-outline
+
+automation:
+  # Fußbodenheizung: im Urlaub auf Standby, 24 h vor Rückkehr bzw. bei Urlaub-Ende wieder Komfort
+  - id: urlaub_heizung
+    alias: "Urlaub: Heizung absenken / Komfort"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.urlaub
+        to: ["on", "off"]
+        id: schalter
+      - trigger: time_pattern
+        minutes: "5"
+        id: rueckkehr
+    variables:
+      zonen: [climate.heizung_wohnzimmer, climate.heizung_obergeschoss_3, climate.heizung_bad_yvonne_2,
+              climate.heizung_flur_eg, climate.heizung_ankleide, climate.heizung_hwr, climate.heizung_sauna]
+      vorheizen: >
+        {% set r = states('input_datetime.urlaub_rueckkehr') | as_datetime %}
+        {{ r is not none and now().replace(tzinfo=None) >= r.replace(tzinfo=None) - timedelta(hours=24) }}
+    actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'schalter' and is_state('input_boolean.urlaub', 'on') and not vorheizen }}"
+            sequence:
+              - action: climate.set_preset_mode
+                continue_on_error: true
+                target: { entity_id: "{{ zonen }}" }
+                data: { preset_mode: standby }
+          - conditions: "{{ trigger.id == 'schalter' and is_state('input_boolean.urlaub', 'off') }}"
+            sequence:
+              - action: climate.set_preset_mode
+                continue_on_error: true
+                target: { entity_id: "{{ zonen }}" }
+                data: { preset_mode: comfort }
+          - conditions: "{{ trigger.id == 'rueckkehr' and is_state('input_boolean.urlaub', 'on') and vorheizen
+                            and not is_state_attr('climate.heizung_wohnzimmer', 'preset_mode', 'comfort') }}"
+            sequence:
+              - action: climate.set_preset_mode
+                continue_on_error: true
+                target: { entity_id: "{{ zonen }}" }
+                data: { preset_mode: comfort }
+
+  - id: urlaub_simulation
+    alias: "Urlaub: zufällig Licht an"
+    mode: parallel
+    max: 4
+    triggers:
+      - trigger: time_pattern
+        minutes: "/10"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "on"
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      - condition: or
+        conditions:
+          - condition: time
+            after: "16:00:00"
+            before: "23:30:00"
+          - condition: time
+            after: "06:30:00"
+            before: "07:45:00"
+      # nur bei etwa jedem dritten Durchlauf, damit es nicht regelmäßig wirkt
+      - condition: template
+        value_template: "{{ range(100) | random < 35 }}"
+    variables:
+      licht: >
+        {{ ['light.dimmer_wohnzimmer_esstisch', 'light.dimmer_kuche_decke_2', 'light.dimmer_wand_sofa',
+            'light.licht_eg_flur_decke', 'light.dimmer_flur_og', 'light.licht_lara_decke',
+            'light.licht_malte_decke', 'light.licht_schlafzimmer', 'light.og_bad_tobias_decke',
+            'light.licht_decke'] | random }}
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: "{{ licht }}"
+      - delay:
+          minutes: "{{ range(8, 41) | random }}"
+      - action: light.turn_off
+        target:
+          entity_id: "{{ licht }}"
+
+  - id: urlaub_einfahrt
+    alias: "Urlaub: Bewegung Einfahrt nachts"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.einfahrt_bewegung
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "on"
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id:
+            - light.licht_decke
+            - light.licht_lara_decke
+            - light.licht_malte_decke
+      - delay: "00:05:00"
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.licht_decke
+            - light.licht_lara_decke
+            - light.licht_malte_decke
+
+  - id: urlaub_nachts_aus
+    alias: "Urlaub: nachts alles aus"
+    triggers:
+      - trigger: time
+        at: "23:45:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "on"
+    actions:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.dimmer_wohnzimmer_esstisch
+            - light.dimmer_kuche_decke_2
+            - light.dimmer_wand_sofa
+            - light.licht_eg_flur_decke
+            - light.dimmer_flur_og
+            - light.licht_lara_decke
+            - light.licht_malte_decke
+            - light.licht_schlafzimmer
+            - light.og_bad_tobias_decke
+            - light.licht_decke

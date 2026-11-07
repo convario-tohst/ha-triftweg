@@ -1,0 +1,212 @@
+# Musik-Quelle merken + "Das gefällt mir" (Änderungswünsche 25.10.)
+# - Jeder Musikstart über Music Assistant (Sprache, Dashboard, Automatik) wird mitgeschrieben:
+#   Quelle (Liste/Sender/Suche), wer gestartet hat, Uhrzeit → input_text.musik_quelle_<raum>
+# - "Das Lied gefällt mir" → laufender Titel auf todo.musik_lieblingslieder (mit Quelle) + Favorit in Music Assistant
+# - "Woher kommt die Musik?" → Antwort aus der gemerkten Quelle
+# - "Spiel unsere Lieblingslieder" → alle gespeicherten Titel gemischt
+# Musik, die direkt in der Spotify-App gestartet wird, kennt HA nicht ("unbekannt").
+
+input_text:
+  musik_quelle_wohnzimmer:
+    name: "Musik-Quelle Wohnzimmer"
+    max: 255
+  musik_quelle_schlafzimmer:
+    name: "Musik-Quelle Schlafzimmer"
+    max: 255
+
+template:
+  - sensor:
+      - name: "Musik Quelle Text"
+        unique_id: musik_quelle_text
+        icon: mdi:playlist-music
+        state: >
+          {% set ns = namespace(t=[]) %}
+          {% for raum, p in [('Wohnzimmer', 'media_player.ma_wohnzimmer'), ('Schlafzimmer', 'media_player.ma_schlafzimmer')] %}
+            {% if is_state(p, 'playing') %}
+              {% set q = states('input_text.musik_quelle_' ~ raum | lower) %}
+              {% set q = q | from_json if q.startswith('{') else {} %}
+              {% set ns.t = ns.t + [raum ~ ': ' ~ (state_attr(p, 'media_title') or '?') ~ ' – aus ' ~ (q.n | default('unbekannt (Spotify-App?)'))
+                 ~ ((', gestartet von ' ~ q.w ~ ' um ' ~ q.z) if q.w is defined else '')] %}
+            {% endif %}
+          {% endfor %}
+          {{ (ns.t | join(' | ') or 'Gerade läuft keine Musik.')[:250] }}
+
+automation:
+  - id: musik_quelle_merken
+    alias: "Musik: Quelle und Starter merken"
+    mode: queued
+    max: 10
+    triggers:
+      - trigger: event
+        event_type: call_service
+        event_data: { domain: music_assistant, service: play_media }
+    variables:
+      sd: "{{ trigger.event.data.service_data | default({}) }}"
+      liste_gespielt: "{{ sd.media_id is not string }}"
+      mid: "{{ (sd.media_id if sd.media_id is string else (sd.media_id | first | default(''))) | string }}"
+      spieler: "{{ ([sd.entity_id] if sd.entity_id is string else (sd.entity_id | default([]) | list)) }}"
+      uid: "{{ trigger.event.context.user_id }}"
+      sprache: >
+        {% set g = states('input_text.sprache_gespraech').split('|') %}
+        {{ g | count == 2 and (as_timestamp(now()) - g[1] | float(0)) < 90 }}
+      wer: >
+        {% set p = (states.person | selectattr('attributes.user_id', 'eq', uid) | map(attribute='name') | list) if uid else [] %}
+        {{ (p | first) if p else ('Sprache' if sprache else 'Automatik') }}
+    actions:
+      - action: todo.get_items
+        continue_on_error: true
+        response_variable: listen
+        target:
+          entity_id: [todo.musik_morgen, todo.musik_chill, todo.musik_abend, todo.musik_deutsch,
+                      todo.musik_party, todo.musik_familie, todo.musik_radio, todo.musik_suche]
+      - variables:
+          name: >
+            {% set ns = namespace(n='') %}
+            {% if liste_gespielt %}{% set ns.n = 'Lieblingslieder' if sd.media_id | count > 1 else '' %}{% endif %}
+            {% for eid, v in (listen | default({})).items() if not ns.n %}
+              {% for i in v['items'] if not ns.n and mid and (mid in (i.description | default('')) or i.summary | lower == mid | lower) %}
+                {% set ns.n = i.summary ~ ' (Liste ' ~ eid | replace('todo.musik_', '') | capitalize ~ ')' %}
+              {% endfor %}
+            {% endfor %}
+            {% if not ns.n %}
+              {% set ns.n = ('Suche „' ~ mid ~ '“') if mid and '://' not in mid else ('Spotify ' ~ (mid.split('://')[1].split('/')[0] if '://' in mid else 'Auswahl')) %}
+            {% endif %}
+            {{ ns.n[:120] }}
+      - repeat:
+          for_each: "{{ spieler }}"
+          sequence:
+            - action: input_text.set_value
+              target:
+                entity_id: "input_text.musik_quelle_{{ 'schlafzimmer' if 'schlafzimmer' in repeat.item else 'wohnzimmer' }}"
+              data:
+                value: "{{ {'n': name, 'u': mid[:80], 'w': wer, 'z': now().strftime('%H:%M')} | to_json | truncate(250, true, '') }}"
+
+script:
+  musik_gefaellt_mir:
+    alias: "Musik: Gefällt mir (Titel speichern)"
+    description: >
+      Speichert den gerade laufenden Titel auf die Liste "Lieblingslieder" (mit der Quelle, aus der er kam) und
+      markiert ihn als Favorit. Für "das Lied gefällt mir", "speicher das Lied", "super Song", "auf die Lieblingsliste".
+      Optional raum (Wohnzimmer/Schlafzimmer), sonst der Raum, in dem gerade Musik läuft.
+    icon: mdi:heart-plus
+    mode: single
+    fields:
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer] } } }
+    variables:
+      p: >
+        {% set r = raum | default('') %}
+        {% if r == 'Schlafzimmer' %}media_player.ma_schlafzimmer
+        {% elif r == 'Wohnzimmer' %}media_player.ma_wohnzimmer
+        {% elif is_state('media_player.ma_wohnzimmer', 'playing') %}media_player.ma_wohnzimmer
+        {% else %}media_player.ma_schlafzimmer{% endif %}
+      raumname: "{{ 'Schlafzimmer' if 'schlafzimmer' in p else 'Wohnzimmer' }}"
+      titel: "{{ state_attr(p, 'media_title') or '' }}"
+      kuenstler: "{{ state_attr(p, 'media_artist') or '' }}"
+      cid: "{{ state_attr(p, 'media_content_id') or '' }}"
+      q_raw: "{{ states('input_text.musik_quelle_' ~ raumname | lower) }}"
+      quelle: "{{ (q_raw | from_json).n if q_raw.startswith('{') else 'unbekannt' }}"
+      eintrag: "{{ (titel ~ (' – ' ~ kuenstler if kuenstler else ''))[:120] }}"
+      adresse: "{{ cid if '://track/' in cid else 'suche:' ~ titel ~ ' ' ~ kuenstler }}"
+    sequence:
+      - if: "{{ not titel or not is_state(p, 'playing') }}"
+        then:
+          - variables: { r: { ansage: "Gerade läuft keine Musik, die ich speichern kann." } }
+          - stop: ""
+            response_variable: r
+      - action: todo.get_items
+        response_variable: vorhanden
+        target: { entity_id: todo.musik_lieblingslieder }
+      - if: "{{ vorhanden['todo.musik_lieblingslieder']['items'] | selectattr('summary', 'eq', eintrag) | list | count > 0 }}"
+        then:
+          - variables: { r: { ansage: "„{{ titel }}“ ist schon auf euren Lieblingsliedern." } }
+          - stop: ""
+            response_variable: r
+      - action: todo.add_item
+        target: { entity_id: todo.musik_lieblingslieder }
+        data:
+          item: "{{ eintrag }}"
+          description: "track|{{ adresse }}|Quelle: {{ quelle }}|{{ now().strftime('%d.%m.%Y') }}"
+      # zusätzlich Favorit in Music Assistant (landet je nach Einstellung auch in Spotify)
+      - action: button.press
+        continue_on_error: true
+        target:
+          entity_id: "{{ 'button.schlafzimmer_1fdd_aktuellen_titel_favorisieren' if raumname == 'Schlafzimmer' else 'button.wohnzimmer_aktuellen_titel_favorisieren' }}"
+      - variables:
+          r:
+            ansage: >
+              „{{ titel }}“{{ ' von ' ~ kuenstler if kuenstler else '' }} ist auf euren Lieblingsliedern{{ (', kam aus ' ~ quelle) if quelle != 'unbekannt' else '' }}.
+      - stop: ""
+        response_variable: r
+
+  musik_lieblingslieder_spielen:
+    alias: "Musik: Lieblingslieder spielen"
+    description: "Spielt alle Titel der Liste Lieblingslieder gemischt. Optional raum."
+    icon: mdi:heart-box
+    mode: single
+    fields:
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer] } } }
+    variables:
+      p: "{{ 'media_player.ma_schlafzimmer' if raum | default('') == 'Schlafzimmer' else 'media_player.ma_wohnzimmer' }}"
+    sequence:
+      - action: todo.get_items
+        response_variable: l
+        target: { entity_id: todo.musik_lieblingslieder }
+        data: { status: needs_action }
+      - variables:
+          titel: >
+            {% set ns = namespace(t=[]) %}
+            {% for i in l['todo.musik_lieblingslieder']['items'] %}
+              {% set a = (i.description | default('')).split('|') %}
+              {% set ns.t = ns.t + [a[1][6:] if a | count > 1 and a[1].startswith('suche:') else (a[1] if a | count > 1 else i.summary)] %}
+            {% endfor %}
+            {{ ns.t }}
+      - if: "{{ titel | count == 0 }}"
+        then:
+          - variables: { r: { ansage: "Auf euren Lieblingsliedern steht noch nichts. Sag bei einem Lied einfach: Das gefällt mir." } }
+          - stop: ""
+            response_variable: r
+      - action: media_player.shuffle_set
+        continue_on_error: true
+        target: { entity_id: "{{ p }}" }
+        data: { shuffle: true }
+      - action: music_assistant.play_media
+        target: { entity_id: "{{ p }}" }
+        data: { media_id: "{{ titel }}", media_type: track, enqueue: replace }
+      - variables: { r: { ansage: "Eure {{ titel | count }} Lieblingslieder laufen, gemischt." } }
+      - stop: ""
+        response_variable: r
+
+intent_script:
+  MusikGefaelltMir:
+    description: "Interner Schnellbefehl: laufenden Titel speichern (nicht selbst aufrufen)."
+    action:
+      - action: script.musik_gefaellt_mir
+        response_variable: erg
+      - stop: ""
+        response_variable: erg
+    speech:
+      text: "{{ action_response.ansage if action_response is mapping and action_response.ansage is defined else 'Gespeichert.' }}"
+  MusikLieblingslieder:
+    description: "Interner Schnellbefehl: Lieblingslieder spielen (nicht selbst aufrufen)."
+    action:
+      - action: script.musik_lieblingslieder_spielen
+        response_variable: erg
+        data: { raum: "{{ musikraum if musikraum is defined else '' }}" }
+      - stop: ""
+        response_variable: erg
+    speech:
+      text: "{{ action_response.ansage if action_response is mapping and action_response.ansage is defined else 'Lieblingslieder laufen.' }}"
+  MusikQuelle:
+    description: "Interner Schnellbefehl: woher kommt die Musik (nicht selbst aufrufen)."
+    speech:
+      text: >
+        {% set ns = namespace(t=[]) %}
+        {% for raum, p in [('Wohnzimmer', 'media_player.ma_wohnzimmer'), ('Schlafzimmer', 'media_player.ma_schlafzimmer')] if is_state(p, 'playing') %}
+          {% set q = states('input_text.musik_quelle_' ~ raum | lower) %}
+          {% set q = q | from_json if q.startswith('{') else {} %}
+          {% set k = state_attr(p, 'media_artist') %}
+          {% set ns.t = ns.t + ['Im ' ~ raum ~ ' läuft „' ~ (state_attr(p, 'media_title') or 'Musik') ~ '“' ~ (' von ' ~ k if k else '')
+             ~ (' aus ' ~ q.n if q.n is defined else ', die Quelle kenne ich nicht, vermutlich aus der Spotify-App')
+             ~ ((', gestartet von ' ~ (q.w.split(' ') | first) ~ ' um ' ~ q.z) if q.w is defined else '') ~ '.'] %}
+        {% endfor %}
+        {{ ns.t | join(' ') if ns.t else 'Gerade läuft keine Musik.' }}

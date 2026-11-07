@@ -1,0 +1,138 @@
+# Musik: Wohnzimmer/Küche (media_player.wohnzimmer) und Schlafzimmer (media_player.schlafzimmer)
+# Jeder Sender-Knopf übergibt seinen Raum direkt (Feld "raum"). Ohne Raum gilt input_select.musik_raum
+# (z. B. bei Sprachbefehlen). "Musik an" wählt nach Tageszeit: morgens Swiss Pop, abends Swiss Jazz, sonst Bremen NEXT.
+
+input_select:
+  musik_raum:
+    name: "Musik-Raum"
+    icon: mdi:speaker
+    options:
+      - Wohnzimmer
+      - Schlafzimmer
+      - Beide
+
+script:
+  musik_sender:
+    alias: "Musik: Sender abspielen"
+    mode: parallel
+    fields:
+      url: { name: Stream-URL, required: true, selector: { text: } }
+      titel: { name: Name, selector: { text: } }
+      lautstaerke: { name: Lautstärke, default: 0.25, selector: { number: { min: 0, max: 1, step: 0.05 } } }
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+    variables:
+      r: "{{ raum if raum is defined and raum else states('input_select.musik_raum') }}"
+      player: >
+        {% if r == 'Schlafzimmer' %}{{ ['media_player.schlafzimmer'] }}
+        {% elif r == 'Beide' %}{{ ['media_player.wohnzimmer', 'media_player.schlafzimmer'] }}
+        {% else %}{{ ['media_player.wohnzimmer'] }}{% endif %}
+      erreichbar: "{{ player | reject('is_state', ['unavailable', 'unknown']) | list }}"
+    sequence:
+      - if: "{{ erreichbar | count < player | count }}"
+        then:
+          - action: persistent_notification.create
+            data:
+              notification_id: musik_offline
+              title: "Lautsprecher offline"
+              message: >
+                {{ player | select('is_state', ['unavailable', 'unknown']) | map('state_attr', 'friendly_name') | join(', ') }}
+                ist nicht erreichbar (Strom/WLAN prüfen).
+      - condition: template
+        value_template: "{{ erreichbar | count > 0 }}"
+      - action: media_player.volume_set
+        continue_on_error: true
+        target: { entity_id: "{{ erreichbar }}" }
+        data: { volume_level: "{{ lautstaerke | default(0.25) }}" }
+      - action: media_player.play_media
+        target: { entity_id: "{{ erreichbar }}" }
+        data:
+          media_content_id: "{{ url }}"
+          media_content_type: music
+          extra: { title: "{{ titel | default('Radio') }}" }
+
+  musik_morgen:
+    alias: "Musik: Morning (Radio Swiss Pop)"
+    icon: mdi:weather-sunset-up
+    mode: parallel
+    fields: &raumfeld
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+    sequence:
+      - action: script.musik_sender
+        data: { url: "http://stream.srg-ssr.ch/m/rsp/mp3_128", titel: "Radio Swiss Pop", lautstaerke: 0.2, raum: "{{ raum | default('') }}" }
+
+  musik_dinner:
+    alias: "Musik: Dinner (Radio Swiss Jazz)"
+    icon: mdi:glass-wine
+    mode: parallel
+    fields: *raumfeld
+    sequence:
+      - action: script.musik_sender
+        data: { url: "http://stream.srg-ssr.ch/m/rsj/mp3_128", titel: "Radio Swiss Jazz", lautstaerke: 0.2, raum: "{{ raum | default('') }}" }
+
+  musik_bremen_next:
+    alias: "Musik: Bremen NEXT"
+    icon: mdi:radio
+    mode: parallel
+    fields: *raumfeld
+    sequence:
+      - action: script.musik_sender
+        data: { url: "https://icecast.radiobremen.de/rb/bremennext/live/mp3/128/stream.mp3", titel: "Bremen NEXT", lautstaerke: 0.25, raum: "{{ raum | default('') }}" }
+
+  musik_elektro:
+    alias: "Musik: Elektro (Sunshine Live) – Tobias"
+    icon: mdi:waveform
+    mode: parallel
+    fields: *raumfeld
+    sequence:
+      - action: script.musik_sender
+        data: { url: "http://stream.sunshine-live.de/live/mp3-192/stream.sunshine-live.de/", titel: "Sunshine Live", lautstaerke: 0.25, raum: "{{ raum | default('') }}" }
+
+  musik_hiphop:
+    alias: "Musik: HipHop (JAM FM) – Yvonne"
+    icon: mdi:microphone-variant
+    mode: parallel
+    fields: *raumfeld
+    sequence:
+      - action: script.musik_sender
+        data: { url: "http://stream.jam.fm/jamfm-live/mp3-128/radio-browser.info/", titel: "JAM FM", lautstaerke: 0.25, raum: "{{ raum | default('') }}" }
+
+  musik_an:
+    alias: "Musik an (nach Tageszeit)"
+    icon: mdi:music
+    mode: parallel
+    fields: *raumfeld
+    sequence:
+      - choose:
+          - conditions:
+              - condition: time
+                after: "05:00:00"
+                before: "10:30:00"
+            sequence:
+              - action: script.musik_morgen
+                data: { raum: "{{ raum | default('') }}" }
+          - conditions:
+              - condition: time
+                after: "17:30:00"
+                before: "23:00:00"
+            sequence:
+              - action: script.musik_dinner
+                data: { raum: "{{ raum | default('') }}" }
+        default:
+          - action: script.musik_bremen_next
+            data: { raum: "{{ raum | default('') }}" }
+
+  musik_aus:
+    alias: "Musik aus"
+    icon: mdi:music-off
+    mode: parallel
+    fields: *raumfeld
+    variables:
+      r: "{{ raum if raum is defined and raum else states('input_select.musik_raum') }}"
+    sequence:
+      - action: media_player.media_stop
+        continue_on_error: true
+        target:
+          entity_id: >
+            {% if r == 'Schlafzimmer' %}media_player.schlafzimmer
+            {% elif r == 'Beide' %}media_player.wohnzimmer, media_player.schlafzimmer
+            {% else %}media_player.wohnzimmer{% endif %}

@@ -1,0 +1,43 @@
+# Einfahrt: nachts bei Bewegung Licht in Küche und Wohnzimmer (abschaltbar)
+# Ring meldet nur "Bewegung" (keine Personenerkennung). Als "fremd" gilt Bewegung,
+# wenn in den letzten 10 Minuten niemand aus der Familie nach Hause gekommen ist.
+
+input_boolean:
+  einfahrt_licht_fremde:
+    name: "Einfahrt: Licht bei Fremden"
+    icon: mdi:account-alert
+
+automation:
+  - id: einfahrt_fremde_licht
+    alias: "Einfahrt: nachts Licht bei fremder Bewegung"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.einfahrt_bewegung
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.einfahrt_licht_fremde
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "off" # im Urlaub übernimmt packages/urlaub.yaml
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      - condition: template
+        value_template: >
+          {{ states.person | selectattr('state', 'eq', 'home')
+             | selectattr('last_changed', 'gt', now() - timedelta(minutes=10)) | list | count == 0 }}
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id:
+            - light.dimmer_kuche_decke_2
+            - light.dimmer_wohnzimmer_esstisch
+      - delay: "00:05:00"
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.dimmer_kuche_decke_2
+            - light.dimmer_wohnzimmer_esstisch

@@ -1,0 +1,127 @@
+# Lautstärke per Sprache sanft ändern (Wunsch Tobias 15.10.): kein Sprung, sondern in ~3 s hin faden.
+# Lokale Sätze ("Lautstärke auf 30", "lauter", "leiser", auch mit Raum) + Claude nutzt das Skript ebenfalls.
+# Gesprächsgedächtnis: der letzte Lautstärke-Befehl (Raum, Wert) wird 5 min gemerkt (input_text.sprache_kontext),
+# damit "wieder auf 20 %" / "auf 80 %" ohne Raum und ohne Rückfrage im selben Raum landet.
+
+input_text:
+  sprache_kontext:
+    name: "Sprache: letzter Befehl (Kontext)"
+    max: 255
+
+script:
+  lautstaerke_faden:
+    alias: "Lautstärke sanft ändern"
+    description: >
+      Ändert die Lautstärke eines Lautsprechers sanft (Fade über einige Sekunden) statt sprunghaft.
+      Immer verwenden, wenn jemand die Lautstärke ändern möchte. Felder: raum (Wohnzimmer, Schlafzimmer, Beide;
+      leer = zuletzt genannter Raum der letzten 5 Minuten, sonst Raum mit laufender Musik), ziel (0–100 Prozent)
+      ODER aenderung (z. B. +10 oder -10 Prozentpunkte).
+    icon: mdi:volume-vibrate
+    mode: parallel
+    fields:
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+      ziel: { name: Ziel in Prozent, selector: { number: { min: 0, max: 100 } } }
+      aenderung: { name: Änderung in Prozentpunkten, selector: { number: { min: -100, max: 100 } } }
+      dauer: { name: Dauer in Sekunden, default: 3, selector: { number: { min: 1, max: 20 } } }
+    variables:
+      k: >
+        {% set s = states('input_text.sprache_kontext') %}
+        {{ s | from_json if s.startswith('{') else {} }}
+      k_frisch: "{{ k.ts is defined and (as_timestamp(now()) - k.ts | float(0)) < 300 }}"
+      r: >
+        {% if raum is defined and raum %}{{ raum }}
+        {% elif k_frisch and k.raum is defined %}{{ k.raum }}
+        {% elif is_state('media_player.ma_schlafzimmer', 'playing') and not is_state('media_player.ma_wohnzimmer', 'playing') %}Schlafzimmer
+        {% else %}Wohnzimmer{% endif %}
+      player: >
+        {% if r == 'Schlafzimmer' %}{{ ['media_player.ma_schlafzimmer'] }}
+        {% elif r == 'Beide' %}{{ ['media_player.ma_wohnzimmer', 'media_player.ma_schlafzimmer'] }}
+        {% else %}{{ ['media_player.ma_wohnzimmer'] }}{% endif %}
+      schritte: 12
+    sequence:
+      - repeat:
+          for_each: "{{ player }}"
+          sequence:
+            - variables:
+                p: "{{ repeat.item }}"
+                start: "{{ state_attr(repeat.item, 'volume_level') | float(0.2) }}"
+                ende: >
+                  {% if ziel is defined and ziel not in [none, ''] %}{{ [[ziel | float / 100, 0] | max, 1] | min }}
+                  {% elif aenderung is defined and aenderung not in [none, ''] %}{{ [[start + aenderung | float / 100, 0] | max, 1] | min }}
+                  {% else %}{{ start }}{% endif %}
+            - repeat:
+                count: "{{ schritte }}"
+                sequence:
+                  - action: media_player.volume_set
+                    continue_on_error: true
+                    target: { entity_id: "{{ p }}" }
+                    data: { volume_level: "{{ (start + (ende - start) * repeat.index / schritte) | round(3) }}" }
+                  - delay:
+                      milliseconds: "{{ ((dauer | default(3) | float) * 1000 / schritte) | int }}"
+      # Kontext merken
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_kontext }
+        data:
+          value: >
+            {{ {'art': 'lautstaerke', 'raum': r,
+                'wert': ((state_attr(player[0], 'volume_level') | float(0)) * 100) | round(0) | int,
+                'text': 'Lautstärke ' ~ r ~ ' auf ' ~ (((state_attr(player[0], 'volume_level') | float(0)) * 100) | round(0) | int) ~ ' %',
+                'ts': as_timestamp(now()) | int} | to_json }}
+      - variables:
+          antwort: { text: "Lautstärke {{ ('im ' ~ r) if r != 'Beide' else 'überall' }} angepasst.", raum: "{{ r }}" }
+      - stop: ok
+        response_variable: antwort
+
+intent_script:
+  LautstaerkeSetzen:
+    description: "Interner Sprachbefehl für sanfte Lautstärkeänderung."
+    action:
+      - action: script.lautstaerke_faden
+        response_variable: erg
+        data:
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+          ziel: "{{ lautwert | int }}"
+      - stop: ok
+        response_variable: erg
+    speech:
+      text: "Lautstärke {{ ('im ' ~ action_response.raum) if action_response is mapping and action_response.raum not in ['Beide', none] else '' }} auf {{ lautwert | int }} Prozent."
+  LautstaerkeRelativ:
+    description: "Interner Sprachbefehl: lauter/leiser sanft."
+    action:
+      - action: script.lautstaerke_faden
+        data:
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+          aenderung: "{{ richtung | int }}"
+    speech:
+      text: "{{ 'Etwas lauter.' if richtung | int > 0 else 'Etwas leiser.' }}"
+  # "wieder auf 20 %", "auf 80 %", "Schlafzimmer 20 %": bezieht sich auf den letzten Befehl (5 min),
+  # sonst an Claude (mit Kontext)
+  KontextWert:
+    description: "Interner Folgebefehl ohne Gerät (bezieht sich auf den vorherigen Befehl)."
+    action:
+      - variables:
+          k: >
+            {% set s = states('input_text.sprache_kontext') %}
+            {{ s | from_json if s.startswith('{') else {} }}
+          frisch: "{{ k.ts is defined and (as_timestamp(now()) - k.ts | float(0)) < 300 }}"
+      - if: "{{ frisch and k.art == 'lautstaerke' }}"
+        then:
+          - action: script.lautstaerke_faden
+            response_variable: erg
+            data:
+              raum: "{{ musikraum if musikraum is defined else k.raum }}"
+              ziel: "{{ lautwert | int }}"
+          - variables: { r: { text: "Lautstärke {{ 'im ' ~ erg.raum }} auf {{ lautwert | int }} Prozent." } }
+        else:
+          - action: conversation.process
+            response_variable: antwort
+            data:
+              agent_id: conversation.claude_conversation
+              language: de
+              conversation_id: "haus_{{ (as_timestamp(now()) // 600) | int }}"
+              text: "{{ ('(Vorheriger Befehl: ' ~ k.text ~ ') ') if frisch and k.text is defined else '' }}auf {{ lautwert | int }} Prozent {{ ('im ' ~ musikraum) if musikraum is defined else '' }}"
+          - variables: { r: { text: "{{ antwort.response.speech.plain.speech | default('Was soll ich auf diesen Wert stellen?') }}" } }
+      - stop: ok
+        response_variable: r
+    speech:
+      text: "{{ action_response.text if action_response is mapping else 'Erledigt.' }}"

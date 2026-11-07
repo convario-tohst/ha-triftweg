@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "minor_version": 2,
+  "key": "core.label_registry",
+  "data": {
+    "labels": [
+      {
+        "color": "primary",
+        "description": null,
+        "icon": "mdi:ceiling-light",
+        "label_id": "prasenz_schlafzimmer",
+        "name": "Präsenz Schlafzimmer",
+        "created_at": "2025-03-20T18:52:07.448910+00:00",
+        "modified_at": "2025-03-20T18:52:07.448916+00:00"
+      }
+    ]
+  }
+}

@@ -1,0 +1,4816 @@
+[
+ {
+  "id": 1,
+  "type": "result",
+  "success": true,
+  "result": {
+   "title": "Home",
+   "views": [
+    {
+     "type": "sections",
+     "path": "default_view",
+     "title": "Home",
+     "icon": "mdi:home",
+     "max_columns": 3,
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.mull_nachste_abholung",
+       "name": "Müll",
+       "icon": "mdi:trash-can",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "brown"
+      },
+      {
+       "type": "entity",
+       "entity": "person.tobias_ohst",
+       "name": "Tobias",
+       "icon": "mdi:account",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "green"
+      },
+      {
+       "type": "entity",
+       "entity": "person.yvonne_ohst",
+       "name": "Yvonne",
+       "icon": "mdi:account",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "green"
+      },
+      {
+       "type": "entity",
+       "entity": "person.malte_ohst",
+       "name": "Malte",
+       "icon": "mdi:account",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "green"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_luftergeschwindigkeit",
+       "name": "Lüftung",
+       "icon": "mdi:fan",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "cyan"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_aussenluft",
+       "name": "Außen",
+       "icon": "mdi:thermometer",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "light-blue"
+      }
+     ],
+     "sections": [
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Heizung",
+         "secondary": "{% set z = ['climate.heizung_wohnzimmer','climate.heizung_obergeschoss_3','climate.heizung_bad_yvonne_2','climate.heizung_flur_eg','climate.heizung_ankleide','climate.heizung_hwr','climate.heizung_sauna'] %}Ø {{ (z | map('state_attr','current_temperature') | select('number') | list | average(0)) | round(1) }} °C · {{ z | select('is_state_attr','hvac_action','heating') | list | count }} heizen",
+         "icon": "mdi:radiator",
+         "icon_color": "deep-orange",
+         "badge_color": "grey",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_heizung', 'on') else 'mdi:chevron-down' }}",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_heizung"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_heizung",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "vertical-stack",
+          "cards": [
+           {
+            "type": "tile",
+            "entity": "climate.heizung_wohnzimmer",
+            "name": "Wohnen / Küche",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           },
+           {
+            "type": "tile",
+            "entity": "climate.heizung_obergeschoss_3",
+            "name": "Obergeschoss",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           },
+           {
+            "type": "tile",
+            "entity": "climate.heizung_bad_yvonne_2",
+            "name": "Bad Yvonne",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           },
+           {
+            "type": "tile",
+            "entity": "climate.heizung_flur_eg",
+            "name": "Flur EG",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           },
+           {
+            "type": "tile",
+            "entity": "climate.heizung_ankleide",
+            "name": "Ankleide",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           },
+           {
+            "type": "tile",
+            "entity": "climate.heizung_hwr",
+            "name": "HWR",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           },
+           {
+            "type": "tile",
+            "entity": "climate.heizung_sauna",
+            "name": "Sauna",
+            "color": "deep-orange",
+            "grid_options": {
+             "columns": "full"
+            },
+            "features": [
+             {
+              "type": "target-temperature"
+             }
+            ],
+            "features_position": "inline"
+           }
+          ]
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Zuhause",
+         "icon": "mdi:home-heart",
+         "heading_style": "title"
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.haus_abwesend",
+           "state": "on"
+          }
+         ],
+         "grid_options": {
+          "columns": "full"
+         },
+         "card": {
+          "type": "tile",
+          "entity": "input_boolean.haus_abwesend",
+          "name": "Abwesend – Rückkehr wird automatisch erkannt",
+          "icon": "mdi:home-export-outline",
+          "color": "red",
+          "features": [
+           {
+            "type": "toggle"
+           }
+          ],
+          "features_position": "inline"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.haus_verlassen",
+         "name": "Haus verlassen",
+         "color": "red",
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:exit-run",
+         "hide_state": true,
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.haus_verlassen",
+          "confirmation": {
+           "text": "Alle Lichter aus, Lüftung auf Abwesend, Musik/TV und Saunaofen aus?"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.haus_verlassen",
+          "confirmation": {
+           "text": "Alle Lichter aus, Lüftung auf Abwesend, Musik/TV und Saunaofen aus?"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "input_boolean.alles_an",
+         "name": "Alles an",
+         "color": "amber",
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:lightbulb-group",
+         "tap_action": {
+          "action": "toggle"
+         },
+         "icon_tap_action": {
+          "action": "toggle"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.alle_lichter_aus",
+         "name": "Alle Lichter aus",
+         "icon": "mdi:lightbulb-group-off",
+         "color": "blue-grey",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 6
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.alle_lichter_aus"
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.alle_lichter_aus"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "input_boolean.disco",
+         "name": "Disco",
+         "color": "pink",
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:party-popper",
+         "tap_action": {
+          "action": "toggle"
+         },
+         "icon_tap_action": {
+          "action": "toggle"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "input_boolean.urlaub",
+         "name": "Urlaub",
+         "color": "light-blue",
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:airplane",
+         "tap_action": {
+          "action": "toggle"
+         },
+         "icon_tap_action": {
+          "action": "toggle"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "input_boolean.einfahrt_licht_fremde",
+         "name": "Licht bei Fremden",
+         "icon": "mdi:account-alert",
+         "color": "orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "sensor.mull_nachste_abholung",
+         "name": "Nächste Müllabfuhr",
+         "color": "brown",
+         "grid_options": {
+          "columns": "full"
+         },
+         "icon": "mdi:trash-can"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Wetter",
+         "icon": "mdi:weather-partly-cloudy"
+        },
+        {
+         "type": "tile",
+         "entity": "weather.forecast_home",
+         "name": "Oldenburg",
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Windy",
+         "secondary": "Wind, Regen, Radar",
+         "icon": "mdi:weather-windy",
+         "icon_color": "light-blue",
+         "badge_color": "grey",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_wetter_karte', 'on') else 'mdi:chevron-down' }}",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_wetter_karte"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_wetter_karte",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "iframe",
+          "aspect_ratio": "110%",
+          "url": "https://embed.windy.com/embed2.html?lat=53.2&lon=8.2&detailLat=53.2&detailLon=8.2&zoom=8&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Ballonwetter",
+         "secondary": "{{ states('sensor.ballon_morgenfahrt')[:1] }} morgens · {{ states('sensor.ballon_abendfahrt')[:1] }} abends",
+         "icon": "mdi:airballoon",
+         "icon_color": "deep-orange",
+         "badge_color": "grey",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_ballon', 'on') else 'mdi:chevron-down' }}",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_ballon"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_ballon",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "vertical-stack",
+          "cards": [
+           {
+            "type": "markdown",
+            "content": "**Morgenfahrt:** {{ states('sensor.ballon_morgenfahrt') }}  \n<small>{{ state_attr('sensor.ballon_morgenfahrt', 'details') }}</small>\n\n**Abendfahrt:** {{ states('sensor.ballon_abendfahrt') }}  \n<small>{{ state_attr('sensor.ballon_abendfahrt', 'details') }}</small>\n\n**METAR EDDW:** `{{ states('sensor.metar_bremen') }}`\n\n**TAF EDDW:** `{{ state_attr('sensor.taf_bremen', 'rawTAF') }}`\n\n<small>Ampel: Boden ≤ 8 kt, Böen ≤ 12 kt, 750 m ≤ 20 kt, Regen ≤ 20 %, Sicht ≥ 5 km, CAPE < 100. Ersetzt kein offizielles Briefing (DWD pc_met).</small>"
+           },
+           {
+            "type": "iframe",
+            "aspect_ratio": "110%",
+            "url": "https://embed.windy.com/embed2.html?lat=53.2&lon=8.2&detailLat=53.2&detailLon=8.2&zoom=8&level=925h&overlay=wind&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"
+           }
+          ]
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Listen",
+         "icon": "mdi:format-list-checks"
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Haus & Garten",
+         "secondary": "{{ states('todo.haus_garten') }} offen",
+         "icon": "mdi:hammer-wrench",
+         "icon_color": "orange",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_haus', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_haus"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_haus",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.haus_garten",
+          "hide_completed": true
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Einkaufsliste",
+         "secondary": "{{ states('todo.einkaufsliste') }} offen",
+         "icon": "mdi:cart",
+         "icon_color": "green",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_einkauf', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_einkauf"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_einkauf",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "vertical-stack",
+          "cards": [
+           {
+            "type": "todo-list",
+            "entity": "todo.einkaufsliste",
+            "hide_completed": true
+           },
+           {
+            "type": "todo-list",
+            "entity": "todo.einkauf_vorschlage",
+            "title": "Vorschläge – abhaken zum Hinzufügen",
+            "hide_completed": true,
+            "hide_create": true
+           }
+          ]
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Abfallkalender",
+         "secondary": "{{ states('sensor.mull_nachste_abholung') }}",
+         "icon": "mdi:calendar",
+         "icon_color": "blue",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_kalender', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_kalender"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_kalender",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "calendar",
+          "entities": [
+           "calendar.abfallkalender"
+          ],
+          "initial_view": "listWeek"
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Archiv",
+         "secondary": "{{ states('todo.archiv_aufgaben') }} gelöschte Aufgaben – abhaken = wiederherstellen",
+         "icon": "mdi:archive-arrow-up",
+         "icon_color": "grey",
+         "badge_color": "grey",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_archiv', 'on') else 'mdi:chevron-down' }}",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_archiv"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_archiv",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.archiv_aufgaben",
+          "hide_create": true
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Änderungswünsche für Claude",
+         "secondary": "{{ states('todo.anderungswunsche') }} offen – per Sprache: „Änderungswunsch: …“",
+         "icon": "mdi:robot-happy-outline",
+         "icon_color": "deep-purple",
+         "badge_color": "grey",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_wuensche', 'on') else 'mdi:chevron-down' }}",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_wuensche"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_wuensche",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.anderungswunsche"
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Musik",
+         "icon": "mdi:music"
+        },
+        {
+         "type": "heading",
+         "heading": "Wohnzimmer & Küche",
+         "icon": "mdi:sofa",
+         "heading_style": "subtitle"
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_morgen",
+         "name": "Morning",
+         "icon": "mdi:weather-sunset-up",
+         "color": "amber",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_morgen",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_morgen",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_bremen_next",
+         "name": "Bremen NEXT",
+         "icon": "mdi:radio",
+         "color": "cyan",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_bremen_next",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_bremen_next",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_dinner",
+         "name": "Dinner",
+         "icon": "mdi:glass-wine",
+         "color": "deep-purple",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_dinner",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_dinner",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_elektro",
+         "name": "Elektro",
+         "icon": "mdi:waveform",
+         "color": "blue",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_elektro",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_elektro",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_hiphop",
+         "name": "HipHop",
+         "icon": "mdi:microphone-variant",
+         "color": "pink",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_hiphop",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_hiphop",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_aus",
+         "name": "Aus",
+         "icon": "mdi:music-off",
+         "color": "grey",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         }
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.wohnzimmer",
+         "name": "Wohnzimmer & Küche",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next"
+         ],
+         "collapsible_controls": false,
+         "fill_container": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "heading",
+         "heading": "Schlafzimmer",
+         "icon": "mdi:bed-king",
+         "heading_style": "subtitle"
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_morgen",
+         "name": "Morning",
+         "icon": "mdi:weather-sunset-up",
+         "color": "amber",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_morgen",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_morgen",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_bremen_next",
+         "name": "Bremen NEXT",
+         "icon": "mdi:radio",
+         "color": "cyan",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_bremen_next",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_bremen_next",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_dinner",
+         "name": "Dinner",
+         "icon": "mdi:glass-wine",
+         "color": "deep-purple",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_dinner",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_dinner",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_elektro",
+         "name": "Elektro",
+         "icon": "mdi:waveform",
+         "color": "blue",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_elektro",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_elektro",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_hiphop",
+         "name": "HipHop",
+         "icon": "mdi:microphone-variant",
+         "color": "pink",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_hiphop",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_hiphop",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_aus",
+         "name": "Aus",
+         "icon": "mdi:music-off",
+         "color": "grey",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.schlafzimmer",
+         "name": "Schlafzimmer",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next"
+         ],
+         "collapsible_controls": false,
+         "fill_container": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Lüftung",
+         "icon": "mdi:fan"
+        },
+        {
+         "type": "tile",
+         "entity": "fan.vallox",
+         "name": "Lüftung",
+         "vertical": false,
+         "features_position": "inline",
+         "features": [
+          {
+           "type": "fan-preset-modes",
+           "style": "dropdown",
+           "preset_modes": [
+            "Home",
+            "Away",
+            "Boost",
+            "Fireplace"
+           ]
+          }
+         ],
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Lüftung Details",
+         "secondary": "{{ states('sensor.vallox_aktuelles_profil') }} · {{ states('sensor.vallox_luftergeschwindigkeit') }} %",
+         "icon": "mdi:fan",
+         "icon_color": "cyan",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_lueftung', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_lueftung"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_lueftung",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "entities": [
+           {
+            "entity": "sensor.vallox_aktuelles_profil",
+            "name": "Profil"
+           },
+           {
+            "entity": "sensor.vallox_profildauer",
+            "name": "Profil endet in"
+           },
+           {
+            "entity": "sensor.vallox_luftergeschwindigkeit",
+            "name": "Lüfterdrehzahl"
+           },
+           {
+            "entity": "sensor.vallox_luftfeuchtigkeit",
+            "name": "Luftfeuchte Abluft"
+           },
+           {
+            "entity": "sensor.vallox_zuluft",
+            "name": "Zuluft"
+           },
+           {
+            "entity": "sensor.vallox_aussenluft",
+            "name": "Außenluft"
+           },
+           {
+            "entity": "sensor.vallox_verbleibende_zeit_fur_den_filter",
+            "name": "Filterwechsel fällig",
+            "format": "date"
+           },
+           {
+            "type": "divider"
+           },
+           {
+            "entity": "binary_sensor.bad_belegt",
+            "name": "Bad belegt"
+           },
+           {
+            "entity": "input_boolean.lueftung_bad_automatik",
+            "name": "Bad-Lüftung automatisch"
+           },
+           {
+            "entity": "input_number.lueftung_bad_dauer",
+            "name": "Boost-Dauer"
+           }
+          ]
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Einfahrt",
+         "icon": "mdi:cctv"
+        },
+        {
+         "type": "tile",
+         "entity": "light.einfahrt_licht",
+         "name": "Licht Einfahrt",
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Kamera",
+         "secondary": "Einfahrt",
+         "icon": "mdi:cctv",
+         "icon_color": "red",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_einfahrt', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_einfahrt"
+          }
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "conditional",
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_einfahrt",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "picture-entity",
+          "entity": "camera.einfahrt",
+          "show_name": false,
+          "show_state": false,
+          "camera_view": "auto",
+          "fit_mode": "cover"
+         },
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "sections",
+     "path": "zeiten",
+     "title": "Automatik",
+     "icon": "mdi:robot",
+     "max_columns": 3,
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "binary_sensor.freier_tag",
+       "name": "Heute frei",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "green"
+      }
+     ],
+     "sections": [
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Tag/Nacht & Zeiten",
+         "secondary": "{% set l = [\"input_boolean.tag_nacht_automatik\", \"automation.zeit_tag_nacht_eg_og\", \"automation.zeit_tag_manuell_flur_hell\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:theme-light-dark",
+         "icon_color": "deep-purple",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_zeiten', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_zeiten"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_zeiten",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "input_boolean.tag_nacht_automatik",
+            "name": "Tag/Nacht automatisch"
+           },
+           {
+            "entity": "switch.tag_nacht_eg",
+            "name": "Nachtmodus EG jetzt"
+           },
+           {
+            "entity": "switch.tag_nacht_og",
+            "name": "Nachtmodus OG jetzt"
+           },
+           {
+            "type": "section",
+            "label": "Einstellungen"
+           },
+           {
+            "entity": "binary_sensor.draussen_dunkel",
+            "name": "Draußen dunkel"
+           },
+           {
+            "entity": "sensor.helligkeit_aussen",
+            "name": "Helligkeit außen"
+           },
+           {
+            "entity": "input_number.nacht_lux_schwelle",
+            "name": "Nachtmodus unter (Lux)"
+           },
+           {
+            "entity": "input_datetime.nacht_eg_beginn",
+            "name": "Nacht EG frühestens ab"
+           },
+           {
+            "entity": "input_datetime.nacht_eg_ende",
+            "name": "Tag EG frühestens ab"
+           },
+           {
+            "entity": "input_datetime.nacht_og_beginn",
+            "name": "Nacht OG frühestens ab"
+           },
+           {
+            "entity": "input_datetime.nacht_og_ende",
+            "name": "Tag OG frühestens ab"
+           },
+           {
+            "type": "section",
+            "label": "Automationen"
+           },
+           {
+            "entity": "automation.zeit_tag_nacht_eg_og",
+            "name": "Tag/Nacht EG + OG schalten"
+           },
+           {
+            "entity": "automation.zeit_tag_manuell_flur_hell",
+            "name": "Tag manuell → Flur hell"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Präsenzmelder",
+         "secondary": "{% set l = [\"input_boolean.praesenz_zeitplan_automatik\", \"automation.malte_prasenz\", \"automation.prasenz_lara_stripe\", \"automation.prasenz_schlafzimmer\", \"automation.prasenz_eg_flur\", \"automation.gastebad_licht_nach_prasenz\", \"automation.sauna_licht_nach_prasenz\", \"automation.aussensauna_led_nach_prasenz\", \"automation.aussensauna_beleuchtung_nachts_dimmen\", \"automation.zeit_prasenzmelder_kinder_schlafzimmer\", \"automation.zeit_prasenzmelder_nach_neustart_nachholen\", \"automation.prasenz_beim_aktivieren_sofort_licht_wenn_jemand_da_ist\", \"automation.prasenz_raum_leer_licht_aus\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:motion-sensor",
+         "icon_color": "green",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_praesenz', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_praesenz"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_praesenz",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "input_boolean.praesenz_zeitplan_automatik",
+            "name": "Zeitplan Kinder & Schlafzimmer"
+           },
+           {
+            "type": "section",
+            "label": "Räume"
+           },
+           {
+            "entity": "automation.malte_prasenz",
+            "name": "Malte"
+           },
+           {
+            "entity": "automation.prasenz_lara_stripe",
+            "name": "Lara"
+           },
+           {
+            "entity": "automation.prasenz_schlafzimmer",
+            "name": "Schlafzimmer"
+           },
+           {
+            "entity": "automation.prasenz_eg_flur",
+            "name": "Flur EG (Stripe)"
+           },
+           {
+            "entity": "automation.gastebad_licht_nach_prasenz",
+            "name": "Gästebad"
+           },
+           {
+            "entity": "automation.sauna_licht_nach_prasenz",
+            "name": "Sauna (Decke, Wand, Stripe)"
+           },
+           {
+            "entity": "automation.aussensauna_led_nach_prasenz",
+            "name": "Außensauna (LED)"
+           },
+           {
+            "entity": "automation.aussensauna_beleuchtung_nachts_dimmen",
+            "name": "Außensauna: Beleuchtung dimmen"
+           },
+           {
+            "entity": "input_number.aussensauna_lux_schwelle",
+            "name": "Außensauna: nur unter (Lux)"
+           },
+           {
+            "entity": "input_number.aussensauna_hell_abend",
+            "name": "Außensauna: Helligkeit abends"
+           },
+           {
+            "entity": "input_number.aussensauna_hell_nacht",
+            "name": "Außensauna: Helligkeit nachts"
+           },
+           {
+            "type": "section",
+            "label": "Melder am Bus"
+           },
+           {
+            "entity": "select.melder_wohnzimmer",
+            "name": "Melder Wohnzimmer"
+           },
+           {
+            "entity": "select.melder_flur_eg",
+            "name": "Melder Flur EG"
+           },
+           {
+            "entity": "select.melder_bad_og",
+            "name": "Melder Bad OG"
+           },
+           {
+            "entity": "select.melder_sauna_aussen",
+            "name": "Melder Sauna außen"
+           },
+           {
+            "type": "section",
+            "label": "Zeiten"
+           },
+           {
+            "entity": "input_datetime.malte_schlafen",
+            "name": "Malte: aus ab"
+           },
+           {
+            "entity": "input_datetime.malte_aufstehen_schule",
+            "name": "Malte: an (Schultag)"
+           },
+           {
+            "entity": "input_datetime.malte_aufstehen_frei",
+            "name": "Malte: an (frei)"
+           },
+           {
+            "entity": "input_datetime.lara_schlafen",
+            "name": "Lara: aus ab"
+           },
+           {
+            "entity": "input_datetime.lara_aufstehen_schule",
+            "name": "Lara: an (Schultag)"
+           },
+           {
+            "entity": "input_datetime.lara_aufstehen_frei",
+            "name": "Lara: an (frei)"
+           },
+           {
+            "entity": "input_datetime.schlafzimmer_schlafen",
+            "name": "Schlafzimmer: aus ab"
+           },
+           {
+            "entity": "input_datetime.schlafzimmer_aufstehen_schule",
+            "name": "Schlafzimmer: an (Arbeitstag)"
+           },
+           {
+            "entity": "input_datetime.schlafzimmer_aufstehen_frei",
+            "name": "Schlafzimmer: an (frei)"
+           },
+           {
+            "type": "section",
+            "label": "Hintergrund"
+           },
+           {
+            "entity": "automation.zeit_prasenzmelder_kinder_schlafzimmer",
+            "name": "Zeitplan ausführen"
+           },
+           {
+            "entity": "automation.zeit_prasenzmelder_nach_neustart_nachholen",
+            "name": "Nach Neustart nachholen"
+           },
+           {
+            "entity": "automation.prasenz_beim_aktivieren_sofort_licht_wenn_jemand_da_ist",
+            "name": "Beim Aktivieren sofort Licht"
+           },
+           {
+            "entity": "automation.prasenz_raum_leer_licht_aus",
+            "name": "Raum leer → Licht aus"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Licht & Szenen",
+         "secondary": "{% set l = [\"automation.kuche_stripe_folgt_szene\", \"automation.bad_yvonne_led_leiste_folgt_deckenlicht\", \"automation.eg_yvonne_bad_spiegel_nach_30_minuten_aus\", \"automation.spiegellicht_gastebad_30_minuten_aus\", \"automation.alles_an_einschalten_vorherigen_zustand_wiederherstellen\", \"automation.disco_an_aus\", \"automation.malte_led_profil_gewechselt\", \"automation.malte_led_aus_profil_stoppen\", \"automation.led_streifen_stromversorgung_immer_an\", \"automation.dosen_wohnzimmer_abschaltung_melden\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:lightbulb-group",
+         "icon_color": "amber",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_licht', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_licht"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_licht",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "automation.kuche_stripe_folgt_szene",
+            "name": "Küchen-Stripe folgt Szene"
+           },
+           {
+            "entity": "automation.bad_yvonne_led_leiste_folgt_deckenlicht",
+            "name": "Bad Yvonne: LED folgt Decke"
+           },
+           {
+            "entity": "automation.eg_yvonne_bad_spiegel_nach_30_minuten_aus",
+            "name": "Bad Yvonne: Spiegel nach 30 min aus"
+           },
+           {
+            "entity": "automation.spiegellicht_gastebad_30_minuten_aus",
+            "name": "Gästebad: Spiegel nach 30 min aus"
+           },
+           {
+            "entity": "automation.alles_an_einschalten_vorherigen_zustand_wiederherstellen",
+            "name": "Alles an / zurück"
+           },
+           {
+            "entity": "automation.disco_an_aus",
+            "name": "Disco-Modus"
+           },
+           {
+            "entity": "automation.malte_led_profil_gewechselt",
+            "name": "Malte LED: Profile"
+           },
+           {
+            "entity": "automation.malte_led_aus_profil_stoppen",
+            "name": "Malte LED: aus stoppt Profil"
+           },
+           {
+            "entity": "automation.led_streifen_stromversorgung_immer_an",
+            "name": "LED-Netzteile immer an"
+           },
+           {
+            "entity": "switch.dosen_wohnzimmer",
+            "name": "Dosen Wohnzimmer"
+           },
+           {
+            "entity": "automation.dosen_wohnzimmer_abschaltung_melden",
+            "name": "Dosen-Abschaltung melden"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Außen & Einfahrt",
+         "secondary": "{% set l = [\"automation.aussenlicht_an_bei_dunkelheit\", \"automation.aussenlicht_aus_zur_uhrzeit_oder_bei_helligkeit\", \"input_boolean.einfahrt_licht_fremde\", \"automation.einfahrt_nachts_licht_bei_fremder_bewegung\", \"automation.aussen_licht_bei_ankunft\", \"automation.aussen_ankunftslicht_aus_timer\", \"automation.aussen_kameralampen_an_lassen\", \"input_boolean.kinder_draussen\", \"automation.aussen_bewegung_im_garten_kinder_draussen\", \"automation.aussen_licht_fur_kinder_draussen\", \"automation.aussen_kinder_draussen_beendet_timer\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:outdoor-lamp",
+         "icon_color": "orange",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_aussen', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_aussen"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_aussen",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "automation.aussenlicht_an_bei_dunkelheit",
+            "name": "Außenlicht an bei Dunkelheit"
+           },
+           {
+            "entity": "automation.aussenlicht_aus_zur_uhrzeit_oder_bei_helligkeit",
+            "name": "Außenlicht aus (Uhrzeit/hell)"
+           },
+           {
+            "entity": "input_datetime.aussenlicht_aus",
+            "name": "Außenlicht aus um"
+           },
+           {
+            "entity": "input_number.giebel_helligkeit",
+            "name": "Giebel Grundhelligkeit"
+           },
+           {
+            "type": "section",
+            "label": "Bewegung & Ankunft"
+           },
+           {
+            "entity": "input_boolean.einfahrt_licht_fremde",
+            "name": "Einfahrt: Licht bei Fremden"
+           },
+           {
+            "entity": "automation.einfahrt_nachts_licht_bei_fremder_bewegung",
+            "name": "Einfahrt: nachts Licht bei Bewegung"
+           },
+           {
+            "entity": "automation.aussen_licht_bei_ankunft",
+            "name": "Licht bei Ankunft"
+           },
+           {
+            "entity": "automation.aussen_ankunftslicht_aus_timer",
+            "name": "Ankunftslicht aus (Timer)"
+           },
+           {
+            "entity": "input_number.ankunft_minuten",
+            "name": "Ankunft: Nachlauf"
+           },
+           {
+            "entity": "automation.aussen_kameralampen_an_lassen",
+            "name": "Kameralampen an lassen"
+           },
+           {
+            "type": "section",
+            "label": "Kinder draußen"
+           },
+           {
+            "entity": "input_boolean.kinder_draussen",
+            "name": "Kinder draußen (jetzt)"
+           },
+           {
+            "entity": "automation.aussen_bewegung_im_garten_kinder_draussen",
+            "name": "Bewegung im Garten erkennen"
+           },
+           {
+            "entity": "automation.aussen_licht_fur_kinder_draussen",
+            "name": "Licht für Kinder draußen"
+           },
+           {
+            "entity": "automation.aussen_kinder_draussen_beendet_timer",
+            "name": "Beenden (Timer)"
+           },
+           {
+            "entity": "input_number.kinder_draussen_minuten",
+            "name": "Nachlauf"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Heizung, Lüftung & Sauna",
+         "secondary": "{% set l = [\"input_boolean.lueftung_bad_automatik\", \"automation.luftung_boost_bei_badbenutzung\", \"automation.heizung_lange_abwesend_standby\", \"automation.saunaofen_aus_nach_zeit\", \"automation.urlaub_heizung_absenken_komfort\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:thermostat",
+         "icon_color": "red",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_klima', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_klima"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_klima",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "input_boolean.lueftung_bad_automatik",
+            "name": "Bad-Lüftung automatisch"
+           },
+           {
+            "entity": "automation.luftung_boost_bei_badbenutzung",
+            "name": "Lüftung Boost bei Badbenutzung"
+           },
+           {
+            "entity": "input_number.lueftung_bad_dauer",
+            "name": "Boost-Dauer"
+           },
+           {
+            "entity": "automation.heizung_lange_abwesend_standby",
+            "name": "Heizung: lange abwesend → Standby"
+           },
+           {
+            "entity": "input_number.heizung_abwesend_stunden",
+            "name": "Standby nach Abwesenheit von"
+           },
+           {
+            "entity": "automation.saunaofen_aus_nach_zeit",
+            "name": "Saunaofen nach 2 h aus"
+           },
+           {
+            "entity": "automation.urlaub_heizung_absenken_komfort",
+            "name": "Urlaub: Heizung absenken/Komfort"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Abwesenheit & Urlaub",
+         "secondary": "{% set l = [\"input_boolean.haus_verlassen_automatisch\", \"automation.anwesenheit_haus_verlassen_automatisch\", \"input_boolean.haus_abwesend\", \"automation.anwesenheit_ruckkehr_erkannt\", \"input_boolean.urlaub\", \"automation.urlaub_zufallig_licht_an\", \"automation.urlaub_nachts_alles_aus\", \"automation.urlaub_bewegung_einfahrt_nachts\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:airplane",
+         "icon_color": "blue",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_abwesend', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_abwesend"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_abwesend",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "input_boolean.haus_verlassen_automatisch",
+            "name": "Haus verlassen automatisch"
+           },
+           {
+            "entity": "binary_sensor.jemand_im_haus",
+            "name": "Jemand im Haus (Handys/Bewegung)"
+           },
+           {
+            "entity": "automation.anwesenheit_haus_verlassen_automatisch",
+            "name": "Auto-Verlassen ausführen"
+           },
+           {
+            "entity": "input_boolean.haus_abwesend",
+            "name": "Haus abwesend (jetzt)"
+           },
+           {
+            "entity": "automation.anwesenheit_ruckkehr_erkannt",
+            "name": "Rückkehr erkennen"
+           },
+           {
+            "type": "section",
+            "label": "Urlaub"
+           },
+           {
+            "entity": "input_boolean.urlaub",
+            "name": "Urlaub jetzt"
+           },
+           {
+            "entity": "input_datetime.urlaub_rueckkehr",
+            "name": "Rückkehr (Heizung 24 h vorher)"
+           },
+           {
+            "entity": "automation.urlaub_zufallig_licht_an",
+            "name": "Anwesenheit simulieren"
+           },
+           {
+            "entity": "automation.urlaub_nachts_alles_aus",
+            "name": "Nachts alles aus"
+           },
+           {
+            "entity": "automation.urlaub_bewegung_einfahrt_nachts",
+            "name": "Bewegung Einfahrt nachts"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Ring & Kameras",
+         "secondary": "{% set l = [\"input_boolean.ring_ruhemodus\", \"input_boolean.ring_ruhezeit_automatik\", \"automation.ring_ruhemodus_an_aus_lautstarken\", \"automation.ring_ruhezeit_automatisch_wenn_jemand_zu_hause\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:doorbell-video",
+         "icon_color": "cyan",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_ring', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_ring"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_ring",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "input_boolean.ring_ruhemodus",
+            "name": "Ruhemodus (stumm)"
+           },
+           {
+            "entity": "input_boolean.ring_ruhezeit_automatik",
+            "name": "Ruhezeit automatisch"
+           },
+           {
+            "entity": "input_datetime.ring_ruhe_beginn",
+            "name": "Ruhezeit von"
+           },
+           {
+            "entity": "input_datetime.ring_ruhe_ende",
+            "name": "Ruhezeit bis"
+           },
+           {
+            "entity": "input_number.ring_lautstaerke_normal",
+            "name": "Normal-Lautstärke"
+           },
+           {
+            "type": "section",
+            "label": "Bewegungserkennung"
+           },
+           {
+            "entity": "switch.front_door_bewegungserkennung",
+            "name": "Haustür"
+           },
+           {
+            "entity": "switch.vordereingang_bewegungserkennung",
+            "name": "Vordereingang"
+           },
+           {
+            "entity": "switch.einfahrt_bewegungserkennung",
+            "name": "Einfahrt"
+           },
+           {
+            "entity": "switch.mulltonne_bewegungserkennung",
+            "name": "Mülltonne"
+           },
+           {
+            "entity": "switch.wohnzimmer_bewegungserkennung",
+            "name": "Carport innen"
+           },
+           {
+            "entity": "switch.carport_hinten_bewegungserkennung",
+            "name": "Carport hinten"
+           },
+           {
+            "entity": "switch.vorraum_bewegungserkennung",
+            "name": "Vorraum"
+           },
+           {
+            "entity": "switch.flur_bewegungserkennung",
+            "name": "Flur"
+           },
+           {
+            "entity": "switch.mobil_bewegungserkennung",
+            "name": "Wohnzimmer"
+           },
+           {
+            "entity": "switch.schlafzimmer_bewegungserkennung",
+            "name": "Schlafzimmer"
+           },
+           {
+            "type": "section",
+            "label": "Kameralicht"
+           },
+           {
+            "entity": "light.einfahrt_licht",
+            "name": "Einfahrt"
+           },
+           {
+            "entity": "light.mulltonne_licht",
+            "name": "Mülltonne"
+           },
+           {
+            "type": "section",
+            "label": "Automationen"
+           },
+           {
+            "entity": "automation.ring_ruhemodus_an_aus_lautstarken",
+            "name": "Ruhemodus → Lautstärken"
+           },
+           {
+            "entity": "automation.ring_ruhezeit_automatisch_wenn_jemand_zu_hause",
+            "name": "Ruhezeit ausführen"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Benachrichtigungen & Listen",
+         "secondary": "{% set l = [\"automation.mull_erinnerung_vorabend\", \"automation.mull_zweite_erinnerung\", \"automation.mull_erinnerung_am_abholtag\", \"automation.mull_erledigt_gedruckt\", \"automation.mull_status_nach_abholtag_zurucksetzen\", \"input_boolean.whatsapp_tobias\", \"input_boolean.whatsapp_yvonne\", \"input_boolean.whatsapp_malte\", \"automation.einkauf_vorschlage_taglich_neu\", \"automation.einkauf_vorschlag_abgehakt_einkaufsliste\", \"automation.aufgaben_geloschte_ins_archiv\", \"automation.aufgaben_aus_archiv_wiederherstellen\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:bell-ring",
+         "icon_color": "pink",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_info', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_info"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_info",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "automation.mull_erinnerung_vorabend",
+            "name": "Müll: Vorabend"
+           },
+           {
+            "entity": "input_datetime.muell_erinnerung_vorabend",
+            "name": "um"
+           },
+           {
+            "entity": "automation.mull_zweite_erinnerung",
+            "name": "Müll: zweite Erinnerung"
+           },
+           {
+            "entity": "input_datetime.muell_erinnerung_spaet",
+            "name": "um"
+           },
+           {
+            "entity": "automation.mull_erinnerung_am_abholtag",
+            "name": "Müll: Abholtag morgens"
+           },
+           {
+            "entity": "input_datetime.muell_erinnerung_morgens",
+            "name": "um"
+           },
+           {
+            "entity": "automation.mull_erledigt_gedruckt",
+            "name": "Müll: Erledigt-Knopf"
+           },
+           {
+            "entity": "automation.mull_status_nach_abholtag_zurucksetzen",
+            "name": "Müll: Status zurücksetzen"
+           },
+           {
+            "type": "section",
+            "label": "WhatsApp"
+           },
+           {
+            "entity": "input_boolean.whatsapp_tobias",
+            "name": "an Tobias"
+           },
+           {
+            "entity": "input_boolean.whatsapp_yvonne",
+            "name": "an Yvonne"
+           },
+           {
+            "entity": "input_boolean.whatsapp_malte",
+            "name": "an Malte"
+           },
+           {
+            "type": "section",
+            "label": "Listen"
+           },
+           {
+            "entity": "automation.einkauf_vorschlage_taglich_neu",
+            "name": "Einkauf: Vorschläge täglich neu"
+           },
+           {
+            "entity": "automation.einkauf_vorschlag_abgehakt_einkaufsliste",
+            "name": "Einkauf: Vorschlag → Liste"
+           },
+           {
+            "entity": "automation.aufgaben_geloschte_ins_archiv",
+            "name": "Aufgaben: Gelöschte ins Archiv"
+           },
+           {
+            "entity": "automation.aufgaben_aus_archiv_wiederherstellen",
+            "name": "Aufgaben: aus Archiv zurück"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Musik & Sonstiges",
+         "secondary": "{% set l = [\"input_boolean.musik_morgens_automatisch\", \"input_number.musik_morgens_lautstaerke\", \"automation.musik_morgens_automatisch_starten\", \"automation.musiklisten_abgehakt_abspielen_neu_bei_spotify_suchen\", \"automation.musik_wunsch_im_textfeld_sofort_abspielen\", \"automation.ring_stumm_bis_wieder_laut\"] %}{{ l | select('is_state', 'on') | list | count }} von {{ l | count }} aktiv",
+         "icon": "mdi:music",
+         "icon_color": "grey",
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_auto_system', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "fill_container": true,
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_auto_system"
+          }
+         },
+         "hold_action": {
+          "action": "none"
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_auto_system",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "entities",
+          "state_color": true,
+          "show_header_toggle": false,
+          "entities": [
+           {
+            "entity": "input_boolean.musik_morgens_automatisch",
+            "name": "Musik morgens automatisch"
+           },
+           {
+            "entity": "input_number.musik_morgens_lautstaerke",
+            "name": "Morgens: Lautstärke"
+           },
+           {
+            "entity": "automation.musik_morgens_automatisch_starten",
+            "name": "Morgens starten (05:30–10:30, 1× täglich)"
+           },
+           {
+            "entity": "automation.musiklisten_abgehakt_abspielen_neu_bei_spotify_suchen",
+            "name": "Musiklisten: Haken = abspielen"
+           },
+           {
+            "entity": "automation.musik_wunsch_im_textfeld_sofort_abspielen",
+            "name": "Musikwunsch sofort abspielen"
+           },
+           {
+            "entity": "automation.ring_stumm_bis_wieder_laut"
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "sections",
+     "path": "eg",
+     "title": "EG",
+     "max_columns": 3,
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_luftergeschwindigkeit",
+       "name": "Lüftung",
+       "icon": "mdi:fan",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "cyan"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.temperatur_wohnzimmer",
+       "name": "Wohnen",
+       "icon": "mdi:thermometer",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "orange"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.temperatur_flur_eg",
+       "name": "Flur",
+       "icon": "mdi:thermometer",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "orange"
+      }
+     ],
+     "sections": [
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Wohnen & Küche",
+         "icon": "mdi:sofa",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_wohnzimmer",
+         "name": "Heizung",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_kuche_decke_2",
+         "name": "Küche Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_wohnzimmer_esstisch",
+         "name": "Esstisch",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_wand_sofa",
+         "name": "Wand Sofa",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.wled_kuche",
+         "name": "Küche Stripe",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "icon": "mdi:led-strip-variant",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "custom:mushroom-chips-card",
+         "alignment": "center",
+         "grid_options": {
+          "columns": "full"
+         },
+         "chips": [
+          {
+           "type": "template",
+           "icon": "mdi:sofa",
+           "content": "Relax",
+           "icon_color": "red",
+           "tap_action": {
+            "action": "perform-action",
+            "perform_action": "scene.turn_on",
+            "target": {
+             "entity_id": "scene.relax"
+            }
+           }
+          },
+          {
+           "type": "template",
+           "icon": "mdi:chef-hat",
+           "content": "Kochen",
+           "icon_color": "orange",
+           "tap_action": {
+            "action": "perform-action",
+            "perform_action": "scene.turn_on",
+            "target": {
+             "entity_id": "scene.kochen"
+            }
+           }
+          },
+          {
+           "type": "template",
+           "icon": "mdi:silverware-fork-knife",
+           "content": "Dinner",
+           "icon_color": "purple",
+           "tap_action": {
+            "action": "perform-action",
+            "perform_action": "scene.turn_on",
+            "target": {
+             "entity_id": "scene.dinner"
+            }
+           }
+          },
+          {
+           "type": "template",
+           "icon": "mdi:party-popper",
+           "content": "Party",
+           "icon_color": "pink",
+           "tap_action": {
+            "action": "perform-action",
+            "perform_action": "scene.turn_on",
+            "target": {
+             "entity_id": "scene.party"
+            }
+           }
+          },
+          {
+           "type": "template",
+           "icon": "mdi:power",
+           "content": "Aus",
+           "icon_color": "grey",
+           "tap_action": {
+            "action": "perform-action",
+            "perform_action": "scene.turn_on",
+            "target": {
+             "entity_id": "scene.aus"
+            }
+           }
+          }
+         ]
+        },
+        {
+         "type": "tile",
+         "entity": "cover.wohnzimmer_rolladen",
+         "name": "Rollladen Wohnzimmer",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "cover.kuche_rolladen",
+         "name": "Rollladen Küche",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "select.melder_wohnzimmer",
+         "name": "Präsenzmelder",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "features": [
+          {
+           "type": "select-options"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Flur",
+         "icon": "mdi:door",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_flur_eg",
+         "name": "Heizung",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_eg_flur_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.wled_2",
+         "name": "Stripe",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "icon": "mdi:led-strip-variant",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.tag_nacht_eg",
+         "name": "Nachtmodus",
+         "icon": "mdi:weather-night",
+         "color": "deep-purple",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "select.melder_flur_eg",
+         "name": "Präsenzmelder",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "features": [
+          {
+           "type": "select-options"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Bad Yvonne",
+         "icon": "mdi:shower",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_bad_yvonne_2",
+         "name": "Heizung",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_yvonne_bad",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_malte",
+         "name": "Spiegel",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:mirror"
+        },
+        {
+         "type": "tile",
+         "entity": "light.bad_yvonne",
+         "name": "LED-Leiste",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full",
+          "rows": 2
+         },
+         "icon": "mdi:led-strip-variant",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "cover.bad_yvonne_rolladen",
+         "name": "Rollladen",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Gästebad",
+         "icon": "mdi:toilet",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.gastebad_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.eg_gastebad_spiegel",
+         "name": "Spiegel",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:mirror"
+        },
+        {
+         "type": "tile",
+         "entity": "binary_sensor.prasenz_gastebad",
+         "name": "Präsenz",
+         "color": "green",
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:motion-sensor"
+        },
+        {
+         "type": "tile",
+         "entity": "sensor.temperatur_gastebad",
+         "name": "Temperatur",
+         "color": "orange",
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:thermometer"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Ankleide",
+         "icon": "mdi:hanger",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_ankleide",
+         "name": "Heizung",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.ankleide_yvonne_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.ankleide_yvonne_wand",
+         "name": "Wand",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "icon": "mdi:wall-sconce",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "HWR",
+         "icon": "mdi:washing-machine",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_hwr",
+         "name": "Heizung",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_sauna_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full",
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "sections",
+     "path": "og",
+     "title": "OG",
+     "max_columns": 3,
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_luftergeschwindigkeit",
+       "name": "Lüftung",
+       "icon": "mdi:fan",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "cyan"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.temperatur_og",
+       "name": "Ist OG",
+       "icon": "mdi:thermometer",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "orange"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.sollwert_og",
+       "name": "Soll OG",
+       "icon": "mdi:thermostat",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "red"
+      }
+     ],
+     "sections": [
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Flur OG",
+         "icon": "mdi:stairs",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_obergeschoss_3",
+         "name": "Heizung (ganzes OG)",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_flur_og",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.nachtlicht_flur_malte",
+         "name": "Nachtlicht",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         },
+         "icon": "mdi:weather-night"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.tag_nacht_og",
+         "name": "Nachtmodus",
+         "icon": "mdi:weather-night",
+         "color": "deep-purple",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Schlafzimmer",
+         "icon": "mdi:bed-king",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.schlafzimmer_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_schlafzimmer",
+         "name": "Wand",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "icon": "mdi:wall-sconce",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "cover.schlafzimmer_rollladen",
+         "name": "Rollladen",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "automation.prasenz_schlafzimmer",
+         "name": "Präsenzmelder",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "heading",
+         "heading": "Musik",
+         "icon": "mdi:music",
+         "heading_style": "subtitle"
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_morgen",
+         "name": "Morning",
+         "icon": "mdi:weather-sunset-up",
+         "color": "amber",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_morgen",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_morgen",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_bremen_next",
+         "name": "Bremen NEXT",
+         "icon": "mdi:radio",
+         "color": "cyan",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_bremen_next",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_bremen_next",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_dinner",
+         "name": "Dinner",
+         "icon": "mdi:glass-wine",
+         "color": "deep-purple",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_dinner",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_dinner",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_elektro",
+         "name": "Elektro",
+         "icon": "mdi:waveform",
+         "color": "blue",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_elektro",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_elektro",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_hiphop",
+         "name": "HipHop",
+         "icon": "mdi:microphone-variant",
+         "color": "pink",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_hiphop",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_hiphop",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_aus",
+         "name": "Aus",
+         "icon": "mdi:music-off",
+         "color": "grey",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 4,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         }
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.schlafzimmer",
+         "name": "Musik",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next"
+         ],
+         "collapsible_controls": false,
+         "fill_container": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Malte",
+         "icon": "mdi:soccer",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_malte_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full",
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "custom:mushroom-light-card",
+         "entity": "light.licht_malte_stripe_2",
+         "name": "LED-Streifen",
+         "icon": "mdi:led-strip-variant",
+         "use_light_color": true,
+         "show_brightness_control": true,
+         "show_color_control": true,
+         "collapsible_controls": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "input_select.malte_led_profil",
+         "name": "LED-Profil",
+         "icon": "mdi:palette",
+         "color": "pink",
+         "features": [
+          {
+           "type": "select-options"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "cover.malte_rollladen_links",
+         "name": "Rollladen links",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "cover.malte_rollladen_rechts",
+         "name": "Rollladen rechts",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "automation.malte_prasenz",
+         "name": "Präsenzmelder",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Lara",
+         "icon": "mdi:flower",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_lara_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.wled",
+         "name": "Stripe",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "icon": "mdi:led-strip-variant",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "cover.lara_rollladen",
+         "name": "Rollladen",
+         "color": "indigo",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "cover-open-close"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "automation.prasenz_lara_stripe",
+         "name": "Präsenzmelder",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Bad OG",
+         "icon": "mdi:bathtub",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.og_bad_tobias_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full",
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "select.melder_bad_og",
+         "name": "Präsenzmelder",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "features": [
+          {
+           "type": "select-options"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Ankleide Tobias",
+         "icon": "mdi:tshirt-crew",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_ankleidezimmer_tobi",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full",
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "sections",
+     "path": "ausen",
+     "title": "Außen",
+     "max_columns": 3,
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_aussenluft",
+       "name": "Außen",
+       "icon": "mdi:thermometer",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "light-blue"
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.helligkeit_aussen",
+       "name": "Helligkeit",
+       "icon": "mdi:brightness-5",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "color": "yellow"
+      }
+     ],
+     "sections": [
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Licht außen",
+         "icon": "mdi:outdoor-lamp",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "input_boolean.kinder_draussen",
+         "name": "Kinder draußen",
+         "icon": "mdi:human-child",
+         "color": "green",
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "timer.kinder_draussen",
+         "name": "Licht bleibt noch",
+         "icon": "mdi:timer-sand",
+         "color": "green",
+         "grid_options": {
+          "columns": 6
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "timer.ankunft",
+         "name": "Ankunftslicht",
+         "icon": "mdi:home-import-outline",
+         "color": "orange",
+         "grid_options": {
+          "columns": 6
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_aussenbeleuchtung_giebel",
+         "name": "Giebel",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.aussenbeleuchtung_garten",
+         "name": "Garten",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_decke",
+         "name": "Carport",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "light.einfahrt_licht",
+         "name": "Einfahrt (Ring)",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "light.dimmer_aussenbeleuchtung_sauna",
+         "name": "Sauna außen",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full",
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "select.melder_sauna_aussen",
+         "name": "Melder Sauna außen",
+         "icon": "mdi:motion-sensor",
+         "color": "green",
+         "features": [
+          {
+           "type": "select-options"
+          }
+         ],
+         "features_position": "inline",
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Sauna",
+         "icon": "mdi:hot-tub",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "climate.heizung_sauna",
+         "name": "Heizung",
+         "color": "deep-orange",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "target-temperature"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.saunaofen",
+         "name": "Saunaofen",
+         "icon": "mdi:fire",
+         "color": "red",
+         "grid_options": {
+          "columns": "full"
+         },
+         "features": [
+          {
+           "type": "toggle"
+          }
+         ],
+         "features_position": "inline"
+        },
+        {
+         "type": "tile",
+         "entity": "light.sauna_decke",
+         "name": "Decke",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        },
+        {
+         "type": "tile",
+         "entity": "light.licht_sauna_wand",
+         "name": "Wand",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": 6,
+          "rows": 2
+         },
+         "icon": "mdi:wall-sconce",
+         "features": [
+          {
+           "type": "light-brightness"
+          }
+         ],
+         "features_position": "bottom"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Werkstatt",
+         "icon": "mdi:hammer-wrench",
+         "heading_style": "title"
+        },
+        {
+         "type": "tile",
+         "entity": "light.werkstatt",
+         "name": "Licht",
+         "color": "amber",
+         "vertical": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Kamera Einfahrt",
+         "icon": "mdi:cctv",
+         "heading_style": "title"
+        },
+        {
+         "type": "picture-entity",
+         "entity": "camera.einfahrt",
+         "show_name": false,
+         "show_state": false,
+         "camera_view": "auto",
+         "fit_mode": "cover",
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "sections",
+     "max_columns": 4,
+     "title": "Musik",
+     "path": "musik",
+     "sections": [
+      {
+       "type": "grid",
+       "id": "musikwunsch",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Musikwunsch",
+         "icon": "mdi:robot-happy-outline"
+        },
+        {
+         "type": "markdown",
+         "text_only": true,
+         "content": "Wunsch eintippen (z. B. *entspannter Jazz*, *Die Ärzte*, *Café del Mar*) – Claude sucht es raus. In den Listen unten: **Haken = abspielen**, neue Einträge einfach unten eintippen. Per Sprache: „Füge Coldplay zur Musikliste Chill hinzu“, „Entferne Sax aus der Musikliste Abend“, „Spiele die Liste Café del Mar“, „Welche Musiklisten gibt es?“"
+        },
+        {
+         "type": "entities",
+         "show_header_toggle": false,
+         "state_color": false,
+         "entities": [
+          {
+           "entity": "input_text.musik_wunsch",
+           "name": "Wunsch"
+          },
+          {
+           "entity": "input_select.musik_raum",
+           "name": "Raum"
+          }
+         ]
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_ueberrasch_mich",
+         "name": "Überrasch mich",
+         "icon": "mdi:dice-5",
+         "color": "deep-orange",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 6,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_ueberrasch_mich",
+          "data": {}
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_ueberrasch_mich",
+          "data": {}
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_wunsch_aus_feld",
+         "name": "Nochmal suchen",
+         "icon": "mdi:play-circle",
+         "color": "green",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 6,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_wunsch_aus_feld",
+          "data": {}
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_wunsch_aus_feld",
+          "data": {}
+         }
+        },
+        {
+         "type": "markdown",
+         "text_only": true,
+         "content": "{% set t = states('input_text.musik_letzter_vorschlag') %}{% if t not in ['unknown', 'unavailable', ''] %}🎧 **{{ t }}**{% endif %}"
+        },
+        {
+         "type": "tile",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Music Assistant",
+         "icon": "mdi:music-box-multiple",
+         "color": "indigo",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 12,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/lovelace/music-assistant"
+         },
+         "icon_tap_action": {
+          "action": "navigate",
+          "navigation_path": "/lovelace/music-assistant"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Läuft gerade",
+         "icon": "mdi:speaker-multiple"
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Wohnzimmer & Küche",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next",
+          "shuffle"
+         ],
+         "collapsible_controls": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.ma_schlafzimmer",
+         "name": "Schlafzimmer",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next",
+          "shuffle"
+         ],
+         "collapsible_controls": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Morgen & Kaffee",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:coffee",
+         "icon_color": "amber",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_morgen', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_morgen"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_morgen",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_morgen",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Chill & Lounge",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:beach",
+         "icon_color": "cyan",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_chill', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_chill"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_chill",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_chill",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Abend & Dinner",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:glass-wine",
+         "icon_color": "deep-purple",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_abend', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_abend"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_abend",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_abend",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Deutsch",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:flag",
+         "icon_color": "red",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_deutsch', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_deutsch"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_deutsch",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_deutsch",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Party & Energie",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:party-popper",
+         "icon_color": "pink",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_party', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_party"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_party",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_party",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Familie & Unterwegs",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:human-male-female-child",
+         "icon_color": "green",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_kinder', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_kinder"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_kinder",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_familie",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "custom:mushroom-template-card",
+         "primary": "Radio",
+         "secondary": "Haken = abspielen · unten eigene ergänzen",
+         "icon": "mdi:radio",
+         "icon_color": "blue",
+         "fill_container": true,
+         "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_musik_radio', 'on') else 'mdi:chevron-down' }}",
+         "badge_color": "grey",
+         "grid_options": {
+          "columns": "full"
+         },
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "input_boolean.toggle",
+          "target": {
+           "entity_id": "input_boolean.dash_musik_radio"
+          }
+         }
+        },
+        {
+         "type": "conditional",
+         "grid_options": {
+          "columns": "full"
+         },
+         "conditions": [
+          {
+           "condition": "state",
+           "entity": "input_boolean.dash_musik_radio",
+           "state": "on"
+          }
+         ],
+         "card": {
+          "type": "todo-list",
+          "entity": "todo.musik_radio",
+          "hide_completed": true,
+          "hide_create": false
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Musik aus",
+         "icon": "mdi:music-off",
+         "heading_style": "subtitle"
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_aus",
+         "name": "Wohnzimmer",
+         "icon": "mdi:stop-circle",
+         "color": "grey",
+         "hide_state": true,
+         "vertical": true,
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Wohnzimmer"
+          }
+         },
+         "grid_options": {
+          "columns": 4,
+          "rows": 2
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_aus",
+         "name": "Schlafzimmer",
+         "icon": "mdi:stop-circle",
+         "color": "grey",
+         "hide_state": true,
+         "vertical": true,
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Schlafzimmer"
+          }
+         },
+         "grid_options": {
+          "columns": 4,
+          "rows": 2
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "script.musik_aus",
+         "name": "Überall",
+         "icon": "mdi:stop-circle",
+         "color": "grey",
+         "hide_state": true,
+         "vertical": true,
+         "tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Beide"
+          }
+         },
+         "icon_tap_action": {
+          "action": "perform-action",
+          "perform_action": "script.musik_aus",
+          "data": {
+           "raum": "Beide"
+          }
+         },
+         "grid_options": {
+          "columns": 4,
+          "rows": 2
+         }
+        }
+       ]
+      }
+     ],
+     "cards": [],
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_luftergeschwindigkeit",
+       "name": "Lüftung",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "icon": "mdi:fan",
+       "color": "cyan"
+      }
+     ]
+    },
+    {
+     "type": "sections",
+     "title": "Music Assistant",
+     "path": "music-assistant",
+     "icon": "mdi:music-box-multiple",
+     "max_columns": 3,
+     "sections": [
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Music Assistant",
+         "icon": "mdi:music-box-multiple"
+        },
+        {
+         "type": "markdown",
+         "text_only": true,
+         "content": "Spotify-Bibliothek, alle Radiosender, Suche, Warteschlange und Lautsprecher-Gruppen. **Öffnen** zeigt die volle Music-Assistant-Oberfläche; **Durchsuchen** blättert direkt in HA (funktioniert auch unterwegs in der App)."
+        },
+        {
+         "type": "tile",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Music Assistant öffnen",
+         "icon": "mdi:open-in-app",
+         "color": "deep-purple",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 12,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/d5369777_music_assistant"
+         },
+         "icon_tap_action": {
+          "action": "navigate",
+          "navigation_path": "/d5369777_music_assistant"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Durchsuchen → Wohnzimmer",
+         "icon": "mdi:folder-music",
+         "color": "indigo",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 6,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/media-browser/media_player.ma_wohnzimmer"
+         },
+         "icon_tap_action": {
+          "action": "navigate",
+          "navigation_path": "/media-browser/media_player.ma_wohnzimmer"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Durchsuchen → Schlafzimmer",
+         "icon": "mdi:folder-music",
+         "color": "indigo",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 6,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/media-browser/media_player.ma_schlafzimmer"
+         },
+         "icon_tap_action": {
+          "action": "navigate",
+          "navigation_path": "/media-browser/media_player.ma_schlafzimmer"
+         }
+        },
+        {
+         "type": "tile",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Musik-Seite (Listen & Wunsch)",
+         "icon": "mdi:playlist-music",
+         "color": "pink",
+         "hide_state": true,
+         "grid_options": {
+          "columns": 12,
+          "rows": 1
+         },
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/lovelace/musik"
+         },
+         "icon_tap_action": {
+          "action": "navigate",
+          "navigation_path": "/lovelace/musik"
+         }
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "cards": [
+        {
+         "type": "heading",
+         "heading": "Lautsprecher",
+         "icon": "mdi:speaker-multiple"
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.ma_wohnzimmer",
+         "name": "Wohnzimmer & Küche",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next",
+          "shuffle",
+          "repeat"
+         ],
+         "collapsible_controls": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        },
+        {
+         "type": "custom:mushroom-media-player-card",
+         "entity": "media_player.ma_schlafzimmer",
+         "name": "Schlafzimmer",
+         "icon": "mdi:speaker",
+         "use_media_info": true,
+         "show_volume_level": true,
+         "volume_controls": [
+          "volume_set",
+          "volume_mute",
+          "volume_buttons"
+         ],
+         "media_controls": [
+          "play_pause_stop",
+          "previous",
+          "next",
+          "shuffle",
+          "repeat"
+         ],
+         "collapsible_controls": false,
+         "grid_options": {
+          "columns": "full"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Kamera",
+     "path": "kamera",
+     "icon": "mdi:video",
+     "subview": true,
+     "badges": [
+      {
+       "type": "entity",
+       "entity": "conversation.home_assistant",
+       "name": "Sprechen",
+       "icon": "mdi:microphone",
+       "show_name": true,
+       "show_state": false,
+       "show_icon": true,
+       "color": "blue",
+       "tap_action": {
+        "action": "assist",
+        "start_listening": true
+       }
+      },
+      {
+       "type": "entity",
+       "entity": "sensor.vallox_luftergeschwindigkeit",
+       "name": "Lüftung",
+       "show_name": true,
+       "show_state": true,
+       "show_icon": true,
+       "icon": "mdi:fan",
+       "color": "cyan"
+      }
+     ],
+     "cards": [
+      {
+       "type": "grid",
+       "square": false,
+       "columns": 1,
+       "cards": [
+        {
+         "type": "entities",
+         "entities": [
+          {
+           "entity": "switch.flur_sirene",
+           "name": "Sirene"
+          },
+          {
+           "entity": "sensor.flur_batterie",
+           "name": "Batterie"
+          },
+          {
+           "entity": "binary_sensor.flur_bewegung",
+           "name": "Bewegung"
+          },
+          {
+           "entity": "sensor.flur_lautstarke_2",
+           "name": "Lautstärke"
+          },
+          {
+           "entity": "sensor.flur_letzte_aktivitat",
+           "name": "Letzte Aktivität"
+          },
+          {
+           "entity": "sensor.flur_letzte_bewegung",
+           "name": "Letzte Bewegung"
+          }
+         ],
+         "title": "Flur"
+        },
+        {
+         "type": "picture-entity",
+         "entity": "camera.flur"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "square": false,
+       "columns": 1,
+       "cards": [
+        {
+         "type": "entities",
+         "entities": [
+          {
+           "entity": "sensor.front_door_batterie",
+           "name": "Batterie"
+          },
+          {
+           "entity": "binary_sensor.front_door_bewegung",
+           "name": "Bewegung"
+          },
+          {
+           "entity": "binary_sensor.front_door_klingeln",
+           "name": "Klingeln"
+          },
+          {
+           "entity": "sensor.front_door_lautstarke",
+           "name": "Lautstärke"
+          },
+          {
+           "entity": "sensor.front_door_letzte_aktivitat",
+           "name": "Letzte Aktivität"
+          },
+          {
+           "entity": "sensor.front_door_letzte_bewegung",
+           "name": "Letzte Bewegung"
+          },
+          {
+           "entity": "sensor.front_door_letztes_klingeln",
+           "name": "Letztes Klingeln"
+          }
+         ],
+         "title": "Front Door"
+        },
+        {
+         "type": "picture-entity",
+         "entity": "camera.front_door"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "square": false,
+       "columns": 1,
+       "cards": [
+        {
+         "type": "entities",
+         "entities": [
+          {
+           "entity": "switch.keller_sirene",
+           "name": "Sirene"
+          },
+          {
+           "entity": "sensor.keller_batterie",
+           "name": "Batterie"
+          },
+          {
+           "entity": "binary_sensor.keller_bewegung",
+           "name": "Bewegung"
+          },
+          {
+           "entity": "sensor.keller_lautstarke",
+           "name": "Lautstärke"
+          },
+          {
+           "entity": "sensor.keller_letzte_aktivitat",
+           "name": "Letzte Aktivität"
+          },
+          {
+           "entity": "sensor.keller_letzte_bewegung",
+           "name": "Letzte Bewegung"
+          }
+         ],
+         "title": "Keller"
+        },
+        {
+         "type": "picture-entity",
+         "entity": "camera.keller"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "square": false,
+       "columns": 1,
+       "cards": [
+        {
+         "type": "entities",
+         "entities": [
+          {
+           "entity": "light.mulltonne_licht",
+           "name": "Licht"
+          },
+          {
+           "entity": "switch.mulltonne_sirene",
+           "name": "Sirene"
+          },
+          {
+           "entity": "sensor.mulltonne_batterie",
+           "name": "Batterie"
+          },
+          {
+           "entity": "binary_sensor.mulltonne_bewegung",
+           "name": "Bewegung"
+          },
+          {
+           "entity": "sensor.mulltonne_lautstarke",
+           "name": "Lautstärke"
+          },
+          {
+           "entity": "sensor.mulltonne_letzte_aktivitat",
+           "name": "Letzte Aktivität"
+          },
+          {
+           "entity": "sensor.mulltonne_letzte_bewegung",
+           "name": "Letzte Bewegung"
+          }
+         ],
+         "title": "Mülltonne"
+        },
+        {
+         "type": "picture-entity",
+         "entity": "camera.mulltonne"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "square": false,
+       "columns": 1,
+       "cards": [
+        {
+         "type": "entities",
+         "entities": [
+          {
+           "entity": "switch.wohnzimmer_sirene",
+           "name": "Sirene"
+          },
+          {
+           "entity": "sensor.wohnzimmer_batterie",
+           "name": "Batterie"
+          },
+          {
+           "entity": "binary_sensor.wohnzimmer_bewegung",
+           "name": "Bewegung"
+          },
+          {
+           "entity": "sensor.wohnzimmer_lautstarke",
+           "name": "Lautstärke"
+          },
+          {
+           "entity": "sensor.wohnzimmer_letzte_aktivitat",
+           "name": "Letzte Aktivität"
+          },
+          {
+           "entity": "sensor.wohnzimmer_letzte_bewegung",
+           "name": "Letzte Bewegung"
+          }
+         ],
+         "title": "Wohnzimmer"
+        },
+        {
+         "type": "picture-entity",
+         "entity": "camera.wohnzimmer"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,37 @@
+# Präsenz-Protokoll: jede Änderung der Raum-Präsenzen als CSV (/config/protokoll/praesenz_JJJJ-MM.csv),
+# bei "aus" mit Dauer der Anwesenheit. Grundlage, um Zeiten/Automationen zu verbessern (Auswertung durch Claude).
+
+shell_command:
+  praesenz_log: "python3 /config/claude_tools/praesenz_log.py '{{ raum }}' '{{ zustand }}' '{{ dauer }}'"
+
+automation:
+  - id: praesenz_protokoll
+    alias: "Präsenz: Protokoll schreiben"
+    mode: queued
+    max: 30
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id:
+          - binary_sensor.prasenz_wohnzimmer
+          - binary_sensor.prasenz_gastebad
+          - binary_sensor.prasenz_flur_og
+          - binary_sensor.praesenz_sauna_aussen
+          - binary_sensor.prasenz_hwr
+          - binary_sensor.prasenz_ankleide_tobias
+          - binary_sensor.prasenzmelder_og_malte_decke
+          - binary_sensor.prasenzmelder_og_lara_decke
+          - binary_sensor.prasenzmelder_og_schlafzimmer_decke
+          - binary_sensor.prasenzmelder_eg_flur_decke
+          - binary_sensor.prasenzmelder_sauna
+        from: ["on", "off"]
+        to: ["on", "off"]
+    actions:
+      - action: shell_command.praesenz_log
+        data:
+          raum: >
+            {{ trigger.to_state.name | replace('Präsenzmelder ', '') | replace('Präsenz ', '') | replace(' Decke', '') | replace("'", '') }}
+          zustand: "{{ 'an' if trigger.to_state.state == 'on' else 'aus' }}"
+          dauer: >
+            {{ ((trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds() | round(0)) | int
+               if trigger.to_state.state == 'off' else '' }}

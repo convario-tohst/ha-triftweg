@@ -1,0 +1,238 @@
+# Nutzung der 1-Wire-Raumwerte (Timberwolf): Bad-Lüftung nach Feuchte, Schimmel-/Feuchtewarnung, "Licht vergessen"
+# 1) Bad Yvonne + Gästebad: Boost, sobald die Feuchte deutlich über der Grundfeuchte liegt (Duschen),
+#    so lange, bis sie wieder fast unten ist. Grundfeuchte = 20-%-Perzentil der letzten 24 h.
+# 2) Warnung (Push an Tobias), wenn ein Raum lange zu feucht ist (Wohnräume > 65 % für 3 h, Bäder > 70 % für 4 h).
+# 3) Licht vergessen: Decken-/Wandlicht seit X min an, im Raum ist es hell (Wandsensor) und die Sonne steht hoch → aus.
+
+input_boolean:
+  bad_feuchte_boost_aktiv:
+    name: "Bad-Lüftung: Feuchte-Boost läuft"
+    icon: mdi:shower
+  licht_vergessen_automatik:
+    name: "Licht vergessen: automatisch aus"
+    icon: mdi:lightbulb-alert-outline
+
+input_number:
+  bad_feuchte_anstieg:
+    name: "Bad-Lüftung: Boost ab Grundfeuchte +"
+    icon: mdi:water-plus
+    min: 3
+    max: 20
+    step: 1
+    unit_of_measurement: "%"
+  licht_vergessen_lux:
+    name: "Licht vergessen: hell genug ab (Wandsensor)"
+    icon: mdi:brightness-7
+    min: 100
+    max: 2000
+    step: 50
+    unit_of_measurement: lx
+    mode: box
+  licht_vergessen_minuten:
+    name: "Licht vergessen: aus nach"
+    icon: mdi:timer-outline
+    min: 10
+    max: 120
+    step: 5
+    unit_of_measurement: min
+
+sensor:
+  - platform: statistics
+    name: "Feuchte Bad Yvonne Grundfeuchte"
+    unique_id: feuchte_bad_yvonne_grund
+    entity_id: sensor.feuchte_bad_yvonne
+    state_characteristic: percentile
+    percentile: 20
+    max_age: { hours: 24 }
+    sampling_size: 3000
+    precision: 1
+  - platform: statistics
+    name: "Feuchte Gästebad Grundfeuchte"
+    unique_id: feuchte_gastebad_grund
+    entity_id: sensor.feuchte_gastebad
+    state_characteristic: percentile
+    percentile: 20
+    max_age: { hours: 24 }
+    sampling_size: 3000
+    precision: 1
+
+template:
+  - sensor:
+      - name: "Feuchte-Warnung Räume"
+        unique_id: feuchte_warnung_raeume
+        icon: mdi:water-alert
+        # Räume, die gerade über der Warnschwelle liegen (Wohnräume 65 %, Bäder 70 %)
+        state: >
+          {% set wohn = ['wohnzimmer', 'flur_eg', 'ankleide', 'hwr', 'schlafzimmer', 'malte', 'lara', 'flur_og', 'sauna_aufenthaltsraum'] %}
+          {% set bad = ['bad_yvonne', 'gastebad'] %}
+          {% set ns = namespace(r=[]) %}
+          {% for s in wohn + bad %}
+            {% set v = states('sensor.feuchte_' ~ s) %}
+            {% if is_number(v) and v | float > (70 if s in bad else 65) %}
+              {% set ns.r = ns.r + [state_attr('sensor.feuchte_' ~ s, 'friendly_name') | replace('Feuchte ', '')] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.r | join(', ') if ns.r else 'alles ok' }}
+  - binary_sensor:
+      - name: "Bad feucht (Duschen)"
+        unique_id: bad_feucht_duschen
+        device_class: moisture
+        # an: deutlich über Grundfeuchte (oder > 75 %); aus erst, wenn wieder unter Grundfeuchte + 3 %
+        state: >
+          {% set d = states('input_number.bad_feuchte_anstieg') | float(8) %}
+          {% set ns = namespace(an=false, halten=false) %}
+          {% for b in ['bad_yvonne', 'gastebad'] %}
+            {% set v = states('sensor.feuchte_' ~ b) %}{% set g = states('sensor.feuchte_' ~ b ~ '_grundfeuchte') %}
+            {% if is_number(v) %}
+              {% set g = g | float(v | float) %}
+              {% if v | float > g + d or v | float > 75 %}{% set ns.an = true %}{% endif %}
+              {% if v | float > g + 3 %}{% set ns.halten = true %}{% endif %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.an or (ns.halten and is_state('binary_sensor.bad_feucht_duschen', 'on')) }}
+        attributes:
+          details: >
+            {% for b in ['bad_yvonne', 'gastebad'] %}{{ b }} {{ states('sensor.feuchte_' ~ b) }} % (Grund {{ states('sensor.feuchte_' ~ b ~ '_grundfeuchte') }} %){{ ' · ' if not loop.last }}{% endfor %}
+
+automation:
+  # ---------- 1) Bad-Lüftung nach Feuchte ----------
+  - id: bad_feuchte_boost
+    alias: "Bad-Lüftung: Boost nach Feuchte (Duschen)"
+    mode: queued
+    max: 3
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.bad_feucht_duschen
+        id: wechsel
+      - trigger: time_pattern
+        minutes: "/10"
+        id: halten
+    conditions:
+      - condition: state
+        entity_id: input_boolean.lueftung_bad_automatik
+        state: "on"
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: sensor.vallox_aktuelles_profil
+            state: "Fireplace"
+    actions:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.bad_feucht_duschen
+                state: "on"
+            sequence:
+              - action: input_boolean.turn_on
+                target: { entity_id: input_boolean.bad_feuchte_boost_aktiv }
+              # Boost (alle 10 min verlängern, solange es feucht ist)
+              - action: vallox.set_profile
+                data: { profile: boost, duration: 15 }
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.bad_feuchte_boost_aktiv
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.bad_feucht_duschen
+                state: "off"
+            sequence:
+              - action: input_boolean.turn_off
+                target: { entity_id: input_boolean.bad_feuchte_boost_aktiv }
+              # Boost sofort beenden, wenn kein anderer Grund (Bad belegt) besteht
+              - if:
+                  - condition: state
+                    entity_id: sensor.vallox_aktuelles_profil
+                    state: "Boost"
+                  - condition: state
+                    entity_id: binary_sensor.bad_belegt
+                    state: "off"
+                then:
+                  - action: vallox.set_profile
+                    data:
+                      profile: "{{ 'away' if is_state('input_boolean.haus_abwesend', 'on') else 'home' }}"
+
+  # ---------- 2) Feuchte-/Schimmelwarnung ----------
+  - id: raumfeuchte_warnung
+    alias: "Raumfeuchte: Warnung bei dauerhaft zu feucht"
+    mode: queued
+    triggers:
+      - trigger: numeric_state
+        entity_id:
+          - sensor.feuchte_wohnzimmer
+          - sensor.feuchte_flur_eg
+          - sensor.feuchte_ankleide
+          - sensor.feuchte_hwr
+          - sensor.feuchte_schlafzimmer
+          - sensor.feuchte_malte
+          - sensor.feuchte_lara
+          - sensor.feuchte_flur_og
+          - sensor.feuchte_sauna_aufenthaltsraum
+        above: 65
+        for: { hours: 3 }
+      - trigger: numeric_state
+        entity_id: [sensor.feuchte_bad_yvonne, sensor.feuchte_gastebad]
+        above: 70
+        for: { hours: 4 }
+    actions:
+      - action: script.system_melden
+        data:
+          titel: "Zu feucht: {{ trigger.to_state.name | replace('Feuchte ', '') }}"
+          text: >
+            {{ trigger.to_state.name | replace('Feuchte ', '') }} liegt seit Stunden bei {{ trigger.to_state.state | float | round(0) }} %
+            (Schimmelgefahr ab ~65–70 %). Lüftung läuft im Modus „{{ states('sensor.luftung_feuchte_modus') }}“ –
+            bitte Fenster/Tür kurz öffnen oder Entfeuchter dorthin.
+          kennung: "feuchte_{{ trigger.entity_id }}"
+
+  # ---------- 3) Licht vergessen ----------
+  - id: licht_vergessen_tageslicht
+    alias: "Licht vergessen: aus bei genug Tageslicht"
+    mode: single
+    triggers:
+      - trigger: time_pattern
+        minutes: "/5"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.licht_vergessen_automatik
+        state: "on"
+      - "{{ state_attr('sun.sun', 'elevation') | float(0) > 10 }}"
+      - condition: state
+        entity_id: input_boolean.disco
+        state: "off"
+    variables:
+      raeume:
+        Wohnzimmer: { lux: sensor.helligkeit_wohnzimmer, licht: [light.dimmer_kuche_decke_2, light.dimmer_wohnzimmer_esstisch, light.dimmer_wand_sofa] }
+        Flur EG: { lux: sensor.helligkeit_flur_eg, licht: [light.licht_eg_flur_decke] }
+        Bad Yvonne: { lux: sensor.helligkeit_bad_yvonne, licht: [light.dimmer_yvonne_bad] }
+        Gästebad: { lux: sensor.helligkeit_gastebad_wand, licht: [light.gastebad_decke] }
+        Ankleide Yvonne: { lux: sensor.helligkeit_ankleide, licht: [light.ankleide_yvonne_decke, light.ankleide_yvonne_wand] }
+        HWR: { lux: sensor.helligkeit_hwr, licht: [light.licht_sauna_decke] }
+        Flur OG: { lux: sensor.helligkeit_flur_og, licht: [light.dimmer_flur_og] }
+        Schlafzimmer: { lux: sensor.helligkeit_schlafzimmer, licht: [light.schlafzimmer_decke, light.licht_schlafzimmer] }
+        Malte: { lux: sensor.helligkeit_malte, licht: [light.licht_malte_decke] }
+        Lara: { lux: sensor.helligkeit_lara, licht: [light.licht_lara_decke] }
+      schwelle: "{{ states('input_number.licht_vergessen_lux') | float(500) }}"
+      minuten: "{{ states('input_number.licht_vergessen_minuten') | int(30) }}"
+      aus: >
+        {% set ns = namespace(l=[], r=[]) %}
+        {% for name, r in raeume.items() %}
+          {% set lx = states(r.lux) %}
+          {# "an" nur mit Helligkeit > 0 (DALI meldet teils "an" bei 0 %) #}
+          {% set an = r.licht | select('is_state', 'on') | reject('is_state_attr', 'brightness', 0) | list %}
+          {% if an and is_number(lx) and lx | float >= schwelle %}
+            {% set ok = namespace(v=true) %}
+            {% for e in an %}
+              {% if (now() - states[e].last_changed).total_seconds() < minuten * 60 %}{% set ok.v = false %}{% endif %}
+            {% endfor %}
+            {% if ok.v %}{% set ns.l = ns.l + an %}{% set ns.r = ns.r + [name] %}{% endif %}
+          {% endif %}
+        {% endfor %}
+        {{ {'licht': ns.l, 'raeume': ns.r} }}
+    actions:
+      - condition: "{{ aus.licht | count > 0 }}"
+      - action: light.turn_off
+        target: { entity_id: "{{ aus.licht }}" }
+      - action: logbook.log
+        data:
+          name: "Licht vergessen"
+          message: "aus wegen genug Tageslicht: {{ aus.raeume | join(', ') }}"

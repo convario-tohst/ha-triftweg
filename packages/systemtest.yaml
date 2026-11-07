@@ -1,0 +1,53 @@
+# Systemtest – läuft in HA (claude_tools/systemtest.py), schaltet nichts, nur lesend.
+# Start: Button im Dashboard „Systemtest“, täglich 05:30, 10 min nach HA-Start, und von Claude nach jeder Änderung.
+# Kritische Fehler (Priorität 1: Präsenz & Licht, Konfiguration, KNX) -> Push an Tobias.
+
+shell_command:
+  systemtest: "nohup python3 /config/claude_tools/systemtest.py > /config/claude_tools/systemtest.log 2>&1 &"
+  systemtest_sprache: "nohup python3 /config/claude_tools/systemtest.py sprache > /config/claude_tools/systemtest.log 2>&1 &"
+
+script:
+  systemtest_starten:
+    alias: "Systemtest starten"
+    icon: mdi:clipboard-play-outline
+    mode: single
+    sequence:
+      - action: shell_command.systemtest
+  systemtest_mit_sprache:
+    alias: "Systemtest mit Sprachtest"
+    icon: mdi:account-voice
+    mode: single
+    sequence:
+      - action: shell_command.systemtest_sprache
+
+automation:
+  - id: systemtest_regelmaessig
+    alias: "System: Systemtest täglich und nach Neustart"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "05:30:00"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - if: "{{ trigger.platform == 'homeassistant' }}"
+        then:
+          - delay: "00:10:00"
+      - action: shell_command.systemtest
+
+  - id: systemtest_kritisch_melden
+    alias: "System: Systemtest kritischer Fehler melden"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: sensor.systemtest
+        not_to: ["läuft", "unavailable", "unknown"]
+    conditions:
+      - "{{ state_attr('sensor.systemtest', 'kritisch') | int(0) > 0 }}"
+    actions:
+      - action: script.system_melden
+        data:
+          kennung: systemtest
+          titel: "🔴 Systemtest: {{ state_attr('sensor.systemtest', 'kritisch') }} kritische Fehler"
+          text: >
+            {{ state_attr('sensor.systemtest', 'fehler') | select('match', 'P1') | list | join('\n') | truncate(900) }}

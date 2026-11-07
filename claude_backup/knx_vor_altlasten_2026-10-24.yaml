@@ -1,0 +1,472 @@
+# KNX
+#knx:
+# Telegramme, die HA als knx_event weiterreicht (Szenen-Taster an der Wand)
+event:
+  - address: "10/0/0"
+    type: scene_number
+  # Präsenzmelder Wohnzimmer 1.1.23 Kanal 2 (Obj. 15) schaltet die Dosen = "jemand betritt das Wohnzimmer"
+  - address: "1/0/111"
+  # Sperr-/Zwangsobjekte der Präsenzmelder (Wächter in packages/melder_sperren.yaml)
+  - address: ["0/5/1", "0/5/2", "0/5/5", "0/4/2", "1/4/0"]
+  # Melder Flur OG 1.1.24 – Bewegung (Dimmwert, nachts 0 %) für den Kinder-wach-Alarm
+  - address: "0/1/6"
+  # Melder Bad OG 1.1.18 – Bewegung (Dimmwert) für den Kinder-wach-Alarm
+  - address: "0/1/7"
+
+# switch
+switch:
+  # Wohnzimmer-Steckdosen: Schaltaktor 1.1.7, automatisch geschaltet vom Präsenzmelder 1.1.23 (Obj. 15)
+  - name: "Dosen Wohnzimmer"
+    address: "1/0/111"
+    state_address: "1/1/0"
+  # Melder Wohnzimmer 1.1.23: "Lichtkanal 1 – Bewegungserkennung sperren" (GA heißt in der ETS "Dosen Sperrobjekt")
+  - name: "Melder Wohnzimmer Bewegungserkennung sperren"
+    address: "1/4/0"
+  # Theben 1.1.9 Kanal C2 (0/0/7) = Stromversorgung der WLED-Streifen Flur EG + Bad Yvonne -> immer an lassen
+  - name: "Stromversorgung LED-Streifen"
+    address: "0/0/7"
+    state_address: "0/2/37"
+  - name: "Tag-Nacht EG"
+    address: "0/3/0"
+  - name: "Tag-Nacht OG"
+    address: "0/3/1"
+  - name: "Saunaofen"
+    address: "1/0/2"
+    state_address: "1/1/3"
+
+# Sperre / Zwangsführung der Präsenzmelder (DPT 2.001, 2 Bit): 0 = Automatik, 2 = Aus erzwingen, 3 = An erzwingen
+select:
+  - name: "Melder Wohnzimmer"
+    address: "0/5/5" # 1.1.23 Lichtkanal 1+2 Zwangsführung
+    payload_length: 0
+    options: &zwang
+      - { option: "Automatik", payload: 0 }
+      - { option: "Aus erzwingen", payload: 2 }
+      - { option: "An erzwingen", payload: 3 }
+  - name: "Melder Flur EG"
+    address: "0/5/1" # 1.1.22 Sperre
+    payload_length: 0
+    options: *zwang
+  - name: "Melder Sauna außen"
+    address: "0/5/2" # 1.1.38 Zwangsführung
+    payload_length: 0
+    options: *zwang
+  - name: "Melder Bad OG"
+    address: "0/4/2" # 1.1.18 Zwangsführung
+    payload_length: 0
+    options: *zwang
+
+# light switch
+light:
+  - name: "Außenbeleuchtung Garten"
+    address: "0/0/8"
+    state_address: "0/2/14"
+  - name: "Außenbeleuchtung Carport"
+    address: "0/0/18"
+    state_address: "0/2/28"
+  - name: "Licht Sauna Decke"
+    address: "0/0/19"
+    brightness_address: "0/1/24"
+    brightness_state_address: "0/2/22"
+  - name: "Licht Sauna Wand"
+    address: "0/0/15"
+    brightness_address: "0/1/25"
+    brightness_state_address: "0/2/21"
+    state_address: "0/2/39"
+  # bisher fehlende Lampen (Audit 11.10.2026)
+  - name: "Schlafzimmer Decke"
+    address: "0/0/211" # AKS 1.1.8
+    state_address: "0/2/5"
+  - name: "Nachtlicht Flur Malte"
+    address: "0/0/3" # AKS 1.1.8
+    state_address: "0/2/0"
+  - name: "Ankleide Yvonne Decke"
+    address: "0/0/9" # Theben 1.1.9 (nur Schalten, kein Absolutwert verknüpft)
+    state_address: "0/2/3"
+    brightness_address: "0/1/30"
+    brightness_state_address: "0/2/16"
+  - name: "Ankleide Yvonne Wand"
+    address: "0/0/114" # Theben 1.1.9
+    state_address: "0/2/36"
+    brightness_address: "0/1/31"
+    brightness_state_address: "0/2/15"
+  - name: "Werkstatt"
+    address: "0/0/13" # DALI
+    state_address: "0/2/19" # DALI Status An/Aus (neu 12.10.)
+  - name: "Licht Malte Decke"
+    address: "0/1/20"
+    state_address: "0/2/42"
+    brightness_address: "0/1/35"
+    brightness_state_address: "0/2/4"
+  # Malte LED-Streifen: DALI Gruppe 9 (EVG 15), Farbe RGBW (DPT 251.600, Obj. 541)
+  - name: "Malte LED"
+    address: "5/0/4"
+    state_address: "5/2/5"
+    brightness_address: "5/1/5"
+    brightness_state_address: "5/2/14"
+    rgbw_address: "5/4/1"
+    rgbw_state_address: "5/2/15"
+  - name: "Licht Lara Decke"
+    address: "0/1/18"
+    state_address: "0/2/41"
+    brightness_address: "0/1/34"
+    brightness_state_address: "0/2/20"
+  - name: "EG Bad Yvonne Spiegel"
+    address: "0/0/20"
+    state_address: "0/2/31"
+  - name: "EG Gästebad Spiegel"
+    address: "0/0/21"
+    state_address: "0/2/32"
+
+    # dimmable light
+  - name: "Gästebad Decke"
+    address: "0/0/22" # DALI EVG 9
+    state_address: "0/2/34"
+    brightness_address: "0/1/9"
+    brightness_state_address: "0/2/35"
+  - name: "OG Bad Tobias Decke"
+    address: "0/0/1" # DALI Gruppe 1
+    state_address: "0/2/7"
+    brightness_address: "0/1/7"
+    brightness_state_address: "0/2/8"
+  - name: "Dimmer Küche Decke"
+    address: "0/0/4"
+    state_address: "0/2/23"
+    brightness_address: "0/1/26"
+    brightness_state_address: "0/2/10"
+  - name: "Dimmer Wohnzimmer Esstisch"
+    address: "0/0/16"
+    state_address: "0/2/2"
+    brightness_address: "0/1/21"
+    brightness_state_address: "0/2/24"
+  - name: "Dimmer Wand Sofa"
+    address: "0/0/113"
+    state_address: "0/2/25"
+    brightness_address: "0/1/4"
+    brightness_state_address: "0/2/12"
+  - name: "Dimmer Außenbeleuchtung Sauna"
+    address: "0/0/14"
+    state_address: "0/2/27"
+    brightness_address: "0/1/22"
+    brightness_state_address: "0/2/26"
+  - name: "Dimmer Ankleidezimmer Tobi"
+    address: "0/0/5" # DALI Gruppe 4
+    state_address: "0/2/47" # Status Schalten, Obj. 121 (seit 18.10.)
+    brightness_address: "0/1/8"
+    brightness_state_address: "0/2/48" # Status Dimmwert, Obj. 122
+  - name: "Dimmer Flur OG"
+    address: "0/0/6"
+    brightness_address: "0/1/6"
+    state_address: "0/2/13"
+    brightness_state_address: "0/2/43"
+  # Theben 1.1.26 Kanal C5: 0/1/12 = heller/dunkler (4 Bit) nimmt keine Dimmwerte an (getestet).
+  # Dimmwert-Objekt 82 -> 0/1/33 und Rückmeldung 89 -> 0/2/40 in der ETS verknüpfen (Liste Schritt 3).
+  - name: "Dimmer Schlafzimmer Wand"
+    address: "0/0/11"
+    state_address: "0/2/40"
+    brightness_address: "0/1/33"
+    brightness_state_address: "0/2/18"
+  - name: "HWR Decke"
+    address: "0/0/12" # DALI Gruppe 11
+    state_address: "0/2/45" # Status Schalten (seit 18.10.)
+    brightness_address: "0/1/27"
+    brightness_state_address: "0/2/46" # Status Dimmwert
+  - name: "Dimmer Yvonne Bad"
+    address: "0/0/10"
+    state_address: "0/2/30"
+    brightness_address: "0/1/28"
+    brightness_state_address: "0/2/17"
+  - name: "Dimmer Außenbeleuchtung Giebel"
+    address: "0/0/2"
+    state_address: "0/2/6"
+    brightness_address: "0/1/29"
+    brightness_state_address: "0/2/33" # war 0/2/23 (= Status Küche)
+
+scene:
+  - name: "Relax"
+    address: 10/0/0
+    scene_number: 1
+  - name: "Kochen"
+    address: 10/0/0
+    scene_number: 2
+  - name: "Party"
+    address: 10/0/0
+    scene_number: 3
+  - name: "Aus"
+    address: 10/0/0
+    scene_number: 4
+  - name: "Dinner"
+    address: 10/0/0
+    scene_number: 7
+  - name: "Malte Stripe Szene"
+    address: 5/6/0
+    scene_number: 1
+
+climate:
+  # Absoluter Komfortsollwert (schreiben) + aktueller Sollwert (lesen), Betriebsmodus, Stellwert
+  - name: "Heizung Wohnzimmer" # Wohnen/Küche/Essen, 1.1.5 Kanal A-C
+    temperature_address: "3/0/0"
+    target_temperature_address: "3/3/32"
+    target_temperature_state_address: "3/3/20"
+    operation_mode_address: "3/4/0"
+    operation_mode_state_address: "3/4/0"
+    command_value_state_address: "3/6/0"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+  - name: "Heizung Obergeschoss" # 1.1.6, Ist = Flur OG Wand (1-Wire)
+    temperature_address: "3/0/21"
+    target_temperature_address: "3/3/34"
+    target_temperature_state_address: "3/3/3"
+    operation_mode_address: "3/4/6"
+    operation_mode_state_address: "3/4/6"
+    command_value_state_address: "3/6/6"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+  - name: "Heizung Bad Yvonne" # 1.1.5 Kanal E
+    temperature_address: "3/0/6"
+    target_temperature_address: "3/3/33"
+    target_temperature_state_address: "3/3/4"
+    operation_mode_address: "3/4/3"
+    operation_mode_state_address: "3/4/3"
+    command_value_state_address: "3/6/3"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+  - name: "Heizung Flur EG" # 1.1.5 Kanal F
+    temperature_address: "3/0/2"
+    target_temperature_address: "3/3/28"
+    target_temperature_state_address: "3/3/0"
+    operation_mode_address: "3/4/1"
+    operation_mode_state_address: "3/4/1"
+    command_value_state_address: "3/6/1"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+  - name: "Heizung Ankleide" # 1.1.5 Kanal G
+    temperature_address: "3/0/9"
+    target_temperature_address: "3/3/29"
+    target_temperature_state_address: "3/3/1"
+    operation_mode_address: "3/4/2"
+    operation_mode_state_address: "3/4/2"
+    command_value_state_address: "3/6/2"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+  - name: "Heizung HWR" # 1.1.5 Kanal D
+    temperature_address: "3/0/12"
+    target_temperature_address: "3/3/30"
+    target_temperature_state_address: "3/3/5"
+    operation_mode_address: "3/4/4"
+    operation_mode_state_address: "3/4/4"
+    command_value_state_address: "3/6/4"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+  - name: "Heizung Sauna" # 1.1.5 Kanal H
+    temperature_address: "3/0/24"
+    target_temperature_address: "3/3/31"
+    target_temperature_state_address: "3/3/23"
+    operation_mode_address: "3/4/5"
+    operation_mode_state_address: "3/4/5"
+    command_value_state_address: "3/6/5"
+    sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
+    operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]
+    min_temp: 15
+    max_temp: 26
+    temperature_step: 0.5
+
+    # Raumklima
+weather:
+  - name: "Wohnzimmer"
+    address_temperature: "3/0/26"
+    address_humidity: "4/0/0"
+    sync_state: true
+
+# Rolladen
+cover:
+  - name: "Wohnzimmer Rolladen"
+    move_long_address: "2/0/8"
+    move_short_address: "2/0/11"
+    stop_address: "2/0/11"
+    #position_address: "3/0/3"
+    position_state_address: "2/2/4"
+    travelling_time_down: 51
+    travelling_time_up: 61
+  - name: "Küche Rolladen"
+    move_long_address: "2/0/9"
+    move_short_address: "2/0/12"
+    stop_address: "2/0/12"
+    #position_address: "3/0/3"
+    position_state_address: "2/2/5"
+    travelling_time_down: 51
+    travelling_time_up: 61
+  - name: "Bad Yvonne Rolladen"
+    move_long_address: "2/0/10"
+    move_short_address: "2/0/13"
+    stop_address: "2/0/13"
+    #position_address: "3/0/3"
+    position_state_address: "2/2/6"
+    travelling_time_down: 51
+    travelling_time_up: 61
+  # OG (Jalousieaktor 1.1.3)
+  - { name: "Malte Rollladen links", move_long_address: "2/0/0", move_short_address: "2/0/1", stop_address: "2/0/1", position_state_address: "2/2/0", travelling_time_down: 51, travelling_time_up: 61 }
+  - { name: "Malte Rollladen rechts", move_long_address: "2/0/2", move_short_address: "2/0/3", stop_address: "2/0/3", position_state_address: "2/2/1", travelling_time_down: 51, travelling_time_up: 61 }
+  - { name: "Schlafzimmer Rollladen", move_long_address: "2/0/4", move_short_address: "2/0/5", stop_address: "2/0/5", position_state_address: "2/2/2", travelling_time_down: 51, travelling_time_up: 61 }
+  - { name: "Lara Rollladen", move_long_address: "2/0/6", move_short_address: "2/0/7", stop_address: "2/0/7", position_state_address: "2/2/3", travelling_time_down: 51, travelling_time_up: 61 }
+
+#Präsenzmelder
+binary_sensor:
+  - name: "Bewegungsmelder Flur"
+    state_address: "1/1/10" # KNX Gruppenadresse für den Status (Bewegung erkannt/nicht erkannt)
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder Sauna"
+    state_address: "0/2/29" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder Außensauna"
+    state_address: "0/2/27" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder EG Flur Decke"
+    state_address: "0/2/9" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder OG Lara Decke"
+    state_address: "0/7/1" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder OG Malte Decke"
+    state_address: "0/7/0" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder OG Schlafzimmer Decke"
+    state_address: "0/7/2" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenz Wohnzimmer"
+    state_address: "0/7/6" # Melder Wohnzimmer 1.1.23, Lichtkanal 1 Ausgang 1 (Schalten)
+    device_class: occupancy
+    sync_state: true
+  - name: "Präsenz Sauna außen"
+    state_address: "0/7/5" # Präsenzmelder Sauna außen 1.1.38, HLK schalten (seit 12.10.)
+    device_class: occupancy
+    sync_state: true
+  - name: "Präsenz HWR"
+    state_address: "0/7/8" # Präsenzmelder HWR 1.1.41, Lichtkanal 1 Schalten (HA schaltet das Licht, seit 18.10.)
+    device_class: occupancy
+    sync_state: true
+  - name: "Präsenz Ankleide Tobias"
+    state_address: "0/7/9" # Präsenzmelder Ankleide Tobias 1.1.20, Meldefunktion Präsenz (HA schaltet, seit 18.10.)
+    device_class: occupancy
+    sync_state: true
+  - name: "Präsenz Flur OG"
+    state_address: "0/7/4" # 1.1.24 HLK-Ausgang
+    device_class: occupancy
+    sync_state: true
+  - name: "Präsenz Gästebad"
+    state_address: "0/7/3" # 1.1.25 HLK-Ausgang
+    device_class: occupancy
+    sync_state: true
+
+sensor:
+  - name: "Sauna Decke Dimmwert"
+    state_address: "0/2/22" # DALI Gruppe 12, einzige Rückmeldung
+    type: percent
+    sync_state: true
+  - name: "Helligkeit Außen"
+    state_address: "0/6/0" # Präsenzmelder Sauna außen 1.1.38
+    type: illuminance
+    sync_state: true
+  - name: "Helligkeit Werkstatt"
+    state_address: "5/1/6" # Präsenzmelder Werkstatt 1.1.37, Lux (DPT 9.004)
+    type: illuminance
+    sync_state: true
+  - name: "Werkstatt Dimmwert"
+    state_address: "0/2/44" # DALI-Gateway Status Dimmwert Gruppe Werkstatt
+    type: percent
+    sync_state: true
+  - name: "Helligkeit Gästebad"
+    state_address: "0/6/1" # 1.1.25 Messwert
+    type: illuminance
+    sync_state: true
+
+  # Raumtemperaturen (1-Wire über Timberwolf) und aktuelle Sollwerte der Heizungsaktoren
+  - { name: "Temperatur Wohnzimmer", state_address: "3/0/0", type: temperature, sync_state: "every 10" }
+  - { name: "Sollwert Wohnzimmer", state_address: "3/3/20", type: temperature, sync_state: true }
+  - { name: "Temperatur Küche", state_address: "3/0/13", type: temperature, sync_state: "every 10" }
+  - { name: "Temperatur Flur EG", state_address: "3/0/2", type: temperature, sync_state: "every 10" }
+  - { name: "Sollwert Flur EG", state_address: "3/3/0", type: temperature, sync_state: true }
+  - { name: "Temperatur Bad Yvonne", state_address: "3/0/6", type: temperature, sync_state: "every 10" }
+  - { name: "Sollwert Bad Yvonne", state_address: "3/3/4", type: temperature, sync_state: true }
+  - { name: "Temperatur Gästebad", state_address: "3/0/8", type: temperature, sync_state: "every 10" }
+  - { name: "Temperatur Ankleide", state_address: "3/0/9", type: temperature, sync_state: "every 10" }
+  - { name: "Sollwert Ankleide", state_address: "3/3/1", type: temperature, sync_state: true }
+  - { name: "Temperatur HWR", state_address: "3/0/12", type: temperature, sync_state: "every 10" }
+  - { name: "Sollwert HWR", state_address: "3/3/5", type: temperature, sync_state: true }
+  - { name: "Temperatur OG", state_address: "3/0/21", type: temperature, sync_state: "every 10" } # Flur OG Wand
+  - { name: "Sollwert OG", state_address: "3/3/3", type: temperature, sync_state: true }
+  - { name: "Temperatur Sauna", state_address: "3/0/24", type: temperature, sync_state: "every 10" }
+  - { name: "Sollwert Sauna", state_address: "3/3/23", type: temperature, sync_state: true }
+
+  - { name: "Temperatur Schlafzimmer", state_address: "3/0/14", type: temperature, sync_state: "every 10" }
+  - { name: "Temperatur Malte", state_address: "3/0/17", type: temperature, sync_state: "every 10" }
+  - { name: "Temperatur Lara", state_address: "3/0/18", type: temperature, sync_state: "every 10" }
+  - { name: "Temperatur Bad OG", state_address: "3/0/22", type: temperature, sync_state: "every 10" }
+
+
+
+  # 1-Wire-Multisensoren (Timberwolf): Feuchte 4/0/N, Helligkeit 4/1/N, Taupunkt 4/2/N, abs. Feuchte 4/3/N
+  # N = Nummer der Wand-Temperatur 3/0/N; Sauna-Aufenthaltsraum nutzt die vorhandenen 12/x/0
+  - { name: "Feuchte Wohnzimmer", state_address: "4/0/0", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Wohnzimmer", state_address: "4/3/0", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Wohnzimmer", state_address: "4/1/0", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Wohnzimmer", state_address: "4/2/0", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Flur EG", state_address: "4/0/2", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Flur EG", state_address: "4/3/2", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Flur EG", state_address: "4/1/2", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Flur EG", state_address: "4/2/2", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Bad Yvonne", state_address: "4/0/6", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Bad Yvonne", state_address: "4/3/6", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Bad Yvonne", state_address: "4/1/6", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Bad Yvonne", state_address: "4/2/6", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Gästebad", state_address: "4/0/8", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Gästebad", state_address: "4/3/8", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Gästebad Wand", state_address: "4/1/8", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Gästebad", state_address: "4/2/8", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Ankleide", state_address: "4/0/9", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Ankleide", state_address: "4/3/9", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Ankleide", state_address: "4/1/9", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Ankleide", state_address: "4/2/9", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte HWR", state_address: "4/0/12", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte HWR", state_address: "4/3/12", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit HWR", state_address: "4/1/12", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt HWR", state_address: "4/2/12", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Schlafzimmer", state_address: "4/0/14", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Schlafzimmer", state_address: "4/3/14", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Schlafzimmer", state_address: "4/1/14", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Schlafzimmer", state_address: "4/2/14", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Malte", state_address: "4/0/17", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Malte", state_address: "4/3/17", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Malte", state_address: "4/1/17", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Malte", state_address: "4/2/17", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Lara", state_address: "4/0/18", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Lara", state_address: "4/3/18", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Lara", state_address: "4/1/18", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Lara", state_address: "4/2/18", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Flur OG", state_address: "4/0/21", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Flur OG", state_address: "4/3/21", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Flur OG", state_address: "4/1/21", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Flur OG", state_address: "4/2/21", type: temperature, sync_state: "every 10" }
+  - { name: "Temperatur Sauna Aufenthaltsraum", state_address: "12/0/0", type: temperature, sync_state: "every 10" }
+  - { name: "Feuchte Sauna Aufenthaltsraum", state_address: "12/1/0", type: humidity, sync_state: "every 10" }
+  - { name: "Absolute Feuchte Sauna Aufenthaltsraum", state_address: "12/2/0", type: absolute_humidity, sync_state: "every 10" }
+  - { name: "Helligkeit Sauna Aufenthaltsraum", state_address: "4/1/24", type: illuminance, sync_state: "every 10" }
+  - { name: "Taupunkt Sauna Aufenthaltsraum", state_address: "4/2/24", type: temperature, sync_state: "every 10" }

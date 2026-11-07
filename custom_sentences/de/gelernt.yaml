@@ -1,0 +1,10 @@
+language: de
+# AUTOMATISCH ERZEUGT von /config/claude_tools/gelernt.py – nicht von Hand bearbeiten
+intents:
+  AnClaude:
+    data:
+      - sentences:
+          - "{satz}"
+lists:
+  satz:
+    wildcard: true

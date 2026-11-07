@@ -1,0 +1,52 @@
+# Schnelle lokale Sprachbefehle (Sätze in custom_sentences/de/schnell.yaml, erzeugt aus den Licht-Aliasen) – 25.10.
+# licht = eine oder mehrere Entity-IDs (Komma-getrennt). Kontext für Folgesätze ("wieder aus") wird gemerkt.
+intent_script:
+  LichtSchnell:
+    description: "Interner Schnellbefehl Licht an/aus (nicht selbst aufrufen)."
+    action:
+      - action: "light.turn_{{ zustand }}"
+        target: { entity_id: "{{ licht.split(',') }}" }
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_kontext }
+        data:
+          value: >
+            {{ {'text': 'Licht ' ~ ('an' if zustand == 'on' else 'aus') ~ ' (' ~ licht ~ ')', 'ts': as_timestamp(now()) | int} | to_json | truncate(250, true, '') }}
+    speech:
+      text: >
+        {% set n = licht.split(',') | map('state_attr', 'friendly_name') | list %}
+        {{ 'Ist an.' if zustand == 'on' else 'Ist aus.' }}
+  RolloSchnell:
+    description: "Interner Schnellbefehl Rollläden (nicht selbst aufrufen)."
+    action:
+      - action: "cover.{{ richtung }}_cover"
+        target: { entity_id: "{{ raum.split(',') }}" }
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_kontext }
+        data:
+          value: >
+            {{ {'text': 'Rollläden ' ~ ('hoch' if richtung == 'open' else 'runter') ~ ' (' ~ raum ~ ')', 'ts': as_timestamp(now()) | int} | to_json | truncate(250, true, '') }}
+    speech:
+      text: "{{ 'Fahren hoch.' if richtung == 'open' else 'Fahren runter.' }}"
+  EffektSchnell:
+    description: "Interner Schnellbefehl LED-Effekt (nicht selbst aufrufen)."
+    action:
+      - action: script.licht_effekt
+        response_variable: erg
+        data: { licht: "{{ stripe }}", effekt: "{{ effekt }}" }
+      - stop: ""
+        response_variable: erg
+    speech:
+      text: "{{ action_response.ergebnis if action_response is mapping and action_response.ergebnis is defined else 'Erledigt.' }}"
+  LichtHelligkeit:
+    description: "Interner Schnellbefehl Licht-Helligkeit (nicht selbst aufrufen)."
+    action:
+      - action: light.turn_on
+        target: { entity_id: "{{ licht.split(',') }}" }
+        data: { brightness_pct: "{{ prozent | int }}" }
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_kontext }
+        data:
+          value: >
+            {{ {'text': 'Licht auf ' ~ prozent ~ ' % (' ~ licht ~ ')', 'ts': as_timestamp(now()) | int} | to_json | truncate(250, true, '') }}
+    speech:
+      text: "Auf {{ prozent }} Prozent."

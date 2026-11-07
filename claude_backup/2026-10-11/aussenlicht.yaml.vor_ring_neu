@@ -1,0 +1,224 @@
+# Außenlicht: Kinder spielen draußen / Ankunft
+# - Grundlicht Giebel bei Dunkelheit bis 23:00 (packages/zeitsteuerung.yaml, Helligkeit hier einstellbar)
+# - Bewegung an den Garten-/Seitenkameras (Ring) bei Dunkelheit 15-22 Uhr = "Kinder draußen":
+#   Giebel 100 %, Ring-Kameralampen an; 20 min nach der letzten Bewegung zurück
+# - Ankunft (Handy kommt nach Hause oder Bewegung Einfahrt/Haustür) bei Dunkelheit:
+#   Carport + Giebel an, nach 10 min Carport aus (Giebel nach 23 Uhr ebenfalls aus)
+
+input_boolean:
+  kinder_draussen:
+    name: "Kinder draußen"
+    icon: mdi:human-child
+
+input_number:
+  giebel_helligkeit:
+    name: "Giebel Grundhelligkeit"
+    icon: mdi:brightness-6
+    min: 10
+    max: 100
+    step: 10
+    unit_of_measurement: "%"
+  kinder_draussen_minuten:
+    name: "Kinder draußen: Nachlauf"
+    icon: mdi:timer-outline
+    min: 5
+    max: 60
+    step: 5
+    unit_of_measurement: min
+  ankunft_minuten:
+    name: "Ankunft: Licht-Nachlauf"
+    icon: mdi:timer-outline
+    min: 2
+    max: 30
+    step: 1
+    unit_of_measurement: min
+
+timer:
+  kinder_draussen:
+    name: "Kinder draußen"
+    restore: true
+  ankunft:
+    name: "Ankunft Licht"
+    restore: true
+
+automation:
+  # ---------- Kinder draußen ----------
+  - id: kinder_draussen_erkennen
+    alias: "Außen: Bewegung im Garten = Kinder draußen"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [event.carport_hinten_bewegung, event.mulltonne_bewegung, event.einfahrt_bewegung, event.wohnzimmer_bewegung] # wohnzimmer = Ring 'Carport innen'
+        not_from: ["unavailable", "unknown"]
+      - trigger: state
+        entity_id: [binary_sensor.mulltonne_bewegung, binary_sensor.einfahrt_bewegung, binary_sensor.wohnzimmer_bewegung]
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      - condition: time
+        after: "15:00:00"
+        before: "22:00:00"
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "off"
+    actions:
+      - action: timer.start
+        target: { entity_id: timer.kinder_draussen }
+        data:
+          duration: "{{ (states('input_number.kinder_draussen_minuten') | int(20)) * 60 }}"
+      - action: input_boolean.turn_on
+        target: { entity_id: input_boolean.kinder_draussen }
+
+  - id: kinder_draussen_ende
+    alias: "Außen: Kinder draußen beendet (Timer)"
+    triggers:
+      - trigger: event
+        event_type: timer.finished
+        event_data: { entity_id: timer.kinder_draussen }
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.kinder_draussen }
+
+  - id: kinder_draussen_licht
+    alias: "Außen: Licht für Kinder draußen"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.kinder_draussen
+        to: ["on", "off"]
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_boolean.kinder_draussen
+            state: "on"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }
+            data: { brightness_pct: 100 }
+          - action: light.turn_on
+            continue_on_error: true
+            target: { entity_id: [light.einfahrt_licht, light.mulltonne_licht] }
+        else:
+          - action: timer.cancel
+            target: { entity_id: timer.kinder_draussen }
+          - action: light.turn_off
+            continue_on_error: true
+            target: { entity_id: [light.einfahrt_licht, light.mulltonne_licht] }
+          - if:
+              - condition: state
+                entity_id: sun.sun
+                state: below_horizon
+              - condition: template
+                value_template: "{{ now().strftime('%H:%M:%S') < states('input_datetime.aussenlicht_aus') and now().hour >= 12 }}"
+            then:
+              - action: light.turn_on
+                target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }
+                data:
+                  brightness_pct: "{{ states('input_number.giebel_helligkeit') | int(70) }}"
+            else:
+              - action: light.turn_off
+                target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }
+
+  # Ring-Lampen schalten nach kurzer Zeit selbst ab -> solange Kinder draußen sind, alle 4 min erneuern
+  - id: kinder_draussen_ringlicht_halten
+    alias: "Außen: Kameralampen an lassen"
+    triggers:
+      - trigger: time_pattern
+        minutes: "/4"
+    conditions:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: input_boolean.kinder_draussen
+            state: "on"
+          - condition: state
+            entity_id: timer.ankunft
+            state: active
+    actions:
+      - action: light.turn_on
+        continue_on_error: true
+        target:
+          entity_id: >
+            {{ ['light.einfahrt_licht', 'light.mulltonne_licht'] if is_state('input_boolean.kinder_draussen', 'on')
+               else ['light.einfahrt_licht'] }}
+
+  # ---------- Ankunft ----------
+  # Ankunft = Handy kommt von unterwegs in die Zone "Annäherung" (500 m) bzw. direkt nach Hause
+  # (nur wenn es vorher mind. 10 min wirklich weg war – GPS-Zittern zu Hause löst nicht aus),
+  # oder Bewegung an Einfahrt/Haustür. Bei Dunkelheit: Carport + Einfahrt (+ Giebel).
+  - id: ankunft_licht
+    alias: "Außen: Licht bei Ankunft"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: [person.tobias_ohst, person.yvonne_ohst, person.malte_ohst]
+        from: not_home
+        to: ["Annäherung", "home"]
+        id: handy
+      - trigger: state
+        entity_id: [binary_sensor.einfahrt_bewegung, binary_sensor.front_door_bewegung]
+        to: "on"
+        id: bewegung
+      - trigger: state
+        entity_id: [event.vordereingang_bewegung, event.front_door_klingeln]
+        not_from: ["unavailable", "unknown"]
+        id: bewegung
+    conditions:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+          - condition: state
+            entity_id: binary_sensor.draussen_dunkel
+            state: "on"
+      - "{{ trigger.id != 'handy' or (trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds() > 600 }}"
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.licht_decke }
+      - action: light.turn_on
+        continue_on_error: true
+        target: { entity_id: light.einfahrt_licht }
+      - if:
+          - condition: state
+            entity_id: input_boolean.kinder_draussen
+            state: "off"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }
+            data:
+              brightness_pct: "{{ states('input_number.giebel_helligkeit') | int(70) }}"
+      - action: timer.start
+        target: { entity_id: timer.ankunft }
+        data:
+          duration: "{{ (states('input_number.ankunft_minuten') | int(10)) * 60 }}"
+
+  - id: ankunft_licht_aus
+    alias: "Außen: Ankunftslicht aus (Timer)"
+    triggers:
+      - trigger: event
+        event_type: timer.finished
+        event_data: { entity_id: timer.ankunft }
+    actions:
+      - action: light.turn_off
+        target: { entity_id: light.licht_decke }
+      - if:
+          - condition: state
+            entity_id: input_boolean.kinder_draussen
+            state: "off"
+        then:
+          - action: light.turn_off
+            continue_on_error: true
+            target: { entity_id: light.einfahrt_licht }
+      # Giebel nach Ausschaltzeit (23 Uhr) wieder aus, sofern keine Kinder draußen
+      - if:
+          - condition: state
+            entity_id: input_boolean.kinder_draussen
+            state: "off"
+          - condition: template
+            value_template: "{{ now().strftime('%H:%M:%S') >= states('input_datetime.aussenlicht_aus') or now().hour < 12 }}"
+        then:
+          - action: light.turn_off
+            target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }

@@ -1,0 +1,90 @@
+# Präsenzmelder-Automationen (Malte, Lara, Schlafzimmer):
+# Wird eine Präsenz-Automation eingeschaltet, während schon jemand im Raum ist,
+# reagiert der Blueprint erst bei der nächsten Bewegung. Hier wird sofort eingeschaltet.
+
+automation:
+  - id: praesenz_sofort_nach_aktivieren
+    alias: "Präsenz: beim Aktivieren sofort Licht, wenn jemand da ist"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [automation.malte_prasenz, automation.prasenz_lara_stripe, automation.prasenz_schlafzimmer]
+        from: "off"
+        to: "on"
+    variables:
+      karte:
+        automation.malte_prasenz: { sensor: binary_sensor.prasenzmelder_og_malte_decke, licht: [light.licht_malte_decke] }
+        automation.prasenz_lara_stripe: { sensor: binary_sensor.prasenzmelder_og_lara_decke, licht: [light.licht_lara_decke, light.wled] }
+        automation.prasenz_schlafzimmer: { sensor: binary_sensor.prasenzmelder_og_schlafzimmer_decke, licht: [light.licht_schlafzimmer] }
+      ziel: "{{ karte[trigger.entity_id] }}"
+    actions:
+      - choose:
+          - conditions: "{{ is_state(ziel.sensor, 'on') }}"
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: "{{ ziel.licht }}" }
+          # Raum beim Aktivieren schon seit 5 min leer, Licht aber an (z. B. vor dem Aufstehen-Zeitpunkt selbst
+          # eingeschaltet, 26.10. Lara) → "Raum leer"-Regel nachholen, sonst brennt es bis abends
+          - conditions: >
+              {{ is_state(ziel.sensor, 'off') and (now() - states[ziel.sensor].last_changed).total_seconds() > 300
+                 and ziel.licht | select('is_state', 'on') | list | count > 0 }}
+            sequence:
+              - action: light.turn_off
+                target: { entity_id: "{{ ziel.licht }}" }
+
+  # Raum leer -> alle Lampen des Raums aus, egal wie sie eingeschaltet wurden
+  # (nur wenn die Präsenz-Automation des Raums aktiv ist, also nicht während der Schlafenszeit)
+  - id: praesenz_raum_leer_aus
+    alias: "Präsenz: Raum leer -> Licht aus"
+    mode: parallel
+    triggers:
+      # nur echtes "an -> aus" (nicht nach Neustart/Neuladen: unavailable -> aus)
+      - trigger: state
+        entity_id: binary_sensor.prasenzmelder_og_malte_decke
+        from: "on"
+        to: "off"
+        for: "00:05:00"
+        id: malte
+      - trigger: state
+        entity_id: binary_sensor.prasenzmelder_og_lara_decke
+        from: "on"
+        to: "off"
+        for: "00:05:00"
+        id: lara
+      - trigger: state
+        entity_id: binary_sensor.prasenzmelder_og_schlafzimmer_decke
+        from: "on"
+        to: "off"
+        for: "00:05:00"
+        id: schlafzimmer
+      # Lampe geht an, obwohl der Raum schon länger leer ist (z. B. per App/Sprache vergessen)
+      - trigger: state
+        entity_id: [light.licht_malte_decke, light.licht_malte_stripe_2, light.licht_lara_decke, light.wled,
+                    light.licht_schlafzimmer, light.schlafzimmer_decke]
+        from: "off"
+        to: "on"
+        for: "00:10:00"
+        id: lampe
+    variables:
+      raeume:
+        malte: { automation: automation.malte_prasenz, sensor: binary_sensor.prasenzmelder_og_malte_decke,
+                 licht: [light.licht_malte_decke, light.licht_malte_stripe_2] }
+        lara: { automation: automation.prasenz_lara_stripe, sensor: binary_sensor.prasenzmelder_og_lara_decke,
+                licht: [light.licht_lara_decke, light.wled] }
+        schlafzimmer: { automation: automation.prasenz_schlafzimmer, sensor: binary_sensor.prasenzmelder_og_schlafzimmer_decke,
+                        licht: [light.licht_schlafzimmer, light.schlafzimmer_decke] }
+      raum: >
+        {% if trigger.id != 'lampe' %}{{ trigger.id }}{% else %}
+        {% for k, v in raeume.items() if trigger.entity_id in v.licht %}{{ k }}{% endfor %}{% endif %}
+      r: "{{ raeume[raum] }}"
+    conditions:
+      - condition: template
+        value_template: "{{ is_state(r.automation, 'on') }}"
+      - condition: template
+        value_template: "{{ is_state(r.sensor, 'off') and (now() - states[r.sensor].last_changed).total_seconds() > 280 }}"
+      - condition: state
+        entity_id: input_boolean.disco
+        state: "off"
+    actions:
+      - action: light.turn_off
+        target: { entity_id: "{{ r.licht }}" }

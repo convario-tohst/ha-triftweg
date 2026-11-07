@@ -1,0 +1,31 @@
+# Wohnzimmer-Steckdosen (Schaltaktor 1.1.7 Kanal, 1/0/111, Status 1/1/0)
+# Wächter: meldet, wenn die Dosen ausgehen – und wer das war (Melder 1.1.23, HA, Taster, Aktor selbst).
+# Hinweis: 1/4/0 ("Dosen Sperrobjekt") sperrt in Wahrheit die Bewegungserkennung von Lichtkanal 1 des Melders
+# 1.1.23 (Szenen), NICHT die Dosen. Die Dosen schaltet Objekt 15 → 1/0/111 – Verknüpfung in der ETS entfernen.
+automation:
+  - id: dosen_wohnzimmer_waechter
+    alias: "Dosen Wohnzimmer: Abschaltung melden"
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "1/0/111" }
+        id: befehl
+      - trigger: state
+        entity_id: switch.dosen_wohnzimmer
+        from: "on"
+        to: "off"
+        id: status
+    conditions:
+      - "{{ trigger.id == 'status' or (trigger.event.data.telegramtype == 'GroupValueWrite' and trigger.event.data.data == 0) }}"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: "dosen_wohnzimmer_{{ now().strftime('%H%M%S') }}"
+          title: "Wohnzimmer-Dosen aus"
+          message: >
+            {% if trigger.id == 'befehl' %}Ausschaltbefehl auf 1/0/111 von {{ trigger.event.data.source }}
+            {{ '(Präsenzmelder Wohnzimmer)' if trigger.event.data.source == '1.1.23' else '' }}
+            {% else %}Aktor meldet „aus“ (1/1/0) – ohne vorherigen Befehl auf 1/0/111 = Funktion im Aktor selbst
+            (Treppenlicht/Zeit/Zentral/Sperre) oder Handbedienung.{% endif %}
+            Zeit: {{ now().strftime('%d.%m. %H:%M:%S') }}

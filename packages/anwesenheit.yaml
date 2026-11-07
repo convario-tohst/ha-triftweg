@@ -1,0 +1,192 @@
+# Anwesenheit: "Haus verlassen" setzt Abwesend; das Haus erkennt die Rückkehr selbst
+# Rückkehr = ein Handy kommt nach Hause ODER Bewegung im Haus (Ring Flur/Wohnzimmer, KNX-Präsenz)
+# -> Lüftung zurück auf Zuhause, Hinweis weg, Begrüßungslicht im Flur bei Dunkelheit
+
+input_boolean:
+  haus_abwesend:
+    name: "Haus abwesend"
+    icon: mdi:home-export-outline
+  haus_verlassen_automatisch:
+    name: "Haus verlassen automatisch"
+    icon: mdi:home-export-outline
+
+input_text:
+  heizung_modus_vorher:
+    name: "Heizung: Modus vor dem Verlassen"
+    max: 255
+
+template:
+  - binary_sensor:
+      # Jemand im Haus? Handys ODER Bewegung/Präsenz innen in den letzten 15 Minuten
+      # (wichtig, weil nicht jeder ein Handy hat, z. B. Lara)
+      - name: "Jemand im Haus"
+        unique_id: jemand_im_haus
+        device_class: occupancy
+        delay_off: "00:15:00"
+        state: >
+          {# Ring-Innenkameras (Flur, Wohnzimmer) als Bewegung der letzten 15 min #}
+          {% set ring_innen = ['event.flur_bewegung', 'event.mobil_bewegung']
+               | map('states') | reject('in', ['unknown', 'unavailable'])
+               | map('as_datetime') | select('ne', none)
+               | select('gt', now() - timedelta(minutes=15)) | list | count > 0 %}
+          {% set innen = ['binary_sensor.prasenz_gastebad',
+                          'binary_sensor.prasenzmelder_og_malte_decke', 'binary_sensor.prasenzmelder_og_lara_decke',
+                          'binary_sensor.prasenzmelder_og_schlafzimmer_decke', 'binary_sensor.prasenzmelder_eg_flur_decke',
+                          'binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_sauna',
+                          'binary_sensor.prasenz_wohnzimmer', 'binary_sensor.prasenz_hwr', 'binary_sensor.prasenz_ankleide_tobias'] %}
+          {# Durchgangsräume: ein Melder, der länger als 2 h ununterbrochen "besetzt" meldet, hängt (26.10.: Flur OG
+             hing 2 Tage → Haus galt nie als leer, Licht blieb beim Weggehen an) – dann nicht mitzählen #}
+          {% set durchgang = ['binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_eg_flur_decke',
+                              'binary_sensor.prasenz_gastebad', 'binary_sensor.prasenzmelder_sauna'] %}
+          {% set ns = namespace(an=false) %}
+          {% for e in innen if is_state(e, 'on') %}
+            {% if e not in durchgang or (now() - states[e].last_changed).total_seconds() < 7200 %}{% set ns.an = true %}{% endif %}
+          {% endfor %}
+          {# Handys: "zu Hause" zählt nur, wenn sich das Handy in den letzten 2 h gemeldet hat (26.10.: Yvonnes iPhone
+             meldete seit 05:50 nichts mehr, Malte lässt sein Handy oft liegen → Haus galt fälschlich als bewohnt).
+             Wer zu Hause ist und dessen Handy schweigt, wird über die Präsenzmelder erkannt. #}
+          {% set nh = namespace(da=false) %}
+          {% for p in states.person if p.state == 'home' %}
+            {% set q = p.attributes.source | default('') %}
+            {% if q and states[q] is not none and (now() - states[q].last_updated).total_seconds() < 7200 %}{% set nh.da = true %}{% endif %}
+          {% endfor %}
+          {# Sauger fährt bei Abwesenheit → seine Bewegung ist keine Rückkehr; dann zählen nur Handys #}
+          {% set sauger = is_state('binary_sensor.sauger_unterwegs', 'on') and is_state('input_boolean.haus_abwesend', 'on') %}
+          {{ nh.da or ((ns.an or ring_innen) and not sauger) }}
+        attributes:
+          handys_zu_hause: >
+            {% set ns3 = namespace(l=[]) %}
+            {% for p in states.person if p.state == 'home' %}
+              {% set q = p.attributes.source | default('') %}
+              {% set ns3.l = ns3.l + [p.name ~ (' (Handy meldet sich nicht – zählt nicht)' if not q or states[q] is none or (now() - states[q].last_updated).total_seconds() >= 7200 else '')] %}
+            {% endfor %}
+            {{ ns3.l | join(', ') or 'keine' }}
+
+input_number:
+  heizung_abwesend_stunden:
+    name: "Heizung: Standby nach Abwesenheit von"
+    icon: mdi:timer-sand
+    min: 1
+    max: 24
+    step: 1
+    unit_of_measurement: h
+    mode: box
+
+automation:
+  # Träge Fußbodenheizung: kurze Abwesenheit (Einkaufen, Arbeit) nicht absenken – das spart kaum und
+  # das Haus ist beim Heimkommen kühl. Erst nach langer Abwesenheit Komfort -> Standby (ca. 2 K weniger).
+  # Rückkehr stellt den gemerkten Modus wieder her (Automation "Rückkehr erkannt").
+  - id: heizung_lange_abwesend_standby
+    alias: "Heizung: lange abwesend → Standby"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.haus_abwesend
+        to: "on"
+        for: { hours: "{{ states('input_number.heizung_abwesend_stunden') | int(8) }}" }
+    conditions:
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "off"
+    actions:
+      - action: input_text.set_value
+        target: { entity_id: input_text.heizung_modus_vorher }
+        data:
+          value: >
+            {% set ns = namespace(d={}) %}
+            {% for z in ['climate.heizung_wohnzimmer', 'climate.heizung_obergeschoss_3', 'climate.heizung_bad_yvonne_2',
+                         'climate.heizung_flur_eg', 'climate.heizung_ankleide', 'climate.heizung_hwr', 'climate.heizung_sauna']
+                 if state_attr(z, 'preset_mode') %}
+              {% set ns.d = dict(ns.d, **{z.replace('climate.heizung_', ''): state_attr(z, 'preset_mode')}) %}
+            {% endfor %}
+            {{ ns.d | to_json }}
+      - action: climate.set_preset_mode
+        continue_on_error: true
+        target:
+          entity_id: [climate.heizung_wohnzimmer, climate.heizung_obergeschoss_3, climate.heizung_bad_yvonne_2,
+                      climate.heizung_flur_eg, climate.heizung_ankleide, climate.heizung_hwr, climate.heizung_sauna]
+        data: { preset_mode: standby }
+
+  - id: haus_verlassen_automatisch
+    alias: "Anwesenheit: Haus verlassen automatisch"
+    description: "Alle Handys weg und 15 Minuten keine Bewegung/Präsenz im Haus → Skript 'Haus verlassen'."
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.jemand_im_haus
+        from: "on"
+        to: "off"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.haus_verlassen_automatisch
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.haus_abwesend
+        state: "off"
+    actions:
+      - action: script.haus_verlassen
+      - action: logbook.log
+        data: { name: "Haus verlassen", message: "automatisch – alle Handys weg, 15 Minuten keine Bewegung im Haus" }
+
+  - id: rueckkehr_erkannt
+    alias: "Anwesenheit: Rückkehr erkannt"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: [person.tobias_ohst, person.yvonne_ohst, person.malte_ohst]
+        to: home
+        id: handy
+      - trigger: state
+        entity_id:
+          - binary_sensor.prasenz_gastebad
+          - binary_sensor.prasenzmelder_og_malte_decke
+          - binary_sensor.prasenzmelder_og_lara_decke
+          - binary_sensor.prasenzmelder_og_schlafzimmer_decke
+        to: "on"
+        id: bewegung
+    conditions:
+      - condition: state
+        entity_id: input_boolean.haus_abwesend
+        state: "on"
+        for: "00:05:00" # erst 5 min nach dem Verlassen scharf
+      # Bewegung, während der Sauger fährt, ist keine Rückkehr (26.10.)
+      - "{{ trigger.id == 'handy' or is_state('binary_sensor.sauger_unterwegs', 'off') }}"
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.haus_abwesend }
+      - action: vallox.set_profile
+        continue_on_error: true
+        data: { profile: home }
+      # Heizung: Modus von vor dem Verlassen wiederherstellen (nicht im Urlaub)
+      - if:
+          - condition: state
+            entity_id: input_boolean.urlaub
+            state: "off"
+        then:
+          - repeat:
+              for_each: >
+                {% set d = states('input_text.heizung_modus_vorher') %}
+                {% set d = d | from_json if d.startswith('{') else {} %}
+                {{ d.items() | map('list') | list }}
+              sequence:
+                - action: climate.set_preset_mode
+                  continue_on_error: true
+                  target: { entity_id: "climate.heizung_{{ repeat.item[0] }}" }
+                  data: { preset_mode: "{{ repeat.item[1] }}" }
+          # gemerkten Stand löschen, damit er nicht bei einer späteren kurzen Abwesenheit wieder greift
+          - action: input_text.set_value
+            target: { entity_id: input_text.heizung_modus_vorher }
+            data: { value: "" }
+      - action: persistent_notification.dismiss
+        data: { notification_id: haus_verlassen }
+      - if:
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.licht_eg_flur_decke }
+      - action: logbook.log
+        data:
+          name: "Willkommen zu Hause"
+          message: "Rückkehr erkannt über {{ 'Handy' if trigger.id == 'handy' else 'Bewegung im Haus' }} ({{ trigger.to_state.name }})"

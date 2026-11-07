@@ -1,0 +1,210 @@
+# KNX
+#knx:
+# switch
+switch:
+  - name: "Sperre Außenbeleuchtung Sauna"
+    address: "0/5/2"
+  - name: "Sperre Beleuchtung Wohnzimmer"
+    address: "0/5/5"
+  - name: "Sperre Flur Decke"
+    address: "0/5/1"
+  - name: "Tag-Nacht EG"
+    address: "0/3/0"
+  - name: "Tag-Nacht OG"
+    address: "0/3/1"
+  - name: "OG Bad Zwangsrueckführung"
+    address: "0/4/2"
+  - name: "Saunaofen"
+    address: "1/0/2"
+    state_address: "1/1/3"
+
+# light switch
+light:
+  - name: "Außenbeleuchtung Garten"
+    address: "0/0/8"
+  - name: "Außenbeleuchtung Carport"
+    address: "0/0/18"
+    state_address: "0/2/28"
+  - name: "Licht Sauna Decke"
+    address: "0/0/19"
+  - name: "Licht Sauna Wand"
+    address: "0/0/15"
+  - name: "Licht Malte Decke"
+    address: "0/1/20"
+  - name: "Licht Malte Stripe"
+    address: "5/0/4"
+  - name: "Licht Lara Decke"
+    address: "0/1/18"
+  - name: "Licht OG Flur"
+    address: "0/0/6"
+  - name: "EG Bad Yvonne Spiegel"
+    address: "0/0/20"
+    state_address: "0/2/31"
+  - name: "EG Gästebad Spiegel"
+    address: "0/0/21"
+    state_address: "0/2/32"
+
+    # dimmable light
+  - name: "Dimmer Küche Decke"
+    address: "0/0/4"
+    state_address: "0/2/23"
+    brightness_address: "0/1/26"
+    brightness_state_address: "0/2/10"
+  - name: "Dimmer Wohnzimmer Esstisch"
+    address: "0/0/16"
+    state_address: "0/2/2"
+    brightness_address: "0/1/21"
+    brightness_state_address: "0/2/24"
+  - name: "Dimmer Wand Sofa"
+    address: "0/0/113"
+    state_address: "0/2/25"
+    brightness_address: "0/1/4"
+    brightness_state_address: "0/2/12"
+  - name: "Dimmer Außenbeleuchtung Sauna"
+    address: "0/0/14"
+    state_address: "0/2/27"
+    brightness_address: "0/1/22"
+    brightness_state_address: "0/2/26"
+  - name: "Dimmer Ankleidezimmer Tobi"
+    address: "0/0/5"
+    state_address: "0/2/11"
+    brightness_address: "0/1/8"
+    brightness_state_address: "0/2/11"
+  - name: "Dimmer Flur OG"
+    address: "0/0/6"
+    state_address: "0/2/13"
+    brightness_address: "0/1/6"
+    brightness_state_address: "0/2/13"
+  - name: "Dimmer Schlafzimmer Wand"
+    address: "0/0/11"
+    state_address: "0/2/18"
+    brightness_address: "0/1/12"
+    brightness_state_address: "0/2/18"
+  - name: "Dimmer Yvonne Bad"
+    address: "0/0/10"
+    state_address: "0/2/30"
+    brightness_address: "0/1/28"
+    brightness_state_address: "0/2/17"
+  - name: "Dimmer Außenbeleuchtung Giebel"
+    address: "0/0/2"
+    state_address: "0/2/6"
+    brightness_address: "0/1/29"
+    brightness_state_address: "0/2/23"
+
+scene:
+  - name: "Relax"
+    address: 10/0/0
+    scene_number: 1
+  - name: "Kochen"
+    address: 10/0/0
+    scene_number: 2
+  - name: "Party"
+    address: 10/0/0
+    scene_number: 3
+  - name: "Aus"
+    address: 10/0/0
+    scene_number: 4
+  - name: "Dinner"
+    address: 10/0/0
+    scene_number: 7
+  - name: "Malte Stripe Szene"
+    address: 5/6/0
+    scene_number: 1
+
+climate:
+  - name: "Heizung Wohnzimmer"
+    temperature_address: "3/0/0" # IST-Wert
+    target_temperature_state_address: "3/3/20" # Aktueller SOLL-Wert
+    setpoint_shift_address: "3/3/24" # Sollwertverschiebung
+    setpoint_shift_state_address: "3/3/24" # Sollwertverschiebung (lesend)
+    setpoint_shift_mode: "DPT9002" # 2-Byte
+    #setpoint_shift_step: 0.5
+    temperature_step: 0.5
+    #operation_mode_address: "5/1/5"
+    #operation_mode_state_address: "5/1/6"
+  - name: "Heizung Obergeschoss"
+    temperature_address: "3/0/25" # IST-Wert
+    target_temperature_state_address: "3/3/3" # Aktueller SOLL-Wert (lesend)
+    setpoint_shift_address: "3/3/25" # Sollwertverschiebung
+    setpoint_shift_state_address: "3/3/25" # Sollwertverschiebung (lesend)
+    setpoint_shift_mode: "DPT9002" # 2-Byte
+    setpoint_shift_max: 5
+    setpoint_shift_min: -5
+    #setpoint_shift_step: 0.5
+    temperature_step: 0.5
+    #operation_mode_address: "5/1/5"
+    #operation_mode_state_address: "5/1/6"
+    #active_state_address: "10/5/3" # Ventil Zustand (lesend)
+    #operation_mode_address: "10/5/6" # Betriebsmodus
+    #operation_mode_state_address: "10/5/7" # Betriebsmodus status
+    #command_value_state_address: "10/5/2" # Status Stellwert
+  - name: "Heizung Bad Yvonne"
+    temperature_address: "3/0/6" # IST-Wert
+    target_temperature_state_address: "3/3/4" # Aktueller SOLL-Wert (lesend)
+    setpoint_shift_address: "3/3/27" # Sollwertverschiebung
+    setpoint_shift_state_address: "3/3/27" # Sollwertverschiebung (lesend)
+    setpoint_shift_mode: "DPT9002" # 2-Byte
+    setpoint_shift_max: 5
+    setpoint_shift_min: -5
+    temperature_step: 0.5
+
+    # Raumklima
+weather:
+  - name: "Wohnzimmer"
+    address_temperature: "3/0/26"
+    address_humidity: "4/0/0"
+    sync_state: true
+
+# Rolladen
+cover:
+  - name: "Wohnzimmer Rolladen"
+    move_long_address: "2/0/8"
+    move_short_address: "2/0/11"
+    stop_address: "2/0/11"
+    #position_address: "3/0/3"
+    position_state_address: "2/2/4"
+    travelling_time_down: 51
+    travelling_time_up: 61
+  - name: "Küche Rolladen"
+    move_long_address: "2/0/9"
+    move_short_address: "2/0/12"
+    stop_address: "2/0/12"
+    #position_address: "3/0/3"
+    position_state_address: "2/2/5"
+    travelling_time_down: 51
+    travelling_time_up: 61
+  - name: "Bad Yvonne Rolladen"
+    move_long_address: "2/0/10"
+    move_short_address: "2/0/13"
+    stop_address: "2/0/13"
+    #position_address: "3/0/3"
+    position_state_address: "2/2/6"
+    travelling_time_down: 51
+    travelling_time_up: 61
+
+#Präsenzmelder
+binary_sensor:
+  - name: "Bewegungsmelder Flur"
+    state_address: "1/1/10" # KNX Gruppenadresse für den Status (Bewegung erkannt/nicht erkannt)
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder Sauna"
+    state_address: "0/2/29" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Nachtlicht"
+    state_address: "0/0/3" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder Außensauna"
+    state_address: "0/2/27" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder EG Flur Decke"
+    state_address: "0/2/9" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder OG Lara Decke"
+    state_address: "0/7/1" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder OG Malte Decke"
+    state_address: "0/7/0" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar
+  - name: "Präsenzmelder OG Schlafzimmer Decke"
+    state_address: "0/7/2" # Falls ein separater Status vorhanden ist
+    device_class: motion # Stellt den Sensor als Bewegungsmelder dar

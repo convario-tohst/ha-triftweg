@@ -1,0 +1,32 @@
+# Nachtabsenkung für Lichter, die der Melder ohne Nachtwert einschaltet (Bad Yvonne: Melder 1.1.32 → 0/0/10)
+# Geht das Licht im Nachtmodus EG an, dimmt HA es sofort auf die Nachthelligkeit (wie Flur/Gästebad).
+# Später, wenn 1.1.32 nur noch Präsenz meldet (0/7/13), schaltet HA direkt mit Nachtwert.
+
+input_number:
+  bad_yvonne_hell_nacht:
+    name: "Bad Yvonne: Helligkeit nachts"
+    icon: mdi:brightness-3
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+
+automation:
+  - id: bad_yvonne_nachtabsenkung
+    alias: "Bad Yvonne: Decke nachts abgesenkt"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: light.dimmer_yvonne_bad
+        from: "off"
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: switch.tag_nacht_eg
+        state: "on"
+      - "{{ state_attr('light.dimmer_yvonne_bad', 'brightness') | int(255) > (states('input_number.bad_yvonne_hell_nacht') | int(20) * 2.55) | int + 3 }}"
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.dimmer_yvonne_bad }
+        data:
+          brightness_pct: "{{ states('input_number.bad_yvonne_hell_nacht') | int(20) }}"

@@ -1,0 +1,60 @@
+# Voice PE (Wohnzimmer): tagsüber normale Lautstärke, nachts leise und ohne Weck-Ton
+# Weckwort "Okay Nabu", Sprechpausen-Erkennung "relaxed" (sonst werden Sätze abgeschnitten), Raum = Wohnzimmer (Kontext für Claude)
+
+input_number:
+  voice_lautstaerke_tag:
+    name: "Voice: Lautstärke tagsüber"
+    icon: mdi:volume-high
+    min: 0.1
+    max: 1
+    step: 0.05
+  voice_lautstaerke_nacht:
+    name: "Voice: Lautstärke nachts"
+    icon: mdi:volume-low
+    min: 0.05
+    max: 1
+    step: 0.05
+
+automation:
+  - id: voice_pe_tag_nacht
+    alias: "Voice: Lautstärke Tag/Nacht"
+    mode: restart
+    triggers:
+      - trigger: time
+        at: ["07:00:00", "22:00:00"]
+      - trigger: homeassistant
+        event: start
+      - trigger: state
+        entity_id: input_boolean.schlafmodus_og
+    variables:
+      # leise ab Schlafmodus OG (19:30) bzw. 22 Uhr bis 7 Uhr
+      nacht: "{{ is_state('input_boolean.schlafmodus_og', 'on') or now().hour >= 22 or now().hour < 7 }}"
+    actions:
+      - action: media_player.volume_set
+        continue_on_error: true
+        target: { entity_id: media_player.home_assistant_voice_0adb1a_media_player }
+        data:
+          volume_level: "{{ states('input_number.voice_lautstaerke_nacht' if nacht else 'input_number.voice_lautstaerke_tag') | float(0.5) }}"
+      - action: "switch.turn_{{ 'off' if nacht else 'on' }}"
+        continue_on_error: true
+        target: { entity_id: switch.home_assistant_voice_0adb1a_wake_sound }
+
+  # Sprechpausen-Erkennung immer "relaxed": "aggressive" und "default" schnitten Kindern den Satz ab ("Spiel das Lied. Es." ohne Titel, 25.10.)
+  - id: voice_pe_sprechpausen_aggressiv
+    alias: "Voice: Sprechpausen-Erkennung geduldig halten"
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: state
+        entity_id: select.home_assistant_voice_0adb1a_sprechpausen_erkennung
+        not_to: ["relaxed", "unavailable", "unknown"]
+      - trigger: state
+        entity_id: assist_satellite.home_assistant_voice_0adb1a_assist_satellit
+        from: unavailable
+    actions:
+      - delay: 5
+      - action: select.select_option
+        continue_on_error: true
+        target: { entity_id: select.home_assistant_voice_0adb1a_sprechpausen_erkennung }
+        data: { option: relaxed }

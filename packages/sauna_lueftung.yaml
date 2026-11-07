@@ -1,0 +1,159 @@
+# Sauna-Lüftung: oxxify-Lüfterpaar (Master 192.168.11.144, Slave gekoppelt) – lokal per UDP (claude_tools/oxxify.py)
+# Bedarfssteuerung (Schalter "Sauna-Lüftung automatisch"):
+#  - Drehzahl nach Feuchte: unter "mittel" Grundlüftung (zu Hause 20 %, niemand da 5 %), ab "mittel" mittel, ab "hoch" stark; Saunaofen an → stark
+#  - Modus nach Temperatur: draußen kalt → Wärmerückgewinnung (Wärme bleibt drin);
+#    draußen warm und innen deutlich wärmer → Lüftung (kühlt); sonst Wärmerückgewinnung
+
+command_line:
+  - sensor:
+      name: "Sauna Lüftung"
+      unique_id: sauna_lueftung_status
+      command: "python3 /config/claude_tools/oxxify.py status"
+      value_template: "{{ value_json.feuchte }}"
+      unit_of_measurement: "%"
+      device_class: humidity
+      json_attributes: [an, stufe, drehzahl_manuell, modus, modus_nr, feuchte_schwelle, feuchtesensor_aktiv, rpm1, rpm2, alarm, boost]
+      scan_interval: 60
+      command_timeout: 15
+
+shell_command:
+  oxxify: >-
+    python3 /config/claude_tools/oxxify.py {{ befehl if befehl in ['an', 'aus', 'stufe', 'prozent', 'modus', 'status'] else 'status' }} {{ wert | int(0) if wert is defined else '' }}
+
+input_boolean:
+  sauna_lueftung_automatik:
+    name: "Sauna-Lüftung automatisch"
+    icon: mdi:fan-auto
+
+input_number:
+  sauna_lueftung_feuchte_mittel:
+    name: "Sauna-Lüftung: mittel ab Feuchte"
+    min: 40
+    max: 90
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  sauna_lueftung_feuchte_hoch:
+    name: "Sauna-Lüftung: stark ab Feuchte"
+    min: 45
+    max: 95
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  sauna_lueftung_grund:
+    name: "Sauna-Lüftung: Grundlüftung"
+    min: 0
+    max: 60
+    step: 5
+    unit_of_measurement: "%"
+  sauna_lueftung_grund_abwesend:
+    name: "Sauna-Lüftung: Grundlüftung, wenn niemand zu Hause"
+    min: 0
+    max: 40
+    step: 1
+    unit_of_measurement: "%"
+  sauna_lueftung_mittel:
+    name: "Sauna-Lüftung: mittlere Drehzahl"
+    min: 20
+    max: 90
+    step: 5
+    unit_of_measurement: "%"
+  sauna_lueftung_stark:
+    name: "Sauna-Lüftung: starke Drehzahl"
+    min: 40
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+  sauna_lueftung_wrg_unter:
+    name: "Sauna-Lüftung: Wärmerückgewinnung unter (außen)"
+    min: 5
+    max: 25
+    step: 1
+    unit_of_measurement: "°C"
+    mode: box
+
+template:
+  - fan:
+      - name: "Sauna Lüftung"
+        unique_id: sauna_lueftung_fan
+        state: "{{ state_attr('sensor.sauna_luftung', 'an') }}"
+        percentage: >
+          {% set s = state_attr('sensor.sauna_luftung', 'stufe') %}
+          {{ state_attr('sensor.sauna_luftung', 'drehzahl_manuell') | int(0) if s == 255 else {1: 33, 2: 66, 3: 100}.get(s, 0) }}
+        preset_mode: "{{ state_attr('sensor.sauna_luftung', 'modus') }}"
+        preset_modes: ["Lüftung", "Wärmerückgewinnung", "Zuluft"]
+        turn_on:
+          - action: shell_command.oxxify
+            data: { befehl: an }
+          - action: homeassistant.update_entity
+            target: { entity_id: sensor.sauna_luftung }
+        turn_off:
+          - action: shell_command.oxxify
+            data: { befehl: aus }
+          - action: homeassistant.update_entity
+            target: { entity_id: sensor.sauna_luftung }
+        set_percentage:
+          - action: shell_command.oxxify
+            data: { befehl: "{{ 'aus' if percentage | int == 0 else 'prozent' }}", wert: "{{ percentage | int }}" }
+          - action: homeassistant.update_entity
+            target: { entity_id: sensor.sauna_luftung }
+        set_preset_mode:
+          - action: shell_command.oxxify
+            data:
+              befehl: modus
+              wert: "{{ {'Lüftung': 0, 'Wärmerückgewinnung': 1, 'Zuluft': 2}[preset_mode] }}"
+          - action: homeassistant.update_entity
+            target: { entity_id: sensor.sauna_luftung }
+
+automation:
+  - id: sauna_lueftung_bedarf
+    alias: "Sauna-Lüftung: nach Bedarf (Feuchte/Temperatur)"
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: time_pattern
+        minutes: "/5"
+      - trigger: state
+        entity_id: [switch.saunaofen, input_boolean.sauna_lueftung_automatik, binary_sensor.jemand_im_haus, input_boolean.haus_abwesend]
+      - trigger: numeric_state
+        entity_id: sensor.sauna_luftung
+        above: input_number.sauna_lueftung_feuchte_mittel
+      - trigger: numeric_state
+        entity_id: sensor.sauna_luftung
+        above: input_number.sauna_lueftung_feuchte_hoch
+    conditions:
+      - condition: state
+        entity_id: input_boolean.sauna_lueftung_automatik
+        state: "on"
+      - "{{ states('sensor.sauna_luftung') not in ['unknown', 'unavailable'] }}"
+    variables:
+      f: "{{ states('sensor.sauna_luftung') | float(50) }}"
+      aussen: "{{ states('sensor.vallox_aussenluft') | float(state_attr('weather.forecast_home', 'temperature') | float(10)) }}"
+      innen: "{{ states('sensor.temperatur_sauna') | float(20) }}"
+      soll_prozent: >
+        {% if is_state('switch.saunaofen', 'on') or f >= states('input_number.sauna_lueftung_feuchte_hoch') | float(70) %}{{ states('input_number.sauna_lueftung_stark') | int(80) }}
+        {% elif f >= states('input_number.sauna_lueftung_feuchte_mittel') | float(60) %}{{ states('input_number.sauna_lueftung_mittel') | int(50) }}
+        {% elif is_state('binary_sensor.jemand_im_haus', 'off') or is_state('input_boolean.haus_abwesend', 'on') %}{{ states('input_number.sauna_lueftung_grund_abwesend') | int(5) }}
+        {% else %}{{ states('input_number.sauna_lueftung_grund') | int(20) }}{% endif %}
+      soll_modus: >
+        {% if aussen < states('input_number.sauna_lueftung_wrg_unter') | float(16) %}1
+        {% elif innen > aussen + 2 %}0
+        {% else %}1{% endif %}
+      ist_prozent: "{{ state_attr('fan.sauna_luftung', 'percentage') | int(-1) }}"
+      ist_modus: "{{ state_attr('sensor.sauna_luftung', 'modus_nr') | int(-1) }}"
+    actions:
+      # nur senden, wenn sich etwas ändert (UDP schonen)
+      - if: "{{ not state_attr('sensor.sauna_luftung', 'an') and soll_prozent | int > 0 }}"
+        then:
+          - action: shell_command.oxxify
+            data: { befehl: an }
+      - if: "{{ (soll_prozent | int - ist_prozent) | abs > 2 or state_attr('sensor.sauna_luftung', 'stufe') != 255 }}"
+        then:
+          - action: shell_command.oxxify
+            data: { befehl: prozent, wert: "{{ soll_prozent | int }}" }
+      - if: "{{ soll_modus | int != ist_modus }}"
+        then:
+          - action: shell_command.oxxify
+            data: { befehl: modus, wert: "{{ soll_modus | int }}" }
+      - action: homeassistant.update_entity
+        target: { entity_id: sensor.sauna_luftung }

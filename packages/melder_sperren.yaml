@@ -1,0 +1,73 @@
+# Wächter: meldet, wenn ein Präsenzmelder gesperrt / zwangsgeführt wird – und von wem
+# (Hintergrund 13.10.: Flur EG 1.1.22 war unbemerkt über 0/5/1 gesperrt, kein Licht nach Bewegung)
+automation:
+  - id: melder_sperre_waechter
+    alias: "Melder: Sperre/Zwangsführung melden"
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/5/1" }
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/5/2" }
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/5/5" }
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/4/2" }
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "1/4/0" }
+    conditions:
+      - "{{ trigger.event.data.telegramtype == 'GroupValueWrite' and trigger.event.data.data not in [0, [0], none] }}"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: "melder_sperre_{{ trigger.event.data.destination | replace('/', '_') }}"
+          title: "Präsenzmelder gesperrt"
+          message: >
+            {% set namen = {'0/5/1': 'Flur EG (1.1.22)', '0/5/2': 'Sauna außen (1.1.38)', '0/5/5': 'Wohnzimmer (1.1.23)',
+                            '0/4/2': 'Bad OG (1.1.18)', '1/4/0': 'Wohnzimmer Bewegungserkennung (1.1.23)'} %}
+            {{ namen.get(trigger.event.data.destination, trigger.event.data.destination) }} wurde gesperrt
+            (Wert {{ trigger.event.data.data }}) von {{ trigger.event.data.source }}
+            {{ '= Home Assistant' if trigger.event.data.source == '1.1.204' else
+               ('= Timberwolf' if trigger.event.data.source == '1.1.10' else '') }}
+            um {{ now().strftime('%d.%m. %H:%M:%S') }}. Entsperren: Seite „Automatik“ → Präsenzmelder → „Automatik“.
+
+  # Flur EG: Ein Taster (1.1.14) sperrt den Melder 1.1.22 über 0/5/1 – unbemerkt, danach geht das Flurlicht nicht mehr
+  # (13.10. und 28.10.). Gesperrt von einem Gerät (nicht HA) → nach X Minuten automatisch wieder "Automatik".
+  - id: melder_flur_eg_auto_entsperren
+    alias: "Melder Flur EG: Sperre durch Taster automatisch aufheben"
+    mode: restart
+    triggers:
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/5/1", telegramtype: GroupValueWrite }
+      - trigger: homeassistant
+        event: start
+        id: start
+    conditions:
+      - "{{ trigger.id == 'start' or (trigger.event.data.source != '1.1.204' and trigger.event.data.data not in [0, [0], none]) }}"
+    actions:
+      - delay:
+          minutes: "{{ 1 if trigger.id == 'start' else states('input_number.melder_flur_eg_sperre_max') | int(30) }}"
+      - action: select.select_option
+        target: { entity_id: select.melder_flur_eg }
+        data: { option: Automatik }
+      - action: persistent_notification.dismiss
+        data: { notification_id: "melder_sperre_0_5_1" }
+      - action: logbook.log
+        data: { name: "Melder Flur EG", message: "Sperre automatisch aufgehoben (Automatik)" }
+
+input_number:
+  melder_flur_eg_sperre_max:
+    name: "Melder Flur EG: Taster-Sperre aufheben nach"
+    icon: mdi:lock-clock
+    min: 5
+    max: 240
+    step: 5
+    unit_of_measurement: min
+    mode: box
+    initial: 30

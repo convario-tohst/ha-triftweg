@@ -1,0 +1,102 @@
+# Malte: LED-Streifen mit kindgerechten Profilen
+# HA schickt alle paar Sekunden eine neue Farbe; das sanfte Überblenden macht das DALI-Gateway
+# (Gruppe 9: Überblendzeit/Fade Time ca. 2-4 s einstellen).
+
+input_select:
+  malte_led_profil:
+    name: "Malte LED Profil"
+    icon: mdi:palette
+    options:
+      - "Aus"
+      - "Regenbogen"
+      - "Meer"
+      - "Einhorn"
+      - "Lagerfeuer"
+      - "Party"
+      - "Einschlafen"
+
+script:
+  malte_led_profil:
+    alias: "Malte LED: Profil abspielen"
+    mode: restart
+    sequence:
+      - variables:
+          p: "{{ states('input_select.malte_led_profil') }}"
+          farben: >
+            {% set f = {
+              'Regenbogen': [[255,0,0,0],[255,128,0,0],[255,255,0,0],[0,255,0,0],[0,255,255,0],[0,0,255,0],[128,0,255,0],[255,0,255,0]],
+              'Meer': [[0,40,255,0],[0,120,255,0],[0,200,200,0],[0,90,160,30],[0,160,255,0]],
+              'Einhorn': [[255,60,180,0],[170,60,255,0],[60,200,255,0],[255,120,220,20]],
+              'Lagerfeuer': [[255,60,0,0],[255,100,0,0],[220,40,0,0],[255,140,10,0],[200,30,0,0]],
+              'Party': [[255,0,0,0],[0,255,0,0],[0,0,255,0],[255,0,255,0],[255,255,0,0],[0,255,255,0]]
+            } %}{{ f.get(p, []) }}
+          pause: "{{ {'Party': 2, 'Lagerfeuer': 3, 'Regenbogen': 5, 'Einhorn': 6, 'Meer': 7}.get(p, 5) }}"
+      - choose:
+          - conditions: "{{ p == 'Aus' }}"
+            sequence:
+              - action: light.turn_off
+                target: { entity_id: light.licht_malte_stripe_2 }
+          - conditions: "{{ p == 'Einschlafen' }}"
+            sequence:
+              # warmes Orange, in 20 Minuten langsam auf 0, dann aus
+              - repeat:
+                  for_each: [40, 32, 25, 18, 12, 8, 5, 3, 1]
+                  sequence:
+                    - condition: state
+                      entity_id: input_select.malte_led_profil
+                      state: "Einschlafen"
+                    - action: light.turn_on
+                      target: { entity_id: light.licht_malte_stripe_2 }
+                      data:
+                        rgbw_color: [255, 90, 10, 0]
+                        brightness_pct: "{{ repeat.item }}"
+                    - delay: { minutes: 2, seconds: 15 }
+              - action: light.turn_off
+                target: { entity_id: light.licht_malte_stripe_2 }
+              - action: input_select.select_option
+                target: { entity_id: input_select.malte_led_profil }
+                data: { option: "Aus" }
+        default:
+          - repeat:
+              while:
+                - condition: template
+                  value_template: "{{ is_state('input_select.malte_led_profil', p) }}"
+              sequence:
+                - action: light.turn_on
+                  target: { entity_id: light.licht_malte_stripe_2 }
+                  data:
+                    rgbw_color: >
+                      {% if p == 'Party' %}{{ farben | random }}{% else %}{{ farben[(repeat.index - 1) % (farben | count)] }}{% endif %}
+                - delay: { seconds: "{{ pause }}" }
+
+automation:
+  - id: malte_led_profil_wechsel
+    alias: "Malte LED: Profil gewechselt"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_select.malte_led_profil
+    actions:
+      - action: script.turn_off
+        target: { entity_id: script.malte_led_profil }
+      - action: script.turn_on
+        target: { entity_id: script.malte_led_profil }
+
+  # Wird der Streifen am Taster ausgeschaltet, Profil beenden
+  - id: malte_led_aus_profil_stopp
+    alias: "Malte LED: aus -> Profil stoppen"
+    triggers:
+      - trigger: state
+        entity_id: light.licht_malte_stripe_2
+        to: "off"
+        for: "00:00:10"
+    conditions:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: input_select.malte_led_profil
+            state: ["Aus", "Einschlafen"]
+    actions:
+      - action: input_select.select_option
+        target: { entity_id: input_select.malte_led_profil }
+        data: { option: "Aus" }

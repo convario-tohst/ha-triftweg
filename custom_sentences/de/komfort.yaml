@@ -1,0 +1,29 @@
+language: de
+# Komfort-Schnellbefehle (26.10.) – Logik in packages/komfort.yaml
+intents:
+  IchGeheInsBett:
+    data:
+      - sentences:
+          - "(ich gehe|ich geh|wir gehen|wir geh) [jetzt] (ins bett|schlafen|pennen)"
+          - "gute nacht [ludwig|nabu]"
+          - "unten [alles] aus"
+  AllesAus:
+    data:
+      - sentences:
+          - "[bitte] (mach|mache|schalte|schalt) [mal] [bitte] alles aus"
+          - "alles aus"
+          - "[mach] [das] ganze haus aus"
+  SchlafmodusOG:
+    data:
+      - sentences:
+          - "[bitte] [(mach|mache|schalte|schalt)] [den] schlafmodus [oben|im obergeschoss|og] {zustand}"
+          - "[bitte] [(mach|mache|schalte|schalt)] oben [den] schlafmodus {zustand}"
+          - "[(schalte|schalt)] oben schlafen [ein] {zustand}"
+          - "oben schlafen {zustand}"
+lists:
+  zustand:
+    values:
+      - in: "(an|ein)"
+        out: "on"
+      - in: "aus"
+        out: "off"

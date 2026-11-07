@@ -1,0 +1,84 @@
+# HWR: Licht nach Präsenz über HA (Melder 1.1.41 meldet nur noch Präsenz auf 0/7/16, schaltet DALI nicht mehr selbst)
+# - Präsenz kommt + Raum dunkel genug (1-Wire-Wandsensor 4/1/12) → Licht an (tagsüber / nachts eigene Helligkeit)
+# - keine Präsenz mehr für "Nachlauf" Minuten → aus
+# - Manuell ausgeschaltet bei Präsenz → bleibt aus, bis der Raum einmal leer war
+# Glastaster schalten weiterhin direkt (auch wenn HA ausfällt).
+
+input_boolean:
+  hwr_praesenz_licht:
+    name: "HWR: Licht nach Präsenz"
+    icon: mdi:motion-sensor
+
+input_number:
+  hwr_nachlauf:
+    name: "HWR: Licht aus nach (ohne Präsenz)"
+    icon: mdi:timer-outline
+    min: 1
+    max: 60
+    step: 1
+    unit_of_measurement: min
+  hwr_helligkeit_tag:
+    name: "HWR: Helligkeit tagsüber"
+    icon: mdi:brightness-6
+    min: 10
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+  hwr_helligkeit_nacht:
+    name: "HWR: Helligkeit nachts"
+    icon: mdi:brightness-3
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+  hwr_lux_schwelle:
+    name: "HWR: Licht nur unter (Lux im Raum)"
+    icon: mdi:brightness-5
+    min: 10
+    max: 1000
+    step: 10
+    unit_of_measurement: lx
+    mode: box
+
+automation:
+  - id: hwr_licht_praesenz
+    alias: "HWR: Licht nach Präsenz"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.prasenz_hwr
+        from: "off"
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: binary_sensor.prasenz_hwr
+        from: "on"
+        to: "off"
+        for: { minutes: "{{ states('input_number.hwr_nachlauf') | int(5) }}" }
+        id: aus
+    conditions:
+      - condition: state
+        entity_id: input_boolean.hwr_praesenz_licht
+        state: "on"
+    variables:
+      nacht: >
+        {% set b = states('input_datetime.nacht_eg_beginn') %}{% set e = states('input_datetime.nacht_eg_ende') %}
+        {% set t = now().strftime('%H:%M:%S') %}
+        {{ (t >= b or t < e) if b > e else (b <= t < e) }}
+    actions:
+      - choose:
+          - conditions:
+              - "{{ trigger.id == 'an' }}"
+              - >
+                {% set lx = states('sensor.helligkeit_hwr') %}
+                {{ not is_number(lx) or lx | float < states('input_number.hwr_lux_schwelle') | float(300) }}
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.licht_sauna_decke }   # = HWR Decke (0/0/12, DALI-Gruppe 11)
+                data:
+                  brightness_pct: >
+                    {{ states('input_number.hwr_helligkeit_nacht' if nacht else 'input_number.hwr_helligkeit_tag') | int(60) }}
+          - conditions: "{{ trigger.id == 'aus' }}"
+            sequence:
+              - action: light.turn_off
+                target: { entity_id: light.licht_sauna_decke }

@@ -1,0 +1,18 @@
+{
+  "type": "micro",
+  "wake_word": "Ludwig",
+  "author": "Familie Ohst (trainiert 26.10.2026, deutsches Stimmenmodell)",
+  "website": "https://github.com/kahrendt/microWakeWord",
+  "model": "ludwig.tflite",
+  "trained_languages": [
+    "de"
+  ],
+  "version": 2,
+  "micro": {
+    "probability_cutoff": 0.99,
+    "sliding_window_size": 6,
+    "feature_step_size": 10,
+    "tensor_arena_size": 40000,
+    "minimum_esphome_version": "2024.7.0"
+  }
+}

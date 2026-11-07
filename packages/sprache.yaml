@@ -1,0 +1,202 @@
+# Sprachsteuerung: Antworten zu den eigenen Sätzen (custom_sentences/de/haus.yaml)
+# und Lichtgruppen für "Wohnzimmer und Küche", "unten", "oben"
+
+intent_script:
+  TempWohnenKueche:
+    speech:
+      text: >
+        In Wohnen und Küche sind es {{ state_attr('climate.heizung_wohnzimmer', 'current_temperature') | round(1) }} Grad,
+        eingestellt sind {{ state_attr('climate.heizung_wohnzimmer', 'temperature') }} Grad.
+  TempObergeschoss:
+    speech:
+      text: >
+        Im Obergeschoss sind es {{ state_attr('climate.heizung_obergeschoss_3', 'current_temperature') | round(1) }} Grad,
+        eingestellt sind {{ state_attr('climate.heizung_obergeschoss_3', 'temperature') }} Grad.
+  HeizungWohnenKueche:
+    action:
+      - action: climate.set_temperature
+        target: { entity_id: climate.heizung_wohnzimmer }
+        data: { temperature: "{{ grad }}" }
+    speech:
+      text: "Heizung Wohnen und Küche auf {{ grad }} Grad gestellt."
+  HeizungObergeschoss:
+    action:
+      - action: climate.set_temperature
+        target: { entity_id: climate.heizung_obergeschoss_3 }
+        data: { temperature: "{{ grad }}" }
+    speech:
+      text: "Heizung im Obergeschoss auf {{ grad }} Grad gestellt."
+  AllesAn:
+    action:
+      - if: "{{ is_state('input_boolean.alles_an', 'on') }}"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.alle_lichter }
+            data: { brightness_pct: 100 }
+        else:
+          - action: input_boolean.turn_on
+            target: { entity_id: input_boolean.alles_an }
+    speech:
+      text: "Alle Lichter sind an. Sag 'zurück', um den vorherigen Zustand wiederherzustellen."
+  AllesZurueck:
+    action:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.alles_an }
+    speech:
+      text: "Vorheriger Lichtzustand wiederhergestellt."
+  SzeneAktivieren:
+    action:
+      - action: scene.turn_on
+        target: { entity_id: "{{ szene }}" }
+    speech:
+      text: "Szene {{ state_attr(szene, 'friendly_name') }} aktiviert."
+  MusikSender:
+    action:
+      - if: "{{ musikraum is defined }}"
+        then:
+          - action: input_select.select_option
+            target: { entity_id: input_select.musik_raum }
+            data: { option: "{{ musikraum }}" }
+      - action: "{{ sender if sender is defined else 'script.musik_an' }}"
+        data:
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+    speech:
+      text: "Musik läuft {{ 'im ' ~ states('input_select.musik_raum') if states('input_select.musik_raum') != 'Beide' else 'überall' }}."
+  FrageAnClaude:
+    description: "Interne Weiterleitung von Fragen an Claude (nicht selbst aufrufen)."
+    action:
+      - action: conversation.process
+        response_variable: antwort
+        data:
+          agent_id: conversation.claude_conversation
+          language: de
+          # Gesprächsgedächtnis: gleiche ID, solange zwischen zwei Sätzen < 5 min liegen (danach neu)
+          conversation_id: >
+            {% set g = states('input_text.sprache_gespraech').split('|') %}
+            {{ g[0] if g | count == 2 and (as_timestamp(now()) - g[1] | float(0)) < 300 else 'haus_' ~ (as_timestamp(now()) | int) }}
+          text: >
+            {{ state_attr('sensor.sprache_zustand', 'text') }}
+            {% set rr = states('input_text.sprache_raum').split('|') %}{% if rr | count == 2 and (as_timestamp(now()) - rr[1] | float(0)) < 90 %}(Gesprochen über das Sprachgerät im Raum {{ rr[0] }} – Befehle ohne Raumangabe und "hier" meinen diesen Raum.) {% endif %}ANFRAGE: {{ fragewort }} {{ frage }}
+      # API-Fehler (z. B. 400, wenn sich die Werkzeuge mitten im Gespräch ändern – 25.10.) → einmal mit NEUEM Gespräch wiederholen
+      - if: "{{ 'API error' in (antwort.response.speech.plain.speech | default('')) or (antwort.response.response_type | default('')) == 'error' }}"
+        then:
+          - action: conversation.process
+            response_variable: antwort2
+            data:
+              agent_id: conversation.claude_conversation
+              language: de
+              conversation_id: "{{ 'haus_neu_' ~ (as_timestamp(now()) | int) }}"
+              text: >
+                {{ state_attr('sensor.sprache_zustand', 'text') }}
+                {% set rr = states('input_text.sprache_raum').split('|') %}{% if rr | count == 2 and (as_timestamp(now()) - rr[1] | float(0)) < 90 %}(Gesprochen über das Sprachgerät im Raum {{ rr[0] }} – Befehle ohne Raumangabe und "hier" meinen diesen Raum.) {% endif %}ANFRAGE: {{ fragewort }} {{ frage }}
+          - variables:
+              antwort: "{{ antwort2 }}"
+      - action: input_text.set_value
+        target: { entity_id: input_text.sprache_gespraech }
+        data: { value: "{{ antwort.conversation_id | default('haus_0') }}|{{ as_timestamp(now()) | int }}" }
+      - variables:
+          r: { text: "{{ antwort.response.speech.plain.speech | default('Das weiß ich gerade nicht.') }}" }
+      - stop: ok
+        response_variable: r
+    speech:
+      text: "{{ action_response.text if action_response is mapping else 'Das weiß ich gerade nicht.' }}"
+  MusikWunsch:
+    action:
+      # Wunsch ohne Titel (z. B. Satz abgeschnitten: "Spiel das Lied.") → nicht raten, nachfragen (25.10.: spielte Café del Mar)
+      - if: "{{ (musikwunsch | lower | regex_replace('[^a-zäöüß ]', '') | trim) is match('^(bitte )?((das|ein|den|einen|die) )?(lied|song|stück|titel|album|playlist|musik|was|etwas)?( bitte)?( [a-zäöüß]{1,3})?$') }}"
+        then:
+          - variables: { nachfrage: { frage: true } }
+          - stop: ok
+            response_variable: nachfrage
+      - action: script.musik_wunsch_abspielen
+        response_variable: ergebnis
+        data:
+          wunsch: "{{ musikwunsch }}"
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+      - stop: ok
+        response_variable: ergebnis
+    speech:
+      text: "{{ 'Welches Lied? Sag den Titel gleich mit, zum Beispiel: Spiel Sky full of Stars.' if action_response is mapping and action_response.frage is defined else (action_response.data.ansage if action_response is mapping and action_response.data is defined else 'Ich suche ' ~ musikwunsch ~ '.') }}"
+  MusikUeberraschung:
+    action:
+      - action: script.musik_wunsch_abspielen
+        response_variable: ergebnis
+        data:
+          wunsch: ""
+          raum: "{{ musikraum if musikraum is defined else '' }}"
+      - stop: ok
+        response_variable: ergebnis
+    speech:
+      text: "{{ action_response.data.ansage if action_response is mapping and action_response.data is defined else 'Ich suche etwas Passendes aus.' }}"
+  MusikRaum:
+    action:
+      - action: input_select.select_option
+        target: { entity_id: input_select.musik_raum }
+        data: { option: "{{ musikraum }}" }
+    speech:
+      text: "Musik-Raum ist jetzt {{ musikraum }}."
+  MusikAus:
+    action:
+      - if: "{{ musikraum is defined }}"
+        then:
+          - action: input_select.select_option
+            target: { entity_id: input_select.musik_raum }
+            data: { option: "{{ musikraum }}" }
+      - action: script.musik_aus
+    speech:
+      text: "Musik aus."
+  Aenderungswunsch:
+    action:
+      - condition: template
+        value_template: "{{ wunsch is defined and wunsch | length > 3 }}"
+      - action: todo.add_item
+        target: { entity_id: todo.anderungswunsche }
+        data:
+          item: "{{ wunsch[:1] | upper }}{{ wunsch[1:] }}"
+          description: "Per Sprache am {{ now().strftime('%d.%m.%Y %H:%M') }}"
+    speech:
+      text: "{{ 'Notiert für Claude: ' ~ wunsch ~ '.' if wunsch is defined and wunsch | length > 3 else 'Das habe ich nicht verstanden. Sag zum Beispiel: Änderungswunsch, Licht im Flur soll heller werden.' }}"
+  AlleLichterAus:
+    action:
+      - action: script.alle_lichter_aus
+    speech:
+      text: "Alle Lichter sind aus."
+  AllesAus:
+    action:
+      - action: light.turn_off
+        target: { entity_id: light.alle_lichter }
+      - delay: 2
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.alles_an }
+    speech:
+      text: "Alle Lichter sind aus."
+  WelcheLichterAn:
+    speech:
+      text: >
+        {% set an = state_attr('light.alle_lichter', 'entity_id') | select('is_state', 'on') | map('state_attr', 'friendly_name') | list %}
+        {% if an | count == 0 %}Im Haus ist kein Licht an.{% else %}An sind: {{ an | join(', ') }}.{% endif %}
+  MelderWohnzimmer:
+    action:
+      - action: select.select_option
+        target: { entity_id: select.melder_wohnzimmer }
+        data: { option: "{{ modus }}" }
+    speech:
+      text: >
+        {{ 'Präsenzmelder im Wohnzimmer gesperrt, das Licht bleibt an.' if modus == 'An erzwingen'
+           else 'Präsenzmelder im Wohnzimmer wieder auf Automatik.' }}
+  WieWarmUeberall:
+    speech:
+      text: >
+        {% set z = [('Wohnen', 'climate.heizung_wohnzimmer'), ('Obergeschoss', 'climate.heizung_obergeschoss_3'),
+                    ('Bad Yvonne', 'climate.heizung_bad_yvonne_2'), ('Flur', 'climate.heizung_flur_eg'),
+                    ('Ankleide', 'climate.heizung_ankleide'), ('HWR', 'climate.heizung_hwr')] %}
+        {% for n, e in z %}{{ n }} {{ state_attr(e, 'current_temperature') | round(1) }}{{ ', ' if not loop.last }}{% endfor %} Grad.
+
+light:
+  - platform: group
+    name: "Licht Wohnen und Küche"
+    unique_id: licht_wohnen_kueche
+    entities:
+      - light.dimmer_kuche_decke_2
+      - light.dimmer_wohnzimmer_esstisch
+      - light.dimmer_wand_sofa

@@ -1,0 +1,42 @@
+# --- Home Assistant Triftweg: was NICHT ins Git gehört ---
+# Geheimnisse & Schlüssel
+secrets.yaml
+.ssh/
+*.key
+*.pem
+.cloud/
+claude_tools/.systemtest_token
+esphome/secrets.yaml
+
+# Datenbank, Logs, Laufzeit
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.*
+home-assistant.log*
+.ha_run.lock
+.HA_VERSION
+
+# Caches, Abhängigkeiten, generierte Dateien
+.cache/
+deps/
+tts/
+__pycache__/
+custom_components/
+esphome/.esphome/
+www/community/
+.shopping_list.json
+
+# Präsenz-Protokolle (personenbezogen)
+protokoll/
+
+# .storage: nur ausgewählte, unkritische Dateien sichern (enthält sonst Tokens/Passwörter)
+.storage/*
+!.storage/lovelace*
+!.storage/core.area_registry
+!.storage/core.floor_registry
+!.storage/core.label_registry
+!.storage/core.category_registry
+!.storage/input_boolean
+!.storage/local_todo.*

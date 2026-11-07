@@ -1,0 +1,342 @@
+# Ring: zentrale Steuerung (Dashboard + Sprache)
+# Geräte-Kürzel = Anfang der Entity-IDs:
+#   front_door (Haustür-Klingel), vordereingang, schlafzimmer, flur, mobil (= "Wohnzimmer"),
+#   carport_hinten, wohnzimmer (= "Carport innen"), vorraum, mulltonne, einfahrt
+# Ruhemodus: alle Ring-Lautstärken auf 0, danach zurück auf "Normal-Lautstärke".
+# Ruhezeiten: optional automatisch, wenn jemand zu Hause ist (Zeiten einstellbar).
+
+input_boolean:
+  ring_ruhemodus:
+    name: "Ring: Ruhemodus (stumm)"
+    icon: mdi:bell-sleep
+  ring_kameras_stumm:
+    name: "Ring: Kameras stumm (Ruhezeit)"
+    icon: mdi:cctv-off
+  ring_ruhezeit_automatik:
+    name: "Ring: Ruhezeit automatisch"
+    icon: mdi:bell-cog
+
+input_number:
+  ring_lautstaerke_normal:
+    name: "Ring: Normal-Lautstärke"
+    icon: mdi:volume-high
+    min: 1
+    max: 11
+    step: 1
+
+input_datetime:
+  ring_ruhe_beginn:
+    name: "Ring: Ruhezeit von"
+    has_date: false
+    has_time: true
+  ring_ruhe_ende:
+    name: "Ring: Ruhezeit bis"
+    has_date: false
+    has_time: true
+  ring_stumm_bis:
+    name: "Ring: stumm bis"
+    icon: mdi:bell-sleep-outline
+    has_date: true
+    has_time: true
+
+template:
+  - binary_sensor:
+      - name: "Ring Ruhezeit Soll"
+        unique_id: ring_ruhezeit_soll
+        icon: mdi:bell-clock
+        state: >
+          {% set b = today_at(states('input_datetime.ring_ruhe_beginn')) %}
+          {% set e = today_at(states('input_datetime.ring_ruhe_ende')) %}
+          {% set in_zeit = (b <= now() < e) if b <= e else (now() >= b or now() < e) %}
+          {{ in_zeit and states.person | selectattr('state', 'eq', 'home') | list | count > 0 }}
+
+script:
+  ring_stumm_bis:
+    alias: "Ring stumm schalten (bis Uhrzeit / für Minuten)"
+    description: >
+      Schaltet alle Ring-Klingeln und -Kameras stumm (Lautstärke 0) und automatisch wieder laut,
+      entweder zur Uhrzeit "bis" (HH:MM, heute bzw. morgen falls schon vorbei) oder nach "minuten".
+      Ohne Angabe bleibt Ring stumm, bis man es wieder laut schaltet. Push-Nachrichten der Ring-App
+      werden dadurch NICHT abgeschaltet.
+    icon: mdi:bell-sleep
+    mode: restart
+    fields:
+      bis:
+        name: Bis Uhrzeit (HH:MM)
+        example: "20:00"
+        selector: { time: }
+      minuten:
+        name: Für Minuten
+        example: 60
+        selector: { number: { min: 1, max: 1440, unit_of_measurement: min } }
+    variables:
+      ende: >
+        {% if minuten is defined and minuten | int(0) > 0 %}
+          {{ (now() + timedelta(minutes=minuten | int)).strftime('%Y-%m-%d %H:%M:%S') }}
+        {% elif bis is defined and bis %}
+          {% set t = today_at(bis[:5]) %}
+          {{ (t if t > now() else t + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S') }}
+        {% else %}{% endif %}
+    sequence:
+      - action: input_boolean.turn_on
+        target: { entity_id: input_boolean.ring_ruhemodus }
+      # ohne Ende: alten Endzeitpunkt in die Vergangenheit setzen, damit nichts unerwartet laut schaltet
+      - action: input_datetime.set_datetime
+        target: { entity_id: input_datetime.ring_stumm_bis }
+        data: { datetime: "{{ ende | trim if ende | trim != '' else '2000-01-01 00:00:00' }}" }
+      - variables:
+          antwort:
+            text: >
+              {{ 'Ring ist stumm bis ' ~ as_datetime(ende | trim).strftime('%H:%M') ~ ' Uhr.' if ende | trim != ''
+                 else 'Ring ist stumm, bis du es wieder laut schaltest.' }}
+      - stop: ok
+        response_variable: antwort
+
+  ring_laut:
+    alias: "Ring wieder laut schalten"
+    description: "Beendet den Ruhemodus: alle Ring-Lautstärken wieder wie vorher."
+    icon: mdi:bell-ring
+    mode: restart
+    sequence:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.ring_ruhemodus }
+
+  ring_steuern:
+    alias: "Ring steuern"
+    description: >
+      Ring-Geräte steuern. geraet: alle, front_door (Haustür-Klingel), vordereingang, schlafzimmer, flur,
+      mobil (Wohnzimmer-Kamera), carport_hinten, wohnzimmer (= Carport innen!), vorraum, mulltonne, einfahrt.
+      aktion: bewegung_an / bewegung_aus (Bewegungserkennung), sirene_an / sirene_aus, licht_an / licht_aus
+      (Kameralicht), lautstaerke (mit wert 0–11).
+    icon: mdi:doorbell-video
+    mode: queued
+    fields:
+      geraet:
+        name: Gerät (Kürzel oder "alle")
+        default: alle
+        selector:
+          select:
+            options: [alle, front_door, vordereingang, schlafzimmer, flur, mobil, carport_hinten, wohnzimmer, vorraum, mulltonne, einfahrt]
+      aktion:
+        name: Aktion
+        required: true
+        selector:
+          select:
+            options: [bewegung_an, bewegung_aus, sirene_an, sirene_aus, licht_an, licht_aus, lautstaerke]
+      wert:
+        name: Lautstärke (0–11)
+        selector: { number: { min: 0, max: 11, step: 1 } }
+    variables:
+      alle: [front_door, vordereingang, schlafzimmer, flur, mobil, carport_hinten, wohnzimmer, vorraum, mulltonne, einfahrt]
+      gs: "{{ alle if (geraet | default('alle')) in ['alle', '', none] else [geraet] }}"
+      art: "{{ aktion.split('_')[0] }}"
+      ziele: >
+        {% set ns = namespace(e=[]) %}
+        {% set doms = {'bewegung': ['switch'], 'sirene': ['siren', 'switch'], 'licht': ['light'], 'lautstaerke': ['number']}[art] %}
+        {% set key = {'bewegung': 'bewegungserkennung', 'sirene': 'sirene', 'licht': '_licht', 'lautstaerke': 'lautstarke'}[art] %}
+        {% for d in doms %}{% for s in states[d] %}
+          {% for g in gs if s.object_id.startswith(g ~ '_') and key in s.object_id
+             and s.state not in ['unavailable'] %}
+            {% set ns.e = ns.e + [s.entity_id] %}
+          {% endfor %}
+        {% endfor %}{% endfor %}
+        {{ ns.e | unique | list }}
+    sequence:
+      - condition: template
+        value_template: "{{ ziele | count > 0 }}"
+      - choose:
+          - conditions: "{{ art == 'lautstaerke' }}"
+            sequence:
+              - action: number.set_value
+                continue_on_error: true
+                target: { entity_id: "{{ ziele }}" }
+                data: { value: "{{ wert | default(states('input_number.ring_lautstaerke_normal')) | int }}" }
+          - conditions: "{{ aktion.endswith('_an') }}"
+            sequence:
+              - action: homeassistant.turn_on
+                continue_on_error: true
+                target: { entity_id: "{{ ziele }}" }
+        default:
+          - action: homeassistant.turn_off
+            continue_on_error: true
+            target: { entity_id: "{{ ziele }}" }
+
+intent_script:
+  RingSteuern:
+    action:
+      - action: script.ring_steuern
+        data:
+          geraet: "{{ ringgeraet if ringgeraet is defined else 'alle' }}"
+          aktion: "{{ aktion }}"
+          wert: "{{ ringlaut if ringlaut is defined else 0 }}"
+    speech:
+      text: >
+        {% set namen = {'alle': 'allen Ring-Geräten', 'front_door': 'der Haustür', 'vordereingang': 'dem Vordereingang',
+           'schlafzimmer': 'der Schlafzimmer-Kamera', 'flur': 'der Flur-Kamera', 'mobil': 'der Wohnzimmer-Kamera',
+           'carport_hinten': 'Carport hinten', 'wohnzimmer': 'Carport innen', 'vorraum': 'dem Vorraum',
+           'mulltonne': 'der Mülltonne', 'einfahrt': 'der Einfahrt'} %}
+        {% set g = namen.get(ringgeraet | default('alle'), 'Ring') %}
+        {% set a = {'bewegung_an': 'Bewegungserkennung an', 'bewegung_aus': 'Bewegungserkennung aus',
+           'sirene_an': 'Sirene an', 'sirene_aus': 'Sirene aus', 'licht_an': 'Kameralicht an',
+           'licht_aus': 'Kameralicht aus', 'lautstaerke': 'Lautstärke ' ~ (ringlaut | default(0))}[aktion] %}
+        {{ a }} bei {{ g }}.
+  RingRuhe:
+    description: "Ring stumm schalten (optional bis Uhrzeit oder für eine Dauer) oder wieder laut schalten."
+    action:
+      - variables:
+          m: "{{ modus | default('on') }}"
+          # "20:00 uhr", "20 uhr", "20 uhr 30", "halb acht" (nur Ziffern-Formate) -> HH:MM
+          bis_hhmm: >
+            {% set b = (ringbis | default('')) | lower | replace('.', ':') %}
+            {% set z = b | regex_findall('\\d+') %}
+            {% if z | count >= 1 and z[0] | int(99) < 24 %}{{ '%02d:%02d' | format(z[0] | int, (z[1] | int(0)) if z | count > 1 else 0) }}{% endif %}
+          minuten: >
+            {% if ringdauer is defined %}{{ ringdauer | int * (60 if (ringeinheit | default('minuten')) == 'stunden' else 1) }}{% else %}0{% endif %}
+      - if: "{{ m == 'off' }}"
+        then:
+          - action: script.ring_laut
+          - variables: { antwort_laut: { text: "Ring klingelt wieder normal laut." } }
+          - stop: laut
+            response_variable: antwort_laut
+      - action: script.ring_stumm_bis
+        response_variable: antwort
+        data:
+          minuten: "{{ minuten | int(0) }}"
+          bis: "{{ bis_hhmm | trim }}"
+      - stop: stumm
+        response_variable: antwort
+    speech:
+      text: "{{ action_response.text if action_response is mapping else 'Erledigt.' }}"
+  RingRuhezeit:
+    description: "Automatische Ring-Ruhezeit (wenn jemand zu Hause ist) an- oder ausschalten."
+    action:
+      - action: "input_boolean.turn_{{ modus | default('on') }}"
+        target: { entity_id: input_boolean.ring_ruhezeit_automatik }
+    speech:
+      text: >
+        {{ 'Ruhezeit automatisch an, von ' ~ states('input_datetime.ring_ruhe_beginn')[:5] ~ ' bis '
+           ~ states('input_datetime.ring_ruhe_ende')[:5] ~ ' Uhr, wenn jemand zu Hause ist.'
+           if modus | default('on') == 'on' else 'Ruhezeit automatisch aus.' }}
+  RingStatus:
+    speech:
+      text: >
+        {% if frage == 'klingel' %}
+          {% set k = states('sensor.front_door_letztes_klingeln') %}
+          {% if k in ['unknown', 'unavailable'] %}{% set k = states('event.front_door_klingeln') %}{% endif %}
+          {% if k in ['unknown', 'unavailable'] or not as_datetime(k) %}Ich weiß nicht, wann zuletzt geklingelt wurde.
+          {% else %}{% set t = as_local(as_datetime(k)) %}
+            Zuletzt geklingelt hat es {{ 'heute' if t.date() == now().date() else 'am ' ~ t.strftime('%d.%m.') }} um {{ t.strftime('%H:%M') }} Uhr.
+          {% endif %}
+        {% else %}
+          {% set ns = namespace(t=[]) %}
+          {% set ev = states.event | selectattr('object_id', 'search', '_bewegung$')
+               | rejectattr('state', 'in', ['unknown', 'unavailable']) | list %}
+          {# gleiche Zeitstempel bei mehreren Kameras = HA-Neustart, keine echte Bewegung #}
+          {% set zeiten = ev | map(attribute='state') | map('regex_replace', '\\..*$', '') | list %}
+          {% for s in ev if as_datetime(s.state) and as_local(as_datetime(s.state)).date() == now().date()
+               and zeiten | select('eq', s.state | regex_replace('\\..*$', '')) | list | count == 1 %}
+            {% set ns.t = ns.t + [s.name | replace(' Bewegung', '') ~ ' um ' ~ as_local(as_datetime(s.state)).strftime('%H:%M')] %}
+          {% endfor %}
+          {{ 'Heute Bewegung: ' ~ ns.t | join(', ') ~ '.' if ns.t else 'Heute keine Bewegung gemeldet.' }}
+          {{ 'Ring ist stumm.' if is_state('input_boolean.ring_ruhemodus', 'on') else '' }}
+        {% endif %}
+
+automation:
+  - id: ring_stumm_bis_ende
+    alias: "Ring: stumm bis … → wieder laut"
+    mode: single
+    triggers:
+      - trigger: time
+        at: input_datetime.ring_stumm_bis
+    conditions:
+      - condition: state
+        entity_id: input_boolean.ring_ruhemodus
+        state: "on"
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.ring_ruhemodus }
+
+  - id: ring_ruhemodus_lautstaerke
+    alias: "Ring: Ruhemodus an/aus → Lautstärken"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.ring_ruhemodus
+        from: ["on", "off"]
+        to: ["on", "off"]
+    variables:
+      lautstaerken: >
+        {{ states.number | selectattr('object_id', 'search', 'lautstarke')
+           | selectattr('entity_id', 'in', integration_entities('ring'))
+           | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='entity_id') | list }}
+    actions:
+      - if: "{{ trigger.to_state.state == 'on' }}"
+        then:
+          # individuelle Lautstärken merken, dann stumm
+          - action: scene.create
+            data: { scene_id: ring_lautstaerke_vorher, snapshot_entities: "{{ lautstaerken }}" }
+          - action: script.ring_steuern
+            data: { geraet: alle, aktion: lautstaerke, wert: 0 }
+        else:
+          - if: "{{ states.scene.ring_lautstaerke_vorher is not none }}"
+            then:
+              - action: scene.turn_on
+                target: { entity_id: scene.ring_lautstaerke_vorher }
+              # Ring-Cloud übernimmt Werte manchmal verzögert (Gong fiel auf 0 zurück) → nach 30 s nochmal setzen
+              - delay: 30
+              - condition: state
+                entity_id: input_boolean.ring_ruhemodus
+                state: "off"
+              - action: scene.turn_on
+                target: { entity_id: scene.ring_lautstaerke_vorher }
+            else:
+              - action: script.ring_steuern
+                data: { geraet: alle, aktion: lautstaerke, wert: "{{ states('input_number.ring_lautstaerke_normal') | int }}" }
+
+  - id: ring_ruhezeit_automatisch
+    alias: "Ring: Ruhezeit automatisch (wenn jemand zu Hause)"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.ring_ruhezeit_soll
+        to: ["on", "off"]
+      - trigger: state
+        entity_id: input_boolean.ring_ruhezeit_automatik
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.ring_ruhezeit_automatik
+        state: "on"
+    actions:
+      # nur die KAMERAS stumm – Gong (Flur-Chime) und Türklingel bleiben laut (17.10.: Klingel war tagsüber stumm)
+      - action: "input_boolean.turn_{{ 'on' if is_state('binary_sensor.ring_ruhezeit_soll', 'on') else 'off' }}"
+        target: { entity_id: input_boolean.ring_kameras_stumm }
+
+  - id: ring_kameras_stumm_lautstaerke
+    alias: "Ring: Kameras stumm an/aus (Ruhezeit)"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.ring_kameras_stumm
+        from: ["on", "off"]
+        to: ["on", "off"]
+    variables:
+      kameras: >
+        {{ states.number | selectattr('object_id', 'search', 'lautstarke')
+           | selectattr('entity_id', 'in', integration_entities('ring'))
+           | rejectattr('entity_id', 'in', ['number.flur_lautstarke', 'number.front_door_lautstarke'])
+           | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='entity_id') | list }}
+    actions:
+      - if: "{{ trigger.to_state.state == 'on' }}"
+        then:
+          - action: scene.create
+            data: { scene_id: ring_kameras_vorher, snapshot_entities: "{{ kameras }}" }
+          - action: number.set_value
+            continue_on_error: true
+            target: { entity_id: "{{ kameras }}" }
+            data: { value: 0 }
+        else:
+          - if: "{{ states.scene.ring_kameras_vorher is not none }}"
+            then:
+              - action: scene.turn_on
+                target: { entity_id: scene.ring_kameras_vorher }

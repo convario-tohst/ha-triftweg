@@ -1,0 +1,11 @@
+language: de
+intents:
+  ListeAnlegen:
+    data:
+      - sentences:
+          - "(leg|lege|erstell|erstelle|mach|mache) [mir] [eine] [neue] liste [namens|mit dem namen] {listenname} an"
+          - "(leg|lege|erstell|erstelle|mach|mache) [mir] [eine] [neue] {listenname} liste an"
+          - "neue liste {listenname}"
+lists:
+  listenname:
+    wildcard: true

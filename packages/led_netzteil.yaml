@@ -1,0 +1,25 @@
+# Stromversorgung der WLED-Streifen Flur EG + Bad Yvonne hängt an Theben 1.1.9 Kanal C2 (0/0/7).
+# Ist sie aus, sind die Streifen offline. Deshalb: immer an lassen (auch nach Neustart).
+
+automation:
+  - id: led_netzteil_immer_an
+    alias: "LED-Streifen: Stromversorgung immer an"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: switch.stromversorgung_led_streifen
+        to: "off"
+        for: "00:00:10"
+      - trigger: homeassistant
+        event: start
+      - trigger: time_pattern
+        minutes: "/15"
+    conditions:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: switch.stromversorgung_led_streifen
+            state: "on"
+    actions:
+      - action: switch.turn_on
+        target: { entity_id: switch.stromversorgung_led_streifen }

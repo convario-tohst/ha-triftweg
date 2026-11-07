@@ -1,0 +1,42 @@
+language: de
+intents:
+  LautstaerkeSetzen:
+    data:
+      - sentences:
+          - "(stell|stelle|setz|setze|mach|mache) [die] (lautstärke|musik) [(im|in der|oben im|unten im) {musikraum}] auf {lautwert} [prozent]"
+          - "lautstärke [(im|in der|oben im|unten im) {musikraum}] [auf] {lautwert} [prozent]"
+          - "musik [(im|in der) {musikraum}] auf {lautwert} [prozent]"
+          # so schreibt die Spracherkennung es oft: "Lautstärke auf 50% Schlafzimmer", "Lautstärke, Schlafzimmer, 50%"
+          - "lautstärke [bitte] [auf] {lautwert} [prozent|%] [(im|in der|oben im|unten im)] {musikraum}"
+          - "lautstärke [bitte] [auf] {lautwert} [prozent|%]"
+          - "lautstärke [(im|in der)] {musikraum} [auf] {lautwert} [prozent|%]"
+          - "[die] lautstärke [(im|in der)] [{musikraum}] [bitte] auf {lautwert} [prozent|%] [stellen]"
+  KontextWert:
+    data:
+      - sentences:
+          - "[und|dann|jetzt|bitte] [wieder|nochmal|noch mal|zurück] auf {lautwert} [prozent|%] [bitte]"
+          - "[und|dann|jetzt] {lautwert} [prozent|%] [bitte]"
+          - "[und|dann|jetzt] [im|in der] {musikraum} [wieder|nochmal] [auf] {lautwert} [prozent|%]"
+  LautstaerkeRelativ:
+    data:
+      - sentences:
+          - "(mach|mache|stell|stelle) [die] musik [(im|in der|oben im|unten im) {musikraum}] [etwas|ein bisschen|bisschen] lauter"
+          - "[etwas|ein bisschen|bisschen] lauter [bitte] [(im|in der) {musikraum}]"
+          - "(musik|lautstärke) [(im|in der) {musikraum}] lauter"
+        slots: { richtung: 10 }
+      - sentences:
+          - "(mach|mache|stell|stelle) [die] musik [(im|in der|oben im|unten im) {musikraum}] [etwas|ein bisschen|bisschen] leiser"
+          - "[etwas|ein bisschen|bisschen] leiser [bitte] [(im|in der) {musikraum}]"
+          - "(musik|lautstärke) [(im|in der) {musikraum}] leiser"
+        slots: { richtung: -10 }
+      - sentences:
+          - "(mach|mache) [die] musik [(im|in der) {musikraum}] viel lauter"
+        slots: { richtung: 25 }
+      - sentences:
+          - "(mach|mache) [die] musik [(im|in der) {musikraum}] viel leiser"
+        slots: { richtung: -25 }
+lists:
+  lautwert:
+    range:
+      from: 0
+      to: 100

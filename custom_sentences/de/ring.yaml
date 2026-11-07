@@ -1,0 +1,132 @@
+language: de
+intents:
+  RingSteuern:
+    data:
+      # Bewegungserkennung
+      - sentences:
+          - "(schalte|schalt|mach|mache|aktiviere) [die] (bewegungserkennung|bewegungsmeldung|bewegungsalarme) [(bei|an|von|für) [der|dem|den]] [{ringgeraet}] (an|ein)"
+          - "(aktiviere|starte) [die] (bewegungserkennung|bewegungsmeldung) [(bei|an|von|für) [der|dem|den]] [{ringgeraet}]"
+          - "ring [{ringgeraet}] bewegung (an|ein)"
+          - "[die] (bewegungserkennung|bewegungsmeldung) [(bei|an|von|für) [der|dem|den]] [{ringgeraet}] (an|ein|aktivieren)"
+        slots: { aktion: bewegung_an }
+      - sentences:
+          - "(schalte|schalt|mach|mache|deaktiviere) [die] (bewegungserkennung|bewegungsmeldung|bewegungsalarme) [(bei|an|von|für) [der|dem|den]] [{ringgeraet}] aus"
+          - "(deaktiviere|stoppe|pausiere) [die] (bewegungserkennung|bewegungsmeldung) [(bei|an|von|für) [der|dem|den]] [{ringgeraet}]"
+          - "ring [{ringgeraet}] bewegung aus"
+          - "[die] (bewegungserkennung|bewegungsmeldung) [(bei|an|von|für) [der|dem|den]] [{ringgeraet}] (aus|deaktivieren)"
+        slots: { aktion: bewegung_aus }
+      # Sirene (bewusst nur mit dem Wort "Sirene")
+      - sentences:
+          - "(schalte|schalt|mach|mache|starte) [die] sirene [(bei|an|von) [der|dem]] {ringgeraet} (an|ein)"
+          - "sirene {ringgeraet} (an|ein)"
+        slots: { aktion: sirene_an }
+      - sentences:
+          - "(schalte|schalt|mach|mache|stoppe) [die|alle] (sirene|sirenen) [(bei|an|von) [der|dem]] [{ringgeraet}] aus"
+          - "(sirene|sirenen) [{ringgeraet}] (aus|stopp|stop)"
+        slots: { aktion: sirene_aus }
+      # Kameralicht
+      - sentences:
+          - "(schalte|schalt|mach|mache) [das] (kameralicht|kamera licht|ring licht|licht der kamera) [(bei|an|von) [der|dem]] [{ringgeraet}] (an|ein)"
+          - "(kameralicht|kamera licht|ring licht) [(bei|an|von) [der|dem]] [{ringgeraet}] (an|ein)"
+        slots: { aktion: licht_an }
+      - sentences:
+          - "(schalte|schalt|mach|mache) [das] (kameralicht|kamera licht|ring licht|licht der kamera) [(bei|an|von) [der|dem]] [{ringgeraet}] aus"
+          - "(kameralicht|kamera licht|ring licht) [(bei|an|von) [der|dem]] [{ringgeraet}] aus"
+        slots: { aktion: licht_aus }
+      # Lautstärke
+      - sentences:
+          - "(stelle|stell|setze|setz) [die] (ring|klingel|ring klingel|ring kamera) lautstärke [(bei|an|von) [der|dem]] [{ringgeraet}] auf {ringlaut}"
+          - "(ring|klingel) [{ringgeraet}] lautstärke {ringlaut}"
+        slots: { aktion: lautstaerke }
+  RingRuhe:
+    data:
+      - sentences:
+          - "(ring|klingel|klingeln|ring klingel) (stumm|leise|lautlos|ruhe|ruhemodus) [schalten|an|ein]"
+          - "(schalte|schalt|mach|mache) [die] (ring|klingel|klingeln) (stumm|leise|lautlos)"
+          - "ruhemodus (ring|klingel) (an|ein)"
+          - "[bitte] (ring|klingel) [meldung|meldungen|benachrichtigung|benachrichtigungen|ton|töne] (deaktivieren|aus|ausschalten|abschalten|stumm schalten)"
+        slots: { modus: "on" }
+      # mit Endzeit / Dauer
+      - sentences:
+          - "[bitte] (ring|klingel|klingeln) [meldung|meldungen|benachrichtigung|benachrichtigungen] (stumm|leise|lautlos|deaktivieren|aus|ausschalten|abschalten|stumm schalten) [für] bis {ringbis}"
+          - "[bitte] (schalte|schalt|mach|mache) [die] (ring|klingel|klingeln) [meldungen] (stumm|leise|lautlos|aus) [für] bis {ringbis}"
+          - "[bitte] (ring|klingel|klingeln) bis {ringbis} (stumm|leise|lautlos|deaktivieren|aus)"
+        slots: { modus: "on" }
+      - sentences:
+          - "[bitte] (ring|klingel|klingeln) [meldung|meldungen] (stumm|leise|lautlos|deaktivieren|aus|ausschalten|stumm schalten) für {ringdauer} {ringeinheit}"
+          - "[bitte] (schalte|schalt|mach|mache) [die] (ring|klingel|klingeln) für {ringdauer} {ringeinheit} (stumm|leise|lautlos|aus)"
+          - "[bitte] (ring|klingel|klingeln) für {ringdauer} {ringeinheit} (stumm|leise|lautlos|deaktivieren|aus)"
+        slots: { modus: "on" }
+      - sentences:
+          - "[bitte] (ring|klingel|klingeln) [meldungen] (stumm|leise|lautlos|deaktivieren|aus|stumm schalten) für (eine|1) stunde"
+        slots: { modus: "on", ringdauer: 1, ringeinheit: stunden }
+      - sentences:
+          - "[bitte] (ring|klingel|klingeln) [meldungen] (stumm|leise|lautlos|deaktivieren|aus|stumm schalten) für eine halbe stunde"
+        slots: { modus: "on", ringdauer: 30, ringeinheit: minuten }
+      - sentences:
+          - "(ring|klingel|klingeln) (wieder laut|laut|normal|ruhemodus aus)"
+          - "(schalte|schalt|mach|mache) [die] (ring|klingel|klingeln) wieder laut"
+          - "ruhemodus (ring|klingel) aus"
+        slots: { modus: "off" }
+  RingRuhezeit:
+    data:
+      - sentences:
+          - "(ring|klingel) ruhezeit [automatisch] (an|ein|aktivieren)"
+        slots: { modus: "on" }
+      - sentences:
+          - "(ring|klingel) ruhezeit [automatisch] (aus|deaktivieren)"
+        slots: { modus: "off" }
+  RingStatus:
+    data:
+      - sentences:
+          - "wann hat es [zuletzt|das letzte mal] geklingelt"
+          - "hat (es|jemand) [heute] geklingelt"
+          - "(wer|was) war an der (tür|haustür)"
+        slots: { frage: klingel }
+      - sentences:
+          - "(gab es|war) [heute] bewegung [(bei|an|in) [der|dem]] [{ringgeraet}]"
+          - "(ring|kamera) status"
+          - "wie ist der ring status"
+        slots: { frage: bewegung }
+
+lists:
+  ringgeraet:
+    values:
+      - in: "(haustür|tür|klingel|türklingel|front door|haustürklingel)"
+        out: front_door
+      - in: "(vordereingang|eingang)"
+        out: vordereingang
+      - in: "[ring] schlafzimmer [kamera]"
+        out: schlafzimmer
+      - in: "[ring] flur [kamera]"
+        out: flur
+      - in: "[ring] wohnzimmer [kamera]"
+        out: mobil
+      - in: "(carport hinten|hinten|hinterm carport)"
+        out: carport_hinten
+      - in: "(carport innen|carport)"
+        out: wohnzimmer
+      - in: "vorraum"
+        out: vorraum
+      - in: "(mülltonne|mülltonnen|müll)"
+        out: mulltonne
+      - in: "einfahrt"
+        out: einfahrt
+      - in: "(allen|alle|überall|alle kameras|allen kameras)"
+        out: alle
+  ringlaut:
+    range:
+      from: 0
+      to: 11
+  ringbis:
+    wildcard: true
+  ringdauer:
+    range:
+      from: 1
+      to: 240
+  ringeinheit:
+    values:
+      - in: "(minute|minuten)"
+        out: minuten
+      - in: "(stunde|stunden)"
+        out: stunden

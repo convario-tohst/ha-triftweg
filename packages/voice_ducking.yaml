@@ -1,0 +1,50 @@
+# Musik leiser, solange ein Sprachgerät zuhört/antwortet (sonst erkennt es das Satzende nicht → bis zu 10 s Wartezeit,
+# und Sätze werden nur halb verstanden; gemessen 23.10.). Danach alte Lautstärke zurück.
+
+input_number:
+  voice_ducking_vorher:
+    name: "Voice: Musiklautstärke vorher (intern)"
+    min: 0
+    max: 1
+    step: 0.01
+
+automation:
+  - id: voice_ducking
+    alias: "Voice: Musik beim Zuhören leiser"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: assist_satellite.home_assistant_voice_0adb1a_assist_satellit
+        to: listening
+        id: start
+      - trigger: state
+        entity_id: assist_satellite.home_assistant_voice_0adb1a_assist_satellit
+        to: idle
+        for: "00:00:01"
+        id: ende
+    variables:
+      player: media_player.ma_wohnzimmer
+    actions:
+      - choose:
+          - conditions:
+              - "{{ trigger.id == 'start' and is_state(player, 'playing') }}"
+              - "{{ state_attr(player, 'volume_level') | float(0) > 0.06 }}"
+            sequence:
+              - action: input_number.set_value
+                target: { entity_id: input_number.voice_ducking_vorher }
+                data: { value: "{{ state_attr(player, 'volume_level') | float(0.2) }}" }
+              - action: media_player.volume_set
+                target: { entity_id: "{{ player }}" }
+                data: { volume_level: 0.04 }
+          - conditions:
+              - "{{ trigger.id == 'ende' and states('input_number.voice_ducking_vorher') | float(0) > 0 }}"
+            sequence:
+              # nur zurückstellen, wenn die Musik noch läuft und niemand die Lautstärke inzwischen geändert hat
+              - if: "{{ is_state(player, 'playing') and state_attr(player, 'volume_level') | float(0) <= 0.05 }}"
+                then:
+                  - action: media_player.volume_set
+                    target: { entity_id: "{{ player }}" }
+                    data: { volume_level: "{{ states('input_number.voice_ducking_vorher') | float(0.2) }}" }
+              - action: input_number.set_value
+                target: { entity_id: input_number.voice_ducking_vorher }
+                data: { value: 0 }

@@ -1,0 +1,42 @@
+# Eigene Listen per Sprache/Claude anlegen (Wunsch Familie 18.10.)
+# "Leg eine neue Liste Weihnachtsgeschenke an" → neue To-do-Liste (erscheint links in der Seitenleiste unter "To-do-Listen").
+
+shell_command:
+  liste_anlegen: >-
+    python3 /config/claude_tools/liste_anlegen.py "{{ name | regex_replace('[^A-Za-z0-9äöüÄÖÜß \\-]', '') | truncate(40, true, '') }}"
+
+script:
+  liste_anlegen:
+    alias: "Neue Liste anlegen"
+    description: >
+      Legt eine neue To-do-Liste an (z. B. "Weihnachtsgeschenke", "Urlaub packen"). Feld name = Name der Liste.
+      Danach können Einträge mit "füge … zur Liste … hinzu" ergänzt werden.
+    icon: mdi:playlist-plus
+    mode: queued
+    fields:
+      name: { name: Name, required: true, selector: { text: } }
+    sequence:
+      - action: shell_command.liste_anlegen
+        response_variable: erg
+        data: { name: "{{ name }}" }
+      - delay: 3
+      - variables:
+          antwort:
+            text: >
+              {{ 'Listen anlegen ist noch nicht freigeschaltet – es fehlt der Zugangsschlüssel.' if 'kein Token' in (erg.stdout | default(''))
+                 else 'Die Liste ' ~ name ~ ' gibt es schon.' if 'existiert' in (erg.stdout | default(''))
+                 else ('Liste ' ~ name ~ ' ist angelegt.' if 'create_entry' in (erg.stdout | default('')) else 'Das Anlegen hat nicht geklappt.') }}
+      - stop: ok
+        response_variable: antwort
+
+intent_script:
+  ListeAnlegen:
+    description: "Interner Sprachbefehl: neue Liste anlegen."
+    action:
+      - action: script.liste_anlegen
+        response_variable: erg
+        data: { name: "{{ listenname[:1] | upper }}{{ listenname[1:] }}" }
+      - stop: ok
+        response_variable: erg
+    speech:
+      text: "{{ action_response.text if action_response is mapping else 'Erledigt.' }}"

@@ -1,0 +1,12 @@
+{# Musik-Blacklist (27.10.): True, wenn Name/URI auf todo.musik_blacklist steht.
+   Treffer: gleiche URI, gleicher Name, oder gesperrter Name steckt im Namen (z. B. "Café del Mar" in "Café del Mar Chillout"). #}
+{% macro gesperrt(name, uri='') -%}
+{%- set n = (name | default('') | string | lower | replace('é','e') | replace('è','e') | replace('á','a') | replace('à','a') | replace('ó','o') | replace('í','i') | replace('&',' and ') | replace('  ',' ') | trim) -%}
+{%- set u = (uri | default('') | string | trim) -%}
+{%- set ns = namespace(t=false) -%}
+{%- for b in state_attr('sensor.musik_blacklist', 'eintraege') or [] -%}
+  {%- set bn = (b.n | default('') | lower | replace('é','e') | replace('è','e') | replace('á','a') | replace('à','a') | replace('ó','o') | replace('í','i') | replace('&',' and ') | replace('  ',' ') | trim) -%}
+  {%- if bn and ((u and b.u and b.u == u) or bn == n or (bn | length > 3 and bn in n)) -%}{%- set ns.t = true -%}{%- endif -%}
+{%- endfor -%}
+{{ ns.t }}
+{%- endmacro %}

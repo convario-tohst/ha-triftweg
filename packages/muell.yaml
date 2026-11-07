@@ -1,0 +1,234 @@
+# Müll: Abholtermine AWB Oldenburg (Quelle in configuration.yaml)
+# - Sensoren je Tonne, "Müll heute" / "Müll morgen"
+# - Push an alle Handys am Vorabend (+ zweite Erinnerung) und am Abholtag morgens
+# - Meldung in HA (Glocke links unten) und Popup, bis "Erledigt" gedrückt wird
+
+sensor:
+  - platform: waste_collection_schedule
+    name: "Müll nächste Abholung"
+    details_format: upcoming
+    count: 10
+    value_template: "{{ value.types | join(', ') }} in {{ value.daysTo }} Tagen"
+
+  - platform: waste_collection_schedule
+    name: "Restabfall"
+    types: ["Restabfall"]
+    details_format: hidden
+    add_days_to: true
+    value_template: &tage "{% if value.daysTo == 0 %}heute{% elif value.daysTo == 1 %}morgen{% else %}in {{ value.daysTo }} Tagen{% endif %}"
+
+  - platform: waste_collection_schedule
+    name: "Bioabfall"
+    types: ["Bioabfall"]
+    details_format: hidden
+    add_days_to: true
+    value_template: *tage
+
+  - platform: waste_collection_schedule
+    name: "Gelber Sack"
+    types: ["Gelber Sack/Tonne"]
+    details_format: hidden
+    add_days_to: true
+    value_template: *tage
+
+  - platform: waste_collection_schedule
+    name: "Altpapier"
+    types: ["Altpapier"]
+    details_format: hidden
+    add_days_to: true
+    value_template: *tage
+
+template:
+  - sensor:
+      - name: "Müll heute"
+        unique_id: muell_heute
+        icon: mdi:trash-can-outline
+        state: "{{ state_attr('sensor.mull_nachste_abholung', now().strftime('%Y-%m-%d')) or 'keine' }}"
+      - name: "Müll morgen"
+        unique_id: muell_morgen
+        icon: mdi:trash-can-outline
+        state: "{{ state_attr('sensor.mull_nachste_abholung', (now() + timedelta(days=1)).strftime('%Y-%m-%d')) or 'keine' }}"
+
+input_boolean:
+  muell_erledigt:
+    name: "Müll rausgestellt"
+    icon: mdi:check-circle-outline
+
+input_datetime:
+  muell_erinnerung_vorabend:
+    name: "Müll-Erinnerung Vorabend"
+    has_date: false
+    has_time: true
+  muell_erinnerung_spaet:
+    name: "Müll-Erinnerung zweite"
+    has_date: false
+    has_time: true
+  muell_erinnerung_morgens:
+    name: "Müll-Erinnerung Abholtag"
+    has_date: false
+    has_time: true
+
+script:
+  muell_melden:
+    alias: "Müll: an alle Handys melden"
+    mode: queued
+    fields:
+      title:
+        name: Titel
+        description: Überschrift der Meldung
+        example: Mülltest
+        required: true
+        selector:
+          text:
+      message:
+        name: Text
+        description: Inhalt der Meldung
+        example: Das ist ein Test
+        required: true
+        selector:
+          text:
+            multiline: true
+    sequence:
+      - repeat:
+          # Aktuelle Handys
+          for_each: &handys
+            - mobile_app_t_ohst_2026_android
+            - mobile_app_yvonneiphone2026
+            - mobile_app_malteandroid2026
+          sequence:
+            - action: "notify.{{ repeat.item }}"
+              continue_on_error: true
+              data:
+                title: "{{ title }}"
+                message: "{{ message }}"
+                data:
+                  tag: muell
+                  channel: Müll
+                  importance: high
+                  priority: high
+                  ttl: 0
+                  notification_icon: mdi:trash-can
+                  actions:
+                    - action: MUELL_ERLEDIGT
+                      title: "Erledigt – Tonne steht draußen"
+      - action: script.whatsapp_senden
+        continue_on_error: true
+        data:
+          text: "🗑️ {{ title }}\n{{ message }}"
+      - action: persistent_notification.create
+        data:
+          notification_id: muell
+          title: "🗑️ {{ title }}"
+          message: "{{ message }}"
+      - action: browser_mod.popup
+        continue_on_error: true
+        data:
+          title: "🗑️ {{ title }}"
+          content: "{{ message }}"
+          dismissable: true
+          right_button: "Erledigt"
+          right_button_action:
+            action: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.muell_erledigt
+
+  muell_erledigt:
+    alias: "Müll: erledigt, Meldungen entfernen"
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.muell_erledigt
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: muell
+      - repeat:
+          for_each: *handys
+          sequence:
+            - action: "notify.{{ repeat.item }}"
+              continue_on_error: true
+              data:
+                message: clear_notification
+                data:
+                  tag: muell
+
+automation:
+  - id: muell_vorabend
+    alias: "Müll: Erinnerung Vorabend"
+    triggers:
+      - trigger: time
+        at: input_datetime.muell_erinnerung_vorabend
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.mull_morgen') not in ['keine', 'unknown', 'unavailable'] }}"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.muell_erledigt
+      - action: script.muell_melden
+        data:
+          title: "Morgen: {{ states('sensor.mull_morgen') }}"
+          message: "Bitte heute Abend rausstellen: {{ states('sensor.mull_morgen') }}"
+
+  - id: muell_zweite_erinnerung
+    alias: "Müll: zweite Erinnerung"
+    triggers:
+      - trigger: time
+        at: input_datetime.muell_erinnerung_spaet
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.mull_morgen') not in ['keine', 'unknown', 'unavailable'] }}"
+      - condition: state
+        entity_id: input_boolean.muell_erledigt
+        state: "off"
+    actions:
+      - action: script.muell_melden
+        data:
+          title: "Noch nicht erledigt: {{ states('sensor.mull_morgen') }}"
+          message: "Die Tonne muss noch raus – Abholung morgen früh: {{ states('sensor.mull_morgen') }}"
+
+  - id: muell_abholtag
+    alias: "Müll: Erinnerung am Abholtag"
+    triggers:
+      - trigger: time
+        at: input_datetime.muell_erinnerung_morgens
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.mull_heute') not in ['keine', 'unknown', 'unavailable'] }}"
+      - condition: state
+        entity_id: input_boolean.muell_erledigt
+        state: "off"
+    actions:
+      - action: script.muell_melden
+        data:
+          title: "Heute: {{ states('sensor.mull_heute') }}"
+          message: "Heute wird abgeholt: {{ states('sensor.mull_heute') }} – schnell noch rausstellen!"
+
+  - id: muell_erledigt
+    alias: "Müll: Erledigt gedrückt"
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: MUELL_ERLEDIGT
+      - trigger: state
+        entity_id: input_boolean.muell_erledigt
+        to: "on"
+    actions:
+      - action: script.muell_erledigt
+
+  - id: muell_reset
+    alias: "Müll: Status nach Abholtag zurücksetzen"
+    triggers:
+      - trigger: time
+        at: "12:00:00"
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.mull_heute') not in ['keine', 'unknown', 'unavailable'] }}"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.muell_erledigt
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: muell

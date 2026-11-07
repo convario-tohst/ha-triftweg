@@ -1,0 +1,254 @@
+# Zeitsteuerung v2 (ersetzt die Timberwolf-Logiken)
+# Grundprinzip: HA berechnet regelmäßig den SOLL-Zustand und setzt ihn – auch direkt nach einem Neustart/Ausfall.
+# - Tag/Nacht EG + OG: Nacht = im Zeitfenster (ab ... bis ...) UND dunkel (Helligkeit außen < Schwelle oder Sonne unten)
+#   Beim Wechsel auf Tag werden eingeschaltete Flurlampen auf 100 % gesetzt.
+# - Präsenzmelder Malte/Lara/Schlafzimmer: aus ab Schlafenszeit, an zur Aufstehzeit (Schultag/frei).
+#   Manuell ausgeschaltet? Zur Aufstehzeit wird trotzdem wieder eingeschaltet.
+# - Außenbeleuchtung Giebel: an bei Dunkelheit, aus zur Uhrzeit und immer bei Helligkeit
+# Freier Tag: binary_sensor.freier_tag (Wochenende, Feiertag, Schulferien NI)
+
+input_boolean:
+  tag_nacht_automatik:
+    name: "Tag/Nacht automatisch"
+    icon: mdi:theme-light-dark
+  praesenz_zeitplan_automatik:
+    name: "Präsenzmelder-Zeitplan aktiv"
+    icon: mdi:calendar-clock
+
+input_number:
+  nacht_lux_schwelle:
+    name: "Nachtmodus unter (Lux außen)"
+    icon: mdi:brightness-4
+    min: 5
+    max: 500
+    step: 5
+    unit_of_measurement: lx
+
+input_datetime:
+  nacht_og_beginn: { name: "Nacht OG ab (frühestens)", has_date: false, has_time: true, icon: mdi:weather-night }
+  nacht_og_ende: { name: "Nacht OG bis (frühestens Tag)", has_date: false, has_time: true, icon: mdi:weather-sunny }
+  nacht_eg_beginn: { name: "Nacht EG ab (frühestens)", has_date: false, has_time: true, icon: mdi:weather-night }
+  nacht_eg_ende: { name: "Nacht EG bis (frühestens Tag)", has_date: false, has_time: true, icon: mdi:weather-sunny }
+  aussenlicht_aus: { name: "Außenbeleuchtung aus um", has_date: false, has_time: true, icon: mdi:outdoor-lamp }
+  malte_schlafen: { name: "Malte: Melder aus ab", has_date: false, has_time: true, icon: mdi:bed }
+  malte_aufstehen_schule: { name: "Malte: Melder an (Schultag)", has_date: false, has_time: true, icon: mdi:school }
+  malte_aufstehen_frei: { name: "Malte: Melder an (frei)", has_date: false, has_time: true, icon: mdi:beach }
+  lara_schlafen: { name: "Lara: Melder aus ab", has_date: false, has_time: true, icon: mdi:bed }
+  lara_aufstehen_schule: { name: "Lara: Melder an (Schultag)", has_date: false, has_time: true, icon: mdi:school }
+  lara_aufstehen_frei: { name: "Lara: Melder an (frei)", has_date: false, has_time: true, icon: mdi:beach }
+  schlafzimmer_schlafen: { name: "Schlafzimmer: Melder aus ab", has_date: false, has_time: true, icon: mdi:bed }
+  schlafzimmer_aufstehen_schule: { name: "Schlafzimmer: Melder an (Arbeitstag)", has_date: false, has_time: true, icon: mdi:briefcase }
+  schlafzimmer_aufstehen_frei: { name: "Schlafzimmer: Melder an (frei)", has_date: false, has_time: true, icon: mdi:beach }
+
+template:
+  - binary_sensor:
+      - name: "Freier Tag"
+        unique_id: freier_tag
+        icon: mdi:beach
+        state: "{{ is_state('binary_sensor.workday_sensor_de_ni_2', 'off') }}"
+      - name: "Draußen dunkel"
+        unique_id: draussen_dunkel
+        icon: mdi:weather-night
+        # Helligkeitssensor Sauna außen; fällt er aus, entscheidet die Sonne
+        state: >
+          {% set lux = states('sensor.helligkeit_aussen') | float(-1) %}
+          {% if lux >= 0 %}{{ lux < states('input_number.nacht_lux_schwelle') | float(30) }}
+          {% else %}{{ is_state('sun.sun', 'below_horizon') }}{% endif %}
+        delay_off: "00:05:00"
+        delay_on: "00:05:00"
+      - name: "Nachtmodus EG soll"
+        unique_id: nachtmodus_eg_soll
+        state: >
+          {% set b = states('input_datetime.nacht_eg_beginn') %}{% set e = states('input_datetime.nacht_eg_ende') %}
+          {% set n = now().strftime('%H:%M:%S') %}
+          {{ (n >= b or n < e) and is_state('binary_sensor.draussen_dunkel', 'on') }}
+      - name: "Nachtmodus OG soll"
+        unique_id: nachtmodus_og_soll
+        state: >
+          {% set b = states('input_datetime.nacht_og_beginn') %}{% set e = states('input_datetime.nacht_og_ende') %}
+          {% set n = now().strftime('%H:%M:%S') %}
+          {{ (n >= b or n < e) and is_state('binary_sensor.draussen_dunkel', 'on') }}
+
+automation:
+  # ---------- Tag/Nacht EG + OG (Soll-Zustand setzen) ----------
+  - id: tag_nacht_soll_setzen
+    alias: "Zeit: Tag/Nacht EG + OG"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [binary_sensor.nachtmodus_eg_soll, binary_sensor.nachtmodus_og_soll]
+      - trigger: state
+        entity_id: input_boolean.tag_nacht_automatik
+        to: "on"
+      - trigger: homeassistant
+        event: start
+      - trigger: time_pattern
+        minutes: "/10"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.tag_nacht_automatik
+        state: "on"
+    actions:
+      - delay: 5
+      - repeat:
+          for_each:
+            - { soll: binary_sensor.nachtmodus_eg_soll, schalter: switch.tag_nacht_eg, flur: light.licht_eg_flur_decke }
+            - { soll: binary_sensor.nachtmodus_og_soll, schalter: switch.tag_nacht_og, flur: light.dimmer_flur_og }
+          sequence:
+            - variables:
+                nacht: "{{ is_state(repeat.item.soll, 'on') }}"
+            - if: "{{ nacht and not is_state(repeat.item.schalter, 'on') }}"
+              then:
+                - action: switch.turn_on
+                  target: { entity_id: "{{ repeat.item.schalter }}" }
+            - if: "{{ not nacht and not is_state(repeat.item.schalter, 'off') }}"
+              then:
+                - action: switch.turn_off
+                  target: { entity_id: "{{ repeat.item.schalter }}" }
+                # Melder ändern ihre Helligkeit erst beim nächsten Einschalten -> Flurlicht jetzt hell machen
+                - if: "{{ is_state(repeat.item.flur, 'on') }}"
+                  then:
+                    - action: light.turn_on
+                      target: { entity_id: "{{ repeat.item.flur }}" }
+                      data: { brightness_pct: 100 }
+
+  # Wird der Nachtmodus von Hand ausgeschaltet: Flurlicht ebenfalls hell machen
+  - id: tag_nacht_manuell_flur_hell
+    alias: "Zeit: Tag manuell -> Flur hell"
+    triggers:
+      - trigger: state
+        entity_id: switch.tag_nacht_eg
+        from: "on"
+        to: "off"
+        id: eg
+      - trigger: state
+        entity_id: switch.tag_nacht_og
+        from: "on"
+        to: "off"
+        id: og
+    actions:
+      - variables:
+          flur: "{{ 'light.licht_eg_flur_decke' if trigger.id == 'eg' else 'light.dimmer_flur_og' }}"
+      - if: "{{ is_state(flur, 'on') }}"
+        then:
+          - action: light.turn_on
+            target: { entity_id: "{{ flur }}" }
+            data: { brightness_pct: 100 }
+
+  # ---------- Außenbeleuchtung Giebel ----------
+  - id: aussenlicht_an
+    alias: "Außenlicht: an bei Dunkelheit"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.draussen_dunkel
+        to: "on"
+      - trigger: homeassistant
+        event: start
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.draussen_dunkel
+        state: "on"
+      - condition: template
+        value_template: "{{ now().strftime('%H:%M:%S') < states('input_datetime.aussenlicht_aus') and now().hour >= 12 }}"
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }
+        data:
+          brightness_pct: "{{ 100 if is_state('input_boolean.kinder_draussen', 'on') else states('input_number.giebel_helligkeit') | int(70) }}"
+
+  - id: aussenlicht_aus
+    alias: "Außenlicht: aus zur Uhrzeit oder bei Helligkeit"
+    triggers:
+      - trigger: time
+        at: input_datetime.aussenlicht_aus
+      - trigger: state
+        entity_id: binary_sensor.draussen_dunkel
+        to: "off"
+      # Sicherung: wird es tagsüber eingeschaltet, nach 2 Minuten wieder aus
+      - trigger: state
+        entity_id: light.dimmer_aussenbeleuchtung_giebel
+        to: "on"
+        for: "00:02:00"
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.platform != 'time' or (is_state('input_boolean.kinder_draussen', 'off') and not is_state('timer.ankunft', 'active')) }}"
+      - condition: or
+        conditions:
+          - condition: template
+            value_template: "{{ trigger.platform != 'state' or trigger.entity_id == 'binary_sensor.draussen_dunkel' }}"
+          - condition: state
+            entity_id: binary_sensor.draussen_dunkel
+            state: "off"
+    actions:
+      - action: light.turn_off
+        target: { entity_id: light.dimmer_aussenbeleuchtung_giebel }
+
+  # ---------- Präsenzmelder-Zeitplan (Malte, Lara, Schlafzimmer) ----------
+  - id: praesenz_zeitplan
+    alias: "Zeit: Präsenzmelder Kinder & Schlafzimmer"
+    mode: queued
+    triggers:
+      - { trigger: time, at: input_datetime.malte_schlafen, id: "malte|aus" }
+      - { trigger: time, at: input_datetime.malte_aufstehen_schule, id: "malte|schule" }
+      - { trigger: time, at: input_datetime.malte_aufstehen_frei, id: "malte|frei" }
+      - { trigger: time, at: input_datetime.lara_schlafen, id: "lara|aus" }
+      - { trigger: time, at: input_datetime.lara_aufstehen_schule, id: "lara|schule" }
+      - { trigger: time, at: input_datetime.lara_aufstehen_frei, id: "lara|frei" }
+      - { trigger: time, at: input_datetime.schlafzimmer_schlafen, id: "schlafzimmer|aus" }
+      - { trigger: time, at: input_datetime.schlafzimmer_aufstehen_schule, id: "schlafzimmer|schule" }
+      - { trigger: time, at: input_datetime.schlafzimmer_aufstehen_frei, id: "schlafzimmer|frei" }
+    conditions:
+      - condition: state
+        entity_id: input_boolean.praesenz_zeitplan_automatik
+        state: "on"
+    variables:
+      raum: "{{ trigger.id.split('|')[0] }}"
+      art: "{{ trigger.id.split('|')[1] }}"
+      ziel: >
+        {{ {'malte': 'automation.malte_prasenz', 'lara': 'automation.prasenz_lara_stripe',
+            'schlafzimmer': 'automation.prasenz_schlafzimmer'}[raum] }}
+      frei: "{{ is_state('binary_sensor.freier_tag', 'on') }}"
+    actions:
+      - choose:
+          - conditions: "{{ art == 'aus' }}"
+            sequence:
+              - action: automation.turn_off
+                target: { entity_id: "{{ ziel }}" }
+                data: { stop_actions: true }
+          - conditions: "{{ (art == 'schule' and not frei) or (art == 'frei' and frei) }}"
+            sequence:
+              - action: automation.turn_on
+                target: { entity_id: "{{ ziel }}" }
+
+  # Nachholen nach Neustart/Ausfall: Läuft HA erst nach der Aufstehzeit wieder, Melder trotzdem einschalten
+  - id: praesenz_zeitplan_nachholen
+    alias: "Zeit: Präsenzmelder nach Neustart nachholen"
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: state
+        entity_id: input_boolean.praesenz_zeitplan_automatik
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.praesenz_zeitplan_automatik
+        state: "on"
+    actions:
+      - delay: 30
+      - variables:
+          frei: "{{ is_state('binary_sensor.freier_tag', 'on') }}"
+          n: "{{ now().strftime('%H:%M:%S') }}"
+      - repeat:
+          for_each:
+            - { raum: malte, ziel: automation.malte_prasenz }
+            - { raum: lara, ziel: automation.prasenz_lara_stripe }
+            - { raum: schlafzimmer, ziel: automation.prasenz_schlafzimmer }
+          sequence:
+            - variables:
+                an_ab: "{{ states('input_datetime.' ~ repeat.item.raum ~ ('_aufstehen_frei' if frei else '_aufstehen_schule')) }}"
+                aus_ab: "{{ states('input_datetime.' ~ repeat.item.raum ~ '_schlafen') }}"
+            - if: "{{ an_ab <= n < aus_ab }}"
+              then:
+                - action: automation.turn_on
+                  target: { entity_id: "{{ repeat.item.ziel }}" }

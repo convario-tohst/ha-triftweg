@@ -1,0 +1,40 @@
+# Git-Sicherung der Konfiguration nach GitHub (convario-tohst/ha-triftweg)
+# - jede Nacht 03:30 automatisch
+# - manuell über script.konfiguration_sichern
+# - bei Fehler: Hinweis in HA (Benachrichtigungen)
+shell_command:
+  git_backup: 'bash /config/claude_tools/ha_git_backup.sh "{{ nachricht | default(''Auto-Backup'') }}"'
+
+script:
+  konfiguration_sichern:
+    alias: "Konfiguration sichern (GitHub)"
+    icon: mdi:github
+    fields:
+      nachricht:
+        description: "Kurzer Kommentar zur Sicherung"
+        example: "Vor Umbau Flur OG"
+    sequence:
+      - action: shell_command.git_backup
+        data:
+          nachricht: "{{ nachricht | default('Manuelle Sicherung') }}"
+        response_variable: ergebnis
+      - if:
+          - condition: template
+            value_template: "{{ ergebnis.returncode != 0 }}"
+        then:
+          - action: persistent_notification.create
+            data:
+              notification_id: git_backup_fehler
+              title: "Git-Sicherung fehlgeschlagen"
+              message: "Code {{ ergebnis.returncode }}: {{ ergebnis.stderr | default('')  }}"
+
+automation:
+  - id: git_backup_nachts
+    alias: "System: Konfiguration nachts nach GitHub sichern"
+    triggers:
+      - trigger: time
+        at: "03:30:00"
+    actions:
+      - action: script.konfiguration_sichern
+        data:
+          nachricht: "Nacht-Sicherung"

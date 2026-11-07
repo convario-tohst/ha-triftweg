@@ -1,0 +1,39 @@
+# Hilfsschalter für das Dashboard: auf-/zuklappbare Bereiche auf der Startseite
+input_boolean:
+  dash_haus:
+    name: "Dashboard: Haus & Garten offen"
+  dash_einkauf:
+    name: "Dashboard: Einkaufsliste offen"
+  dash_party:
+    name: "Dashboard: Party-Liste offen"
+  dash_kalender:
+    name: "Dashboard: Kalender offen"
+  dash_lueftung:
+    name: "Dashboard: Lüftung-Details offen"
+  dash_einfahrt:
+    name: "Dashboard: Einfahrt-Kamera offen"
+  dash_heizung:
+    name: "Dashboard: Heizung offen"
+    initial: true
+  dash_archiv:
+    name: "Dashboard: Archiv offen"
+  dash_wuensche:
+    name: "Dashboard: Änderungswünsche offen"
+  # Seite "Automatik": aufklappbare Gruppen
+  dash_auto_zeiten: { name: "Automatik-Seite: Tag/Nacht offen" }
+  dash_auto_praesenz: { name: "Automatik-Seite: Präsenzmelder offen" }
+  dash_auto_licht: { name: "Automatik-Seite: Licht & Szenen offen" }
+  dash_auto_aussen: { name: "Automatik-Seite: Außen offen" }
+  dash_auto_klima: { name: "Automatik-Seite: Heizung & Lüftung offen" }
+  dash_auto_abwesend: { name: "Automatik-Seite: Abwesenheit offen" }
+  dash_auto_ring: { name: "Automatik-Seite: Ring offen" }
+  dash_auto_info: { name: "Automatik-Seite: Benachrichtigungen offen" }
+  dash_auto_system: { name: "Automatik-Seite: System offen" }
+  # Seite "Musik": aufklappbare Listen
+  dash_musik_morgen: { name: "Musik-Seite: Morgen & Kaffee offen" }
+  dash_musik_chill: { name: "Musik-Seite: Chill & Lounge offen" }
+  dash_musik_abend: { name: "Musik-Seite: Abend & Dinner offen" }
+  dash_musik_deutsch: { name: "Musik-Seite: Deutsch offen" }
+  dash_musik_party: { name: "Musik-Seite: Party & Energie offen" }
+  dash_musik_kinder: { name: "Musik-Seite: Familie offen" }
+  dash_musik_radio: { name: "Musik-Seite: Radio offen" }

@@ -1,0 +1,64 @@
+# Licht Erdgeschoss
+
+automation:
+  # Bad Yvonne: WLED-Leiste folgt dem Deckenlicht, das der Präsenzmelder 1.1.32 schaltet
+  - id: bad_yvonne_led_folgt_decke
+    alias: "Bad Yvonne: LED-Leiste folgt Deckenlicht"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: light.dimmer_yvonne_bad
+        to: ["on", "off"]
+    actions:
+      - if:
+          - condition: state
+            entity_id: light.dimmer_yvonne_bad
+            state: "on"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.bad_yvonne }
+            data: { transition: 2 }
+        else:
+          - action: light.turn_off
+            target: { entity_id: light.bad_yvonne }
+            data: { transition: 5 }
+
+  # Gästebad: HA schaltet nach Präsenz (0/7/3) – zusätzlich zum Melder, damit es sicher klappt.
+  # Nachts (Nachtmodus EG) gedimmt, tagsüber hell. Aus, sobald der Melder keine Präsenz mehr meldet.
+  - id: gaestebad_praesenz_licht
+    alias: "Gästebad: Licht nach Präsenz"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.prasenz_gastebad
+        from: "off"
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: binary_sensor.prasenz_gastebad
+        from: "on"
+        to: "off"
+        for: "00:01:00"
+        id: aus
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: an
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.gastebad_decke }
+                data:
+                  brightness_pct: "{{ 25 if is_state('switch.tag_nacht_eg', 'on') else 100 }}"
+          - conditions:
+              - condition: trigger
+                id: aus
+              # Nicht ausschalten, wenn der Melder 1.1.25 das Licht gerade selbst (wieder) eingeschaltet hat –
+              # sonst sitzt man im Dunkeln und der Melder schaltet nicht erneut ein (15.10.: an 20:09:05, HA aus 20:09:14)
+              - "{{ (now() - states.light.gastebad_decke.last_changed).total_seconds() > 120 }}"
+              - condition: state
+                entity_id: binary_sensor.prasenz_gastebad
+                state: "off"
+            sequence:
+              - action: light.turn_off
+                target: { entity_id: light.gastebad_decke }

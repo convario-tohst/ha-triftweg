@@ -1,0 +1,263 @@
+# Musik über Music Assistant (Spotify + TuneIn) + Vorschläge von Claude
+# Spieler: media_player.ma_wohnzimmer (Wohnzimmer/Küche), media_player.ma_schlafzimmer
+# - "Musikwunsch": freier Text („entspannter Jazz“, „Die Ärzte“, „Café del Mar“). Steht der Wunsch in einer
+#   der Musiklisten (todo.musik_*), wird genau dieser Eintrag gespielt, sonst sucht Claude etwas Passendes.
+# - "Überrasch mich": Claude wählt passend zu Uhrzeit, Wetter, wer zu Hause ist – bevorzugt aus euren Listen.
+# - Morgens startet "Überrasch mich" automatisch leise, sobald jemand unten ist (abschaltbar).
+
+input_text:
+  musik_wunsch:
+    name: "Musikwunsch"
+    icon: mdi:music-circle-outline
+    max: 255
+  musik_letzter_vorschlag:
+    name: "Läuft gerade (Claude)"
+    icon: mdi:robot-happy-outline
+    max: 255
+  musik_morgen_verlauf:
+    name: "Morgenmusik: zuletzt gespielt"
+    icon: mdi:history
+    max: 255
+  musik_morgen_auswahl:
+    name: "Morgenmusik: was läuft (Sender/Liste oder „Überraschung“)"
+    icon: mdi:radio
+    max: 100
+
+input_boolean:
+  musik_morgens_automatisch:
+    name: "Musik morgens automatisch"
+    icon: mdi:weather-sunset-up
+
+input_number:
+  musik_morgens_lautstaerke:
+    name: "Musik morgens: Lautstärke"
+    icon: mdi:volume-low
+    min: 0.05
+    max: 0.5
+    step: 0.05
+
+script:
+  musik_wunsch_abspielen:
+    alias: "Musik: Wunsch abspielen (Claude)"
+    icon: mdi:music-circle
+    mode: restart
+    fields:
+      wunsch:
+        name: Wunsch (leer = Überrasch mich)
+        selector: { text: }
+      raum:
+        name: Raum
+        selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } }
+      lautstaerke:
+        name: Start-Lautstärke (nur wenn gerade nichts läuft)
+        selector: { number: { min: 0.05, max: 1, step: 0.05 } }
+    variables:
+      w: "{{ wunsch | default('') | trim }}"
+      # Raum: angegeben > Raum des Sprachgeräts (letzte 90 s) > Musikraum (27.10.: Wunsch im Wohnzimmer landete im Schlafzimmer)
+      r: "{% set rr = states('input_text.sprache_raum').split('|') %}{% if raum is defined and raum %}{{ raum }}{% elif rr | count == 2 and (as_timestamp(now()) - rr[1] | float(0)) < 90 and rr[0] in ['Wohnzimmer', 'Schlafzimmer'] %}{{ rr[0] }}{% else %}{{ states('input_select.musik_raum') }}{% endif %}"
+      zuhause: "{{ states.person | selectattr('state', 'eq', 'home') | map(attribute='name') | join(', ') or 'niemand' }}"
+    sequence:
+      - action: todo.get_items
+        response_variable: listen
+        target:
+          entity_id: [todo.musik_morgen, todo.musik_chill, todo.musik_abend, todo.musik_deutsch,
+                      todo.musik_party, todo.musik_familie, todo.musik_radio]
+        data: { status: needs_action }
+      - variables:
+          # gesperrte (Blacklist) raus, Reihenfolge gemischt – sonst nimmt Claude meist den ersten Treffer (27.10.: immer Café del Mar)
+          eintraege: >
+            {% from 'musik.jinja' import gesperrt %}
+            {% set ns = namespace(e=[]) %}
+            {% for eid, v in listen.items() %}{% for i in v['items'] %}
+              {% set d = i.description | default('') or '' %}
+              {% if gesperrt(i.summary, d.split('|')[1] if '|' in d else '') != 'True' %}
+                {% set ns.e = ns.e + [{'name': i.summary, 'desc': d, 'liste': eid}] %}
+              {% endif %}
+            {% endfor %}{% endfor %}
+            {{ ns.e | shuffle }}
+          verlauf: >
+            {% set v = states('input_text.musik_verlauf') %}
+            {{ [] if v in ['unknown', 'unavailable', ''] else v.split(' · ') }}
+          direkt: >
+            {% set ns = namespace(t=none) %}
+            {% for e in eintraege if w and ns.t is none
+                 and (e.name | lower == w | lower or (w | length > 3 and w | lower in e.name | lower)) %}
+              {% set ns.t = e %}
+            {% endfor %}
+            {{ ns.t }}
+          anweisung: >
+            Du bist der Musik-DJ der Familie Ohst (Tobias, Yvonne, Malte, Lara) in Oldenburg (Niedersachsen).
+            Abgespielt wird über Music Assistant mit Spotify Premium und allen Internet-Radiosendern.
+            {% if w %}Wunsch: „{{ w }}“. Erfülle ihn möglichst genau.
+            WICHTIG: Der Wunsch kommt aus einer DEUTSCHEN Spracherkennung – englische Titel und Namen sind oft lautmalerisch
+            falsch geschrieben (z. B. „Sky voll of Stars“ oder „Skyfall of Stars“ = A Sky Full of Stars von Coldplay,
+            „Bilie Eilisch“ = Billie Eilish). Klingt der Wunsch nach einem Liedtitel oder Künstler, finde den gemeinten
+            echten Song bzw. Künstler: typ track (suche = „Titel Interpret“) bzw. artist – dann KEINE eigene Liste und
+            keine Stimmungs-Playlist. Listen/Playlists nur bei Stimmungs-, Genre- oder Anlass-Wünschen („was Ruhiges“, „Party“).
+            {% else %}Kein konkreter Wunsch – schlage etwas Passendes vor.{% endif %}
+            Kontext: {{ now().strftime('%A %H:%M') }}, Wetter {{ states('weather.forecast_home') }},
+            {{ state_attr('weather.forecast_home', 'temperature') }} °C, zu Hause: {{ zuhause }}, Raum: {{ r }}.
+            ABWECHSLUNG IST WICHTIG: Die Familie will nicht immer dasselbe hören. Zuletzt lief:
+            {{ verlauf[:10] | join(', ') if verlauf else 'nichts' }}. Wähle bei Stimmungs-/Genre-Wünschen NICHTS davon erneut.
+            Wechsle ab zwischen eigenen Listen, echten Spotify-Playlists, Künstler-Radios (typ artist) und passenden Sendern –
+            höchstens jedes zweite Mal eine eigene Liste, und nie automatisch die erste passende.
+            Eigene Musiklisten der Familie (zufällige Reihenfolge; wenn gewählt: "suche" = exakt dieser Name, typ playlist):
+            {% for e in eintraege %}{{ e.name }} ({{ e.liste | replace('todo.musik_', '') }}){{ ', ' if not loop.last }}{% endfor %}.
+            Geschmacksprofil: Chill/Lounge, Acoustic/Unplugged, Coffeehouse/Swing, Dinner/Piano, Jazz/Soul,
+            Deutschrap-Klassiker (Freundeskreis, Max Herre, Beginner), Deutschpop (Sarah Connor, Clueso, Udo Lindenberg),
+            House/Techno (Kontor, Deborah de Luca), Alternative (Linkin Park), Party, Kinderlieder.
+            Die Familie mag es NICHT zu ruhig: lieber mit Pep, Beat, Sound und Stimmung. Auch bei „chillig/entspannt“ eher
+            groovig (Chillhop, Nu Disco, Deep House, Indie-Electronic, Funk) statt einschläfernder Lounge.
+            Andere Quellen: echte Spotify-Playlists (z. B. „Jazz Vibes“, „POPLAND“, „Chill Vibes“, „Lo-Fi Beats“, „Chillout Lounge“,
+            „Deep Focus“, „Acoustic Chill“, „Indie Chillout“) oder Künstler (typ artist = Künstler-Radio, z. B. Bonobo, Tycho,
+            Parcels, Norah Jones, Jack Johnson). Radiosender nur, wenn Radio/Sender gewünscht ist oder zur Abwechslung bei Stimmung.
+            {% set bl = state_attr('sensor.musik_blacklist', 'text') or '' %}{% if bl | trim %}
+            GESPERRT (Blacklist der Familie – NIEMALS wählen, auch nicht unter ähnlichem Namen): {{ bl }}.{% endif %}
+            TABU: NIEMALS 80er-Jahre-Musik – keine 80er-Playlists, keine 80er-Sender (z. B. 80s80s), keine 80er-Hits
+            und keine Titel/Künstler, deren bekannte Musik aus den 80ern stammt. Auch nicht auf Wunsch: dann etwas
+            Ähnliches ohne 80er wählen und in der Ansage kurz sagen, dass 80er bei euch tabu sind.
+            Gib zurück: "suche" = Suchbegriff, der real existiert (keine erfundenen Namen),
+            "typ" = radio, playlist, artist, album oder track,
+            "ansage" = kurzer deutscher Satz, was läuft und warum (max. 12 Wörter).
+      # 1) Wunsch steht in einer Musikliste → genau diesen Eintrag spielen
+      - if: "{{ direkt is mapping }}"
+        then:
+          - action: script.musik_eintrag_spielen
+            data: { name: "{{ direkt.name }}", beschreibung: "{{ direkt.desc }}", raum: "{{ r }}",
+                    lautstaerke: "{{ lautstaerke | default(0.25) }}" }
+          - variables:
+              antwort: { data: { suche: "{{ direkt.name }}", typ: liste, ansage: "{{ direkt.name }} läuft." } }
+          - stop: "aus Liste"
+            response_variable: antwort
+      # 2) Claude wählt
+      - action: ai_task.generate_data
+        response_variable: ki
+        data:
+          task_name: musik_wunsch
+          entity_id: ai_task.claude_ai_task
+          instructions: "{{ anweisung }}"
+          structure: &musik_struktur
+            suche: { required: true, selector: { text: } }
+            typ: { required: true, selector: { select: { options: [radio, playlist, artist, album, track] } } }
+            ansage: { required: true, selector: { text: } }
+      - variables:
+          wahl: "{{ ki.data }}"
+          # gesperrt, oder (bei Stimmungs-Wahl) unter den letzten 3 → einmal neu wählen lassen
+          nochmal: >
+            {% from 'musik.jinja' import gesperrt %}
+            {{ gesperrt(ki.data.suche) == 'True' or (ki.data.typ in ['playlist', 'radio']
+               and ki.data.suche | lower in verlauf[:3] | map('lower') | list) }}
+      - if: "{{ nochmal }}"
+        then:
+          - action: ai_task.generate_data
+            response_variable: ki2
+            data:
+              task_name: musik_wunsch_nochmal
+              entity_id: ai_task.claude_ai_task
+              instructions: "{{ anweisung }} NICHT „{{ ki.data.suche }}“ – das ist gesperrt oder lief gerade erst. Wähle etwas anderes."
+              structure: *musik_struktur
+          - variables:
+              wahl: "{{ ki2.data }}"
+      # immer noch gesperrt (z. B. ausdrücklich gewünscht) → nicht spielen
+      - if: "{% from 'musik.jinja' import gesperrt %}{{ gesperrt(wahl.suche) == 'True' }}"
+        then:
+          - variables:
+              antwort: { data: { suche: "{{ wahl.suche }}", typ: gesperrt, ansage: "{{ wahl.suche }} steht auf eurer Blacklist." } }
+          - stop: "gesperrt"
+            response_variable: antwort
+      - variables:
+          gewaehlt: >
+            {% set ns = namespace(t=none) %}
+            {% for e in eintraege if ns.t is none and e.name | lower == wahl.suche | lower %}{% set ns.t = e %}{% endfor %}
+            {{ ns.t }}
+      - if: "{{ gewaehlt is mapping }}"
+        then:
+          - action: script.musik_eintrag_spielen
+            data: { name: "{{ gewaehlt.name }}", beschreibung: "{{ gewaehlt.desc }}", raum: "{{ r }}",
+                    lautstaerke: "{{ lautstaerke | default(0.25) }}" }
+        else:
+          - action: script.musik_liste
+            continue_on_error: true
+            data: { uri: "{{ wahl.suche }}", typ: "{{ wahl.typ }}", titel: "{{ wahl.suche }}", raum: "{{ r }}",
+                    lautstaerke: "{{ lautstaerke | default(0.25) }}" }
+      - action: input_text.set_value
+        target: { entity_id: input_text.musik_letzter_vorschlag }
+        data: { value: "{{ wahl.ansage[:250] }}" }
+      - variables:
+          antwort: { data: "{{ wahl }}" }
+      - stop: "fertig"
+        response_variable: antwort
+
+  musik_ueberrasch_mich:
+    alias: "Musik: Überrasch mich"
+    icon: mdi:dice-5
+    mode: restart
+    fields:
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+    sequence:
+      - action: script.musik_wunsch_abspielen
+        data: { wunsch: "", raum: "{{ raum | default('') }}" }
+
+  # musik_wunsch_aus_feld + Textfeld-Automation → packages/musik_suche.yaml (Vorschläge, Links)
+
+automation:
+  - id: musik_morgens_automatisch
+    alias: "Musik: morgens automatisch starten"
+    description: >
+      Beim ersten Betreten des Wohnzimmers am Tag (Präsenzmelder 1.1.23 schaltet die Dosen ein, ab 04:30):
+      Morgenmusik – entspannt, modern, leicht elektronisch, jeden Tag etwas anderes.
+    mode: single
+    triggers:
+      # neu: Präsenz-Ausgang der Wohnzimmer-Melder (0/7/6, 0/7/7)
+      - trigger: state
+        entity_id: binary_sensor.prasenz_wohnbereich
+        from: "off"
+        to: "on"
+        id: praesenz
+      # alt (bis die Dosen-Verknüpfung im Melder entfernt ist): Melder schaltet Dosen ein
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "1/0/111", source: "1.1.23" }
+        id: dosen
+    conditions:
+      - "{{ trigger.id == 'praesenz' or (trigger.event.data.telegramtype == 'GroupValueWrite' and trigger.event.data.data == 1) }}"
+      - condition: state
+        entity_id: input_boolean.musik_morgens_automatisch
+        state: "on"
+      - condition: time
+        after: "04:30:00"
+      - "{{ this.attributes.last_triggered is none or as_local(this.attributes.last_triggered).date() < now().date() }}"
+      - "{{ states.person | selectattr('state', 'eq', 'home') | list | count > 0 }}"
+      - condition: state
+        entity_id: input_boolean.urlaub
+        state: "off"
+      - "{{ not is_state('media_player.ma_wohnzimmer', 'playing') }}"
+    variables:
+      auswahl: "{{ states('input_text.musik_morgen_auswahl') | trim }}"
+      vol: "{{ states('input_number.musik_morgens_lautstaerke') | float(0.25) }}"
+    actions:
+      - choose:
+          # fester Sender / feste Liste (z. B. "Bremen NEXT") – per Sprache einstellbar
+          - conditions: "{{ auswahl | lower not in ['', 'unknown', 'unavailable', 'überraschung', 'claude'] }}"
+            sequence:
+              - action: script.musik_liste_per_name
+                data: { name: "{{ auswahl }}", raum: Wohnzimmer, lautstaerke: "{{ vol }}" }
+        default:
+          # "Überraschung": Claude wählt, jeden Tag etwas anderes
+          - action: script.musik_wunsch_abspielen
+            response_variable: erg
+            data:
+              wunsch: >
+                Morgenmusik zum Start in den Tag: entspannt, modern, gern leicht elektronisch
+                (z. B. Chillhop, Downtempo, Lo-Fi House, Indie-Electronic, Nu Jazz, moderne Lounge).
+                Jeden Tag etwas anderes – bitte NICHT nochmal: {{ states('input_text.musik_morgen_verlauf') }}.
+              raum: Wohnzimmer
+              lautstaerke: "{{ vol }}"
+          # Verlauf der letzten Morgen-Auswahlen merken, damit es immer anders ist
+          - action: input_text.set_value
+            target: { entity_id: input_text.musik_morgen_verlauf }
+            data:
+              value: >
+                {% set alt = states('input_text.musik_morgen_verlauf') %}
+                {% set alt = [] if alt in ['unknown', 'unavailable', ''] else alt.split(' · ') %}
+                {{ ([erg.data.suche | default('?')] + alt)[:8] | join(' · ') | truncate(250, true, '') }}

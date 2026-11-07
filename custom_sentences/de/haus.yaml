@@ -1,0 +1,227 @@
+# Eigene Sätze für die Sprachsteuerung (Assist, deutsch)
+# Ergänzt die eingebauten Sätze: Raum ein/aus/dimmen auch mit freier Wortwahl.
+language: "de"
+intents:
+  # ---------- Licht im Raum / auf der Etage ----------
+  HassTurnOn:
+    data:
+      - sentences:
+          - "(schalte|schalt|mach|mache) [das|die] (licht|lichter|lampen|beleuchtung) (im|in der|in dem|in|auf dem) {area} (an|ein)"
+          - "(schalte|schalt|mach|mache) (im|in der|in dem|in) {area} [das|die] (licht|lichter|lampen) (an|ein)"
+          - "(licht|lampen) (im|in der|in) {area} (an|ein)"
+          - "(schalte|schalt|mach|mache) [den|die|das] {area} (an|ein)"
+          - "[das] licht [im|in der] {area} (einschalten|anmachen|an|ein)"
+          - "{area} licht (an|ein|einschalten)"
+        slots:
+          domain: light
+      - sentences:
+          - "(schalte|schalt|mach|mache) [das|die] (licht|lichter|lampen) (im|in der|auf der|auf dem) {floor} (an|ein)"
+          - "(schalte|schalt|mach|mache) (alle lichter|alles licht) (im|in der) {floor} (an|ein)"
+        slots:
+          domain: light
+  HassTurnOff:
+    data:
+      - sentences:
+          - "(schalte|schalt|mach|mache) [das|die] (licht|lichter|lampen|beleuchtung) (im|in der|in dem|in|auf dem) {area} aus"
+          - "(schalte|schalt|mach|mache) (im|in der|in dem|in) {area} [das|die] (licht|lichter|lampen) aus"
+          - "(licht|lampen) (im|in der|in) {area} aus"
+          - "(schalte|schalt|mach|mache) [den|die|das] {area} aus"
+          - "[das] licht [im|in der] {area} (ausschalten|ausmachen|aus)"
+          - "{area} licht (aus|ausschalten)"
+        slots:
+          domain: light
+      - sentences:
+          - "(schalte|schalt|mach|mache) [das|die] (licht|lichter|lampen) (im|in der|auf der|auf dem) {floor} aus"
+          - "(schalte|schalt|mach|mache) (alle lichter|alles licht) (im|in der) {floor} aus"
+        slots:
+          domain: light
+  HassLightSet:
+    data:
+      - sentences:
+          - "(schalte|schalt|stelle|stell|dimme|dimm|mach|mache|setze|setz) [das|die] (licht|lichter|lampen) (im|in der|in dem|in) {area} auf {helligkeit:brightness} [%|prozent]"
+          - "(schalte|schalt|stelle|stell|dimme|dimm|mach|mache|setze|setz) (im|in der|in dem|in) {area} [das] licht auf {helligkeit:brightness} [%|prozent]"
+          - "{area} auf {helligkeit:brightness} [%|prozent]"
+        response: helligkeit
+      - sentences:
+          - "(mach|mache) [das] licht (im|in der|in) {area} (heller|hell|voll)"
+        slots:
+          brightness: 100
+        response: helligkeit
+      - sentences:
+          - "(mach|mache) [das] licht (im|in der|in) {area} (dunkler|gemütlich|schummrig)"
+        slots:
+          brightness: 30
+        response: helligkeit
+
+  # ---------- Ganzes Haus ----------
+  AllesAn:
+    data:
+      - sentences:
+          - "(schalte|schalt|mach|mache) (alles|alle lichter|das haus|das ganze haus|das gesamte haus|überall [das] licht|im ganzen haus [das] licht) (an|ein)"
+          - "alles (an|ein)"
+          - "alle lichter (an|ein)"
+  AllesAus:
+    data:
+      - sentences:
+          - "(schalte|schalt|mach|mache) (alles|alle lichter|das haus|das ganze haus|das gesamte haus|überall [das] licht|im ganzen haus [das] licht) aus"
+          - "alles aus"
+          - "alle lichter aus"
+  WelcheLichterAn:
+    data:
+      - sentences:
+          - "(welche|was für) (lichter|lampen) sind (an|eingeschaltet) [im haus]"
+          - "wo brennt [noch] licht"
+  AllesZurueck:
+    data:
+      - sentences:
+          - "zurück"
+          - "(stelle|stell|mach) [das licht] [wieder] (zurück|wie vorher)"
+          - "vorheriger zustand"
+  SzeneAktivieren:
+    data:
+      - sentences:
+          - "(aktiviere|starte|schalte|mach|mache) [die] szene {szene} [an|ein|im wohnzimmer]"
+          - "szene {szene} [an|ein|starten|aktivieren]"
+          - "{szene} (modus|stimmung) [an|ein]"
+  MusikSender:
+    data:
+      - sentences:
+          - "(spiele|spiel|starte|mach) {sender} [im|in der|auf] [{musikraum}]"
+          - "musik {sender} [im|in der] [{musikraum}]"
+          - "musik [im|in der] {musikraum} {sender}"
+          - "musik [im|in der] [{musikraum}] (an|ein)"
+          - "(starte|start|mach|spiel|spiele) [mal] [die] musik (im|in der|oben im|unten im) {musikraum} [an]"
+          - "(starte|start|mach|spiel|spiele) [mal] [die] musik [an]"
+  MusikWunsch:
+    data:
+      - sentences:
+          # nur eindeutige Musik-Formulierungen (früher auch "mach mal …"/"ich möchte …" → hat Lichtbefehle als Musik erkannt)
+          - "(spiele|spiel) [mal] {musikwunsch} [(im|in der|oben im|unten im) {musikraum}]"
+          - "musikwunsch {musikwunsch} [(im|in der) {musikraum}]"
+  # Fragen ("Wann geht … aus?", "Wie lange …?") nie lokal als Schaltbefehl deuten → an Claude weiterreichen
+  FrageAnClaude:
+    data:
+      - sentences:
+          - "{fragewort} {frage}"
+  MusikUeberraschung:
+    data:
+      - sentences:
+          - "(überrasch|überrasche) mich [mit musik] [(im|in der) {musikraum}]"
+          - "(schlag|schlage) [mir] [mal] (musik|was) vor [(im|in der) {musikraum}]"
+          - "(spiel|spiele) [mal] (irgendwas|was schönes|was passendes|etwas passendes) [(im|in der) {musikraum}]"
+  MusikRaum:
+    data:
+      - sentences:
+          - "(stelle|stell|schalte|schalt|wechsle|setze|setz) [den] (musikraum|musik raum|musik) (auf|ins|in das|in den) {musikraum} [um]"
+          - "musik (ins|in das|in den) {musikraum}"
+  MusikAus:
+    data:
+      - sentences:
+          - "musik [im|in der] [{musikraum}] (aus|stopp|stop|beenden)"
+          - "(stoppe|stopp|beende|mach) die musik [aus]"
+          - "(stoppe|stopp|beende|mach|mache|schalte|schalt) [die] musik (im|in der|oben im|unten im) {musikraum} (aus|ab)"
+          - "(stoppe|stopp|beende) [die] musik (im|in der|oben im|unten im) {musikraum}"
+          - "(mach|mache|schalte|schalt) (im|in der|oben im|unten im) {musikraum} die musik (aus|ab)"
+          - "(musik|die musik) überall (aus|stopp)"
+  Aenderungswunsch:
+    data:
+      - sentences:
+          - "(änderungswunsch|änderung für claude|notiz für claude|claude notiz|claude merke dir) [:] {wunsch}"
+  AlleLichterAus:
+    data:
+      - sentences:
+          - "(alle lichter|alles licht) (komplett|überall) aus"
+          - "gute nacht licht"
+  # ---------- Temperaturen ----------
+  TempWohnenKueche:
+    data:
+      - sentences:
+          - "wie (warm|kalt) ist es (in der küche|im esszimmer|im wohnbereich|im wohnzimmer|unten)"
+          - "[wie ist die] temperatur (in der küche|im esszimmer|im wohnbereich|im wohnzimmer|unten)"
+  TempObergeschoss:
+    data:
+      - sentences:
+          - "wie (warm|kalt) ist es (im obergeschoss|oben|im og|bei malte|bei lara|im schlafzimmer|im kinderzimmer)"
+          - "[wie ist die] temperatur (im obergeschoss|oben|im og|bei malte|bei lara|im schlafzimmer|im kinderzimmer)"
+  HeizungWohnenKueche:
+    data:
+      - sentences:
+          - "(stelle|stell|setze|setz|mach|mache) die heizung (in der küche|im esszimmer|im wohnbereich|im wohnzimmer|unten) auf {grad} [grad]"
+  HeizungObergeschoss:
+    data:
+      - sentences:
+          - "(stelle|stell|setze|setz|mach|mache) die heizung (im obergeschoss|oben|im og|bei malte|bei lara|im schlafzimmer|im kinderzimmer) auf {grad} [grad]"
+  WieWarmUeberall:
+    data:
+      - sentences:
+          - "wie (warm|kalt) ist es (im haus|überall|in allen räumen)"
+          - "(alle|zeige alle|sag mir alle) temperaturen"
+
+  # ---------- Präsenzmelder Wohnzimmer ----------
+  MelderWohnzimmer:
+    data:
+      - sentences:
+          - "(sperre|sperr) [den] (melder|präsenzmelder|bewegungsmelder) (im wohnzimmer|wohnzimmer)"
+          - "(melder|präsenzmelder) (im wohnzimmer|wohnzimmer) (sperren|aus)"
+        slots:
+          modus: "An erzwingen"
+      - sentences:
+          - "(entsperre|entsperr|aktiviere) [den] (melder|präsenzmelder|bewegungsmelder) (im wohnzimmer|wohnzimmer)"
+          - "(melder|präsenzmelder) (im wohnzimmer|wohnzimmer) (entsperren|automatik|an)"
+        slots:
+          modus: "Automatik"
+
+responses:
+  intents:
+    HassLightSet:
+      helligkeit: "Licht im Raum {{ slots.area }} auf {{ slots.brightness }} Prozent"
+
+lists:
+  fragewort:
+    values: ["wann", "wie lange", "wie viel", "wie viele", "warum", "wieso", "weshalb", "wer", "wo", "woran", "seit wann", "bis wann"]
+  frage:
+    wildcard: true
+  wunsch:
+    wildcard: true
+  musikwunsch:
+    wildcard: true
+  szene:
+    values:
+      - in: "(relax|entspannen|entspannung|gemütlich)"
+        out: "scene.relax"
+      - in: "(kochen|koch)"
+        out: "scene.kochen"
+      - in: "(dinner|essen|abendessen)"
+        out: "scene.dinner"
+      - in: "(party|feiern)"
+        out: "scene.party"
+      - in: "(aus|szene aus)"
+        out: "scene.aus"
+  sender:
+    values:
+      - in: "(morning|morgen|morgenmusik|swiss pop)"
+        out: "script.musik_morgen"
+      - in: "(bremen next|bremen|radio)"
+        out: "script.musik_bremen_next"
+      - in: "(dinner|jazz|abendmusik)"
+        out: "script.musik_dinner"
+      - in: "(elektro|electro|techno|sunshine live)"
+        out: "script.musik_elektro"
+      - in: "(hip hop|hiphop|rap|jam fm)"
+        out: "script.musik_hiphop"
+  musikraum:
+    values:
+      - in: "(wohnzimmer|küche|unten)"
+        out: "Wohnzimmer"
+      - in: "(schlafzimmer|oben)"
+        out: "Schlafzimmer"
+      - in: "(überall|beide|im ganzen haus)"
+        out: "Beide"
+  grad:
+    range:
+      from: 15
+      to: 26
+  helligkeit:
+    range:
+      from: 0
+      to: 100

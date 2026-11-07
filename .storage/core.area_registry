@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "minor_version": 9,
+  "key": "core.area_registry",
+  "data": {
+    "areas": [
+      {
+        "aliases": [
+          "Flur EG",
+          "Diele",
+          "Flur Erdgeschoss",
+          "Erdgeschoss Flur",
+          "Eingang",
+          "Flur",
+          "Flur unten"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "flur_eg",
+        "labels": [],
+        "name": "Flur EG",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T12:49:19.262715+00:00"
+      },
+      {
+        "aliases": [
+          "Terrasse"
+        ],
+        "floor_id": "aussen",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "garten",
+        "labels": [],
+        "name": "Garten",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T11:40:30.810239+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "keller",
+        "labels": [],
+        "name": "Keller",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2025-07-28T00:02:11.016794+00:00",
+        "modified_at": "2025-07-28T00:02:11.016800+00:00"
+      },
+      {
+        "aliases": [
+          "Esszimmer",
+          "Kueche"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "kuche",
+        "labels": [],
+        "name": "Küche",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T11:40:30.762166+00:00"
+      },
+      {
+        "aliases": [
+          "Laras Zimmer",
+          "Kinderzimmer Lara",
+          "Zimmer Lara"
+        ],
+        "floor_id": "og",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "lara",
+        "labels": [],
+        "name": "Lara",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T11:40:30.800679+00:00"
+      },
+      {
+        "aliases": [
+          "Kinderzimmer Malte",
+          "Zimmer Malte",
+          "Maltes Zimmer"
+        ],
+        "floor_id": "og",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "malte",
+        "labels": [],
+        "name": "Malte",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T11:40:30.795065+00:00"
+      },
+      {
+        "aliases": [
+          "Saunahaus"
+        ],
+        "floor_id": "aussen",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "sauna",
+        "labels": [],
+        "name": "Sauna",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T11:40:30.813467+00:00"
+      },
+      {
+        "aliases": [
+          "Elternschlafzimmer"
+        ],
+        "floor_id": "og",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "schlafzimmer",
+        "labels": [],
+        "name": "Schlafzimmer",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T11:40:30.804117+00:00"
+      },
+      {
+        "aliases": [
+          "Wohnen",
+          "Stube",
+          "Sofa",
+          "Wohnzimmer unten",
+          "Wohnbereich"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "wohnzimmer",
+        "labels": [],
+        "name": "Wohnzimmer",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2026-10-11T12:49:19.254595+00:00"
+      },
+      {
+        "aliases": [
+          "Bad Erdgeschoss",
+          "Badezimmer unten",
+          "Bad unten",
+          "Badezimmer Yvonne",
+          "Yvonnes Bad"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "bad_yvonne",
+        "labels": [],
+        "name": "Bad Yvonne",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-02-01T15:32:37.239009+00:00",
+        "modified_at": "2026-10-11T12:49:19.270166+00:00"
+      },
+      {
+        "aliases": [
+          "Gäste Bad",
+          "Gäste Badezimmer",
+          "Gäste WC",
+          "Gästeklo",
+          "WC",
+          "Gästetoilette"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "gastebad",
+        "labels": [],
+        "name": "Gästebad",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.503672+00:00",
+        "modified_at": "2026-10-11T12:50:11.002383+00:00"
+      },
+      {
+        "aliases": [
+          "Ankleide unten",
+          "Ankleide Yvonne",
+          "Ankleidezimmer"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "ankleide",
+        "labels": [],
+        "name": "Ankleide",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.531101+00:00",
+        "modified_at": "2026-10-11T11:40:30.786610+00:00"
+      },
+      {
+        "aliases": [
+          "Hauswirtschaftsraum",
+          "Waschküche"
+        ],
+        "floor_id": "eg",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "hwr",
+        "labels": [],
+        "name": "HWR",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.548157+00:00",
+        "modified_at": "2026-10-11T12:50:11.007747+00:00"
+      },
+      {
+        "aliases": [
+          "Obergeschoss Flur",
+          "Flur oben",
+          "Flur Obergeschoss",
+          "Flur OG",
+          "Treppe"
+        ],
+        "floor_id": "og",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "flur_og",
+        "labels": [],
+        "name": "Flur OG",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.574692+00:00",
+        "modified_at": "2026-10-11T12:49:19.266644+00:00"
+      },
+      {
+        "aliases": [
+          "Bad oben",
+          "Bad Obergeschoss",
+          "Bad Tobias",
+          "Badezimmer oben",
+          "Badezimmer"
+        ],
+        "floor_id": "og",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "bad_og",
+        "labels": [],
+        "name": "Bad OG",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.604059+00:00",
+        "modified_at": "2026-10-11T12:49:19.276662+00:00"
+      },
+      {
+        "aliases": [
+          "Ankleide oben",
+          "Ankleidezimmer Tobias"
+        ],
+        "floor_id": "og",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "ankleide_tobias",
+        "labels": [],
+        "name": "Ankleide Tobias",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.621969+00:00",
+        "modified_at": "2026-10-11T11:40:30.790999+00:00"
+      },
+      {
+        "aliases": [
+          "Einfahrt"
+        ],
+        "floor_id": "aussen",
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "carport",
+        "labels": [],
+        "name": "Carport",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-10-11T11:27:54.689121+00:00",
+        "modified_at": "2026-10-11T11:40:30.807349+00:00"
+      }
+    ]
+  }
+}

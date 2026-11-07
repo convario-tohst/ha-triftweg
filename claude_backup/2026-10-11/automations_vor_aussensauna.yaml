@@ -1,0 +1,276 @@
+- id: '1741520496224'
+  alias: Saunaofen aus nach Zeit
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.saunaofen
+    to: 'on'
+    for:
+      hours: 2
+      minutes: 0
+      seconds: 0
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.saunaofen
+  mode: single
+- id: '1741812862463'
+  alias: Präsenz Außensauna
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      light_target:
+        device_id:
+        - a34198190cd087a95e7d19d8aa45cf89
+        entity_id:
+        - light.aussensauna
+      motion_entity: binary_sensor.prasenzmelder_aussensauna
+      no_motion_wait: 20
+- id: '1741813114185'
+  alias: Präsenz EG Flur
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      light_target:
+        device_id:
+        - df0939a8e325da27a812ce52f7a97ae2
+        entity_id:
+        - light.wled_2
+      motion_entity: binary_sensor.prasenzmelder_eg_flur_decke
+      no_motion_wait: 20
+- id: '1741813885977'
+  alias: Präsenz Lara Stripe
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      light_target:
+        device_id:
+        - e1d2e5ba7dddba6d483f318cc749b9e8
+        entity_id:
+        - light.wled
+        - light.licht_lara_decke
+      motion_entity: binary_sensor.prasenzmelder_og_lara_decke
+      no_motion_wait: 20
+- id: '1742413207883'
+  alias: Malte Präsenz
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      light_target:
+        entity_id:
+        - light.licht_malte_decke
+        - light.licht_malte_stripe_2
+      motion_entity: binary_sensor.prasenzmelder_og_malte_decke
+      no_motion_wait: 20
+- id: '1742496314743'
+  alias: Präsenz Schlafzimmer
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      light_target:
+        entity_id: light.licht_schlafzimmer
+      motion_entity: binary_sensor.prasenzmelder_og_schlafzimmer_decke
+      no_motion_wait: 20
+- id: '1742497528952'
+  alias: Aktivieren Präsenz Schlafzimmer
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+  conditions:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  actions:
+  - action: automation.turn_on
+    target:
+      entity_id: automation.prasenz_schlafzimmer
+    data: {}
+  mode: single
+- id: '1742753453902'
+  alias: Aktivieren Präsenz Lara
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+  conditions: []
+  actions:
+  - action: automation.turn_on
+    target:
+      entity_id:
+      - automation.prasenz_lara_stripe
+    data: {}
+  mode: single
+- id: '1742753508337'
+  alias: Aktivieren Präsenz Malte
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+  conditions: []
+  actions:
+  - action: automation.turn_on
+    target:
+      entity_id:
+      - automation.malte_prasenz
+    data: {}
+  mode: single
+- id: '1753652139078'
+  alias: Bewegung Einfahrt Licht Küche
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: event.einfahrt_bewegung
+      light_target:
+        entity_id:
+        - light.dimmer_kuche_decke_2
+        - light.wled_2
+      no_motion_wait: 1200
+- id: '1753652823917'
+  alias: Deaktivieren Präsenz Schlafzimmer
+  description: ''
+  triggers:
+  - trigger: time
+    at: '19:30:00'
+  conditions: []
+  actions:
+  - action: automation.turn_off
+    target:
+      entity_id:
+      - automation.prasenz_schlafzimmer
+    data:
+      stop_actions: true
+  mode: single
+- id: '1753654617766'
+  alias: Deaktivieren Bewegung Einfahrt Licht Küche
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+  conditions: []
+  actions:
+  - action: automation.turn_off
+    target:
+      entity_id:
+      - automation.bewegung_einfahrt_licht_kuche
+    data:
+      stop_actions: true
+  mode: single
+- id: '1753654668448'
+  alias: Aktivieren Bewegung Einfahrt Licht Küche
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:00:00'
+  conditions: []
+  actions:
+  - action: automation.turn_on
+    target:
+      entity_id:
+      - automation.bewegung_einfahrt_licht_kuche
+    data: {}
+  mode: single
+- id: '1753661512620'
+  alias: 'Einfahrt Bewegung Küche '
+  description: ''
+  use_blueprint:
+    path: Blackshome/sensor-light.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.einfahrt_bewegung
+      light_switch:
+        entity_id: light.dimmer_kuche_decke_2
+      include_sun: sun_disabled
+      after_time: '20:00:00'
+      before_time: 07:00:00
+- id: '1765999047898'
+  alias: Deaktivieren Präsenz Malte
+  description: ''
+  triggers:
+  - trigger: time
+    at: '19:30:00'
+  conditions: []
+  actions:
+  - action: automation.turn_off
+    metadata: {}
+    data:
+      stop_actions: true
+    target:
+      entity_id: automation.malte_prasenz
+  mode: single
+- id: '1769959930146'
+  alias: EG Yvonne Bad Spiegel nach 30 Minuten aus
+  description: Schaltet das Spiegellicht 30 Minuten nach dem Einschalten aus
+  triggers:
+  - entity_id: light.licht_malte
+    to: 'on'
+    for: 00:30:00
+    trigger: state
+  actions:
+  - target:
+      entity_id: light.licht_malte
+    action: light.turn_off
+  mode: restart
+- id: '1769963175361'
+  alias: Spiegellicht Gästebad 30 Minuten aus
+  description: Schaltet das Spiegellicht Gästebad 30 Minuten nach dem Einschalten
+    aus
+  triggers:
+  - entity_id: light.eg_gastebad_spiegel
+    to: 'on'
+    for: 00:30:00
+    trigger: state
+  conditions: []
+  actions:
+  - target:
+      entity_id: light.eg_gastebad_spiegel
+    action: light.turn_off
+  mode: restart
+- id: '1769984039160'
+  alias: Giebel Beleuchtung bei Bewegung (tagsüber)
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.front_door_bewegung
+    - binary_sensor.einfahrt_bewegung
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: sun
+    after: sunrise
+    before: sunset
+  actions:
+  - target:
+      entity_id: light.dimmer_aussenbeleuchtung_giebel
+    action: light.turn_on
+  mode: restart
+- id: '1772231638440'
+  alias: Deaktivieren Präsenz Lara
+  description: ''
+  triggers:
+  - trigger: time
+    at: '19:30:00'
+  conditions: []
+  actions:
+  - action: automation.turn_off
+    metadata: {}
+    data:
+      stop_actions: true
+    target:
+      entity_id:
+      - automation.prasenz_lara_stripe
+  mode: single

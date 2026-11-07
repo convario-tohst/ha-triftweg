@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "minor_version": 3,
+  "key": "core.floor_registry",
+  "data": {
+    "floors": [
+      {
+        "aliases": [
+          "Erdgeschoss",
+          "unten"
+        ],
+        "floor_id": "eg",
+        "icon": null,
+        "level": null,
+        "name": "EG",
+        "created_at": "2024-09-02T06:20:32.660244+00:00",
+        "modified_at": "2026-10-11T11:40:30.743484+00:00"
+      },
+      {
+        "aliases": [
+          "Obergeschoss",
+          "oben"
+        ],
+        "floor_id": "og",
+        "icon": null,
+        "level": 1,
+        "name": "OG",
+        "created_at": "2026-10-11T11:27:54.340700+00:00",
+        "modified_at": "2026-10-11T11:40:30.748253+00:00"
+      },
+      {
+        "aliases": [
+          "Garten",
+          "draußen",
+          "außen"
+        ],
+        "floor_id": "aussen",
+        "icon": null,
+        "level": null,
+        "name": "Außen",
+        "created_at": "2026-10-11T11:27:54.356871+00:00",
+        "modified_at": "2026-10-11T12:50:10.983183+00:00"
+      }
+    ]
+  }
+}

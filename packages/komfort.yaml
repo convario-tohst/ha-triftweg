@@ -1,0 +1,185 @@
+# Komfort-Funktionen aus der Änderungsliste (26.10.)
+# - "Ich gehe ins Bett": unten (EG), Sauna und draußen alle Lichter aus (Giebel bleibt, geht um 23 Uhr selbst aus)
+# - "Alles aus": alle Lichter im Haus aus + Musik aus
+# - Meldung, wenn die Lüftung auf 100 % geht (mit Grund/Profil)
+# - Hinweis, wenn der Vallox-Filter bald fällig ist (Glocke + Push + Dashboard)
+# - Werkstatt-Licht: spätestens nach X Minuten aus (kein Melder in HA vorhanden)
+
+input_number:
+  werkstatt_licht_max_minuten:
+    name: "Werkstatt: Licht max. an (Minuten)"
+    icon: mdi:timer-sand
+    min: 10
+    max: 240
+    step: 10
+    unit_of_measurement: min
+    mode: box
+  vallox_filter_vorwarnung_tage:
+    name: "Vallox: Filter-Hinweis ab (Tage vorher)"
+    icon: mdi:air-filter
+    min: 1
+    max: 60
+    step: 1
+    unit_of_measurement: d
+    mode: box
+
+template:
+  - sensor:
+      - name: "Vallox Filter Resttage"
+        unique_id: vallox_filter_resttage
+        icon: mdi:air-filter
+        unit_of_measurement: d
+        state: >
+          {% set t = states('sensor.vallox_verbleibende_zeit_fur_den_filter') | as_datetime %}
+          {{ ((t - now()).total_seconds() / 86400) | round(0) | int if t else none }}
+  - binary_sensor:
+      - name: "Vallox Filter fällig"
+        unique_id: vallox_filter_faellig
+        icon: mdi:air-filter
+        device_class: problem
+        state: >
+          {{ states('sensor.vallox_filter_resttage') | int(999) <= states('input_number.vallox_filter_vorwarnung_tage') | int(14) }}
+
+script:
+  ich_gehe_ins_bett:
+    alias: "Ich gehe ins Bett"
+    description: >
+      Schaltet unten (Erdgeschoss), in der Sauna und draußen alle Lichter aus. Der Giebel bleibt an (geht um 23 Uhr
+      automatisch aus). Für "ich gehe ins Bett", "gute Nacht", "wir gehen schlafen".
+    icon: mdi:bed
+    mode: single
+    variables:
+      lichter: >
+        {% set bereiche = ['Flur EG', 'Küche', 'Wohnzimmer', 'Bad Yvonne', 'Gästebad', 'Ankleide', 'HWR', 'Keller', 'Sauna', 'Garten', 'Carport'] %}
+        {% set ns = namespace(l=[]) %}
+        {% for b in bereiche %}{% set ns.l = ns.l + (area_entities(b) | select('match', 'light\.') | list) %}{% endfor %}
+        {% set extra = ['light.wled_2', 'light.wled_kuche', 'light.bad_yvonne', 'light.sauna', 'light.aussensauna', 'light.sauna_haupt',
+                        'light.werkstatt', 'light.mulltonne_licht', 'light.einfahrt_licht', 'light.ankleide_yvonne_decke', 'light.ankleide_yvonne_wand', 'light.licht_decke', 'light.aussenbeleuchtung_garten'] %}
+        {{ (ns.l + extra) | unique | reject('eq', 'light.dimmer_aussenbeleuchtung_giebel')
+           | reject('search', 'browser_mod|voice|alle_lichter|licht_wohnen_und_kuche') | select('has_value') | list }}
+    sequence:
+      - action: light.turn_off
+        continue_on_error: true
+        target: { entity_id: "{{ lichter }}" }
+      - variables: { r: { ansage: "Gute Nacht! Unten und draußen ist alles aus." } }
+      - stop: ""
+        response_variable: r
+
+  alles_aus:
+    alias: "Alles aus"
+    description: "Schaltet alle Lichter im ganzen Haus und draußen aus und stoppt die Musik. Für 'alles aus', 'mach alles aus'."
+    icon: mdi:power
+    mode: single
+    variables:
+      lichter: >
+        {{ states.light | map(attribute='entity_id')
+           | reject('search', 'browser_mod|voice|_led_ring|alle_lichter|licht_wohnen_und_kuche') | select('has_value') | list }}
+    sequence:
+      - action: light.turn_off
+        continue_on_error: true
+        target: { entity_id: "{{ lichter }}" }
+      - action: media_player.media_pause
+        continue_on_error: true
+        target: { entity_id: [media_player.ma_wohnzimmer, media_player.ma_schlafzimmer] }
+      - variables: { r: { ansage: "Alles aus." } }
+      - stop: ""
+        response_variable: r
+
+automation:
+  - id: lueftung_100_prozent_melden
+    alias: "Lüftung: Meldung bei 100 %"
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.vallox_luftergeschwindigkeit
+        above: 95
+        for: "00:02:00"
+    actions:
+      - variables:
+          profil: "{{ states('sensor.vallox_aktuelles_profil') }}"
+          dauer: "{{ states('sensor.vallox_profildauer') }}"
+          bad: "{{ is_state('binary_sensor.bad_feucht_duschen', 'on') }}"
+      - action: script.system_melden
+        data:
+          kennung: lueftung_100
+          titel: "💨 Lüftung läuft auf 100 %"
+          text: >
+            Profil {{ profil }}{{ (', noch ' ~ dauer ~ ' min') if dauer | int(0) > 0 else '' }}.
+            {{ 'Grund: Bad-Boost (jemand duscht).' if bad else ('Grund: Boost/Kamin-Taste oder App.' if profil in ['Boost', 'Kamin'] else 'Grund: Feuchte-Regelung oder Einstellung.') }}
+            Seit {{ now().strftime('%H:%M') }}.
+      # höchstens einmal pro 30 Minuten melden
+      - delay: "00:30:00"
+
+  - id: vallox_filter_hinweis
+    alias: "Lüftung: Filterwechsel-Hinweis"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.vallox_filter_fallig
+        to: "on"
+      - trigger: time
+        at: "18:00:00"
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.vallox_filter_fallig
+        state: "on"
+      # Push nur beim ersten Mal und dann montags
+      - "{{ trigger.platform == 'state' or now().weekday() == 0 }}"
+    actions:
+      - action: script.system_melden
+        data:
+          kennung: vallox_filter
+          titel: "🔧 Vallox-Filter wechseln"
+          text: >
+            Filterwechsel fällig {{ 'in ' ~ states('sensor.vallox_filter_resttage') ~ ' Tagen' if states('sensor.vallox_filter_resttage') | int(0) > 0 else 'jetzt' }}
+            ({{ as_timestamp(states('sensor.vallox_verbleibende_zeit_fur_den_filter')) | timestamp_custom('%d.%m.%Y') }}).
+            Nach dem Wechsel in der Vallox-App/am Gerät das Filterdatum zurücksetzen.
+
+  - id: werkstatt_licht_max_dauer
+    alias: "Werkstatt: Licht nach max. Dauer aus"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: light.werkstatt
+        to: "on"
+        for:
+          minutes: "{{ states('input_number.werkstatt_licht_max_minuten') | int(60) }}"
+      # abends ab 23 Uhr spätestens aus
+      - trigger: time
+        at: "23:00:00"
+    conditions:
+      - condition: state
+        entity_id: light.werkstatt
+        state: "on"
+    actions:
+      - action: light.turn_off
+        target: { entity_id: light.werkstatt }
+      - action: logbook.log
+        data: { name: "Werkstatt", message: "Licht automatisch ausgeschaltet" }
+
+intent_script:
+  IchGeheInsBett:
+    description: "Interner Schnellbefehl (nicht selbst aufrufen)."
+    action:
+      - action: script.ich_gehe_ins_bett
+        response_variable: r
+      - stop: ""
+        response_variable: r
+    speech:
+      text: "{{ action_response.ansage if action_response is mapping else 'Gute Nacht!' }}"
+  AllesAus:
+    description: "Interner Schnellbefehl (nicht selbst aufrufen)."
+    action:
+      - action: script.alles_aus
+        response_variable: r
+      - stop: ""
+        response_variable: r
+    speech:
+      text: "Alles aus."
+  SchlafmodusOG:
+    description: "Interner Schnellbefehl Schlafmodus OG (nicht selbst aufrufen)."
+    action:
+      - action: "input_boolean.turn_{{ zustand }}"
+        target: { entity_id: input_boolean.schlafmodus_og }
+    speech:
+      text: "{{ 'Schlafmodus oben ist an. Gute Nacht!' if zustand == 'on' else 'Schlafmodus oben ist aus.' }}"

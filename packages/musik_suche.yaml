@@ -1,0 +1,150 @@
+# Musik-Suche mit Vorschlägen (Wunsch 18.10.)
+# Textfeld "Musikwunsch":
+#   - Text eingeben → Liste "Musik Suche" zeigt Treffer (Künstler, Playlists, Alben, Titel, Sender)
+#     → Haken an einem Treffer = abspielen (gleiche Logik wie die Musiklisten)
+#   - Knopf "▶ Abspielen" → Claude wählt den besten Treffer und spielt sofort
+#   - Link einfügen (Spotify-Link oder Stream-URL http…) → wird direkt abgespielt
+
+script:
+  musik_suchen:
+    alias: "Musik: suchen (Vorschläge)"
+    icon: mdi:magnify
+    mode: restart
+    fields:
+      suchbegriff: { name: Suchbegriff, required: true, selector: { text: } }
+    variables:
+      q: "{{ suchbegriff | trim }}"
+    sequence:
+      # alte Treffer löschen
+      - action: todo.get_items
+        response_variable: alt
+        target: { entity_id: todo.musik_suche }
+      - if: "{{ alt['todo.musik_suche']['items'] | count > 0 }}"
+        then:
+          - action: todo.remove_item
+            target: { entity_id: todo.musik_suche }
+            data: { item: "{{ alt['todo.musik_suche']['items'] | map(attribute='uid') | list }}" }
+      - action: music_assistant.search
+        response_variable: s
+        data:
+          config_entry_id: "{{ config_entry_id('media_player.ma_wohnzimmer') }}"
+          name: "{{ q }}"
+          media_type: [artist, playlist, album, track, radio]
+          limit: 4
+      - variables:
+          treffer: >
+            {% set ns = namespace(l=[]) %}
+            {% set icons = {'artists': '👤', 'playlists': '📃', 'albums': '💿', 'tracks': '🎵', 'radio': '📻'} %}
+            {% set typen = {'artists': 'artist', 'playlists': 'playlist', 'albums': 'album', 'tracks': 'track', 'radio': 'radio'} %}
+            {% for k in ['artists', 'playlists', 'albums', 'tracks', 'radio'] %}
+              {% for i in (s[k] | default([]))[:(3 if k in ['artists', 'radio'] else 4)] %}
+                {% set wer = (i.artists | default([]) | map(attribute='name') | list)[:1] | join('') %}
+                {% set ns.l = ns.l + [{'name': icons[k] ~ ' ' ~ i.name | trim ~ ((' – ' ~ wer) if wer else ''),
+                                       'desc': typen[k] ~ '|' ~ i.uri}] %}
+              {% endfor %}
+            {% endfor %}
+            {{ ns.l[:16] }}
+      - repeat:
+          for_each: "{{ treffer }}"
+          sequence:
+            - action: todo.add_item
+              continue_on_error: true
+              target: { entity_id: todo.musik_suche }
+              data: { item: "{{ repeat.item.name[:120] }}", description: "{{ repeat.item.desc }}" }
+      - variables:
+          antwort: { anzahl: "{{ treffer | count }}" }
+      - stop: ok
+        response_variable: antwort
+
+  musik_link_abspielen:
+    alias: "Musik: Link abspielen"
+    icon: mdi:link-variant
+    mode: restart
+    fields:
+      link: { name: Link, required: true, selector: { text: } }
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer, Beide] } } }
+    variables:
+      l: "{{ link | trim }}"
+      typ: >
+        {% if 'spotify.com/playlist' in l or 'spotify:playlist' in l %}playlist
+        {% elif 'spotify.com/album' in l or 'spotify:album' in l %}album
+        {% elif 'spotify.com/artist' in l or 'spotify:artist' in l %}artist
+        {% elif 'spotify.com/track' in l or 'spotify:track' in l %}track
+        {% else %}radio{% endif %}
+    sequence:
+      - action: script.musik_liste
+        data: { uri: "{{ l }}", typ: "{{ typ | trim }}", titel: "Link", raum: "{{ raum | default('') }}" }
+
+  musik_wunsch_aus_feld:
+    alias: "Musik: Wunsch aus Textfeld abspielen"
+    icon: mdi:play-circle
+    mode: restart
+    variables:
+      w: "{{ states('input_text.musik_wunsch') | trim }}"
+    sequence:
+      - if: "{{ w.startswith('http') or w.startswith('spotify:') }}"
+        then:
+          - action: script.musik_link_abspielen
+            data: { link: "{{ w }}" }
+        else:
+          - action: script.musik_wunsch_abspielen
+            data: { wunsch: "{{ w }}" }
+
+  musik_aktuell_speichern:
+    alias: "Musik: Laufendes speichern"
+    description: >
+      Speichert, was gerade läuft (Sender, Playlist, Titel), auf eine Musikliste – mit genauer Adresse,
+      damit der Eintrag später exakt das wieder spielt. Für "speicher den Sender", "merk dir das Lied".
+    icon: mdi:playlist-plus
+    mode: single
+    fields:
+      raum: { name: Raum, selector: { select: { options: [Wohnzimmer, Schlafzimmer] } } }
+      name: { name: "Name (leer = Titel vom Player)", selector: { text: } }
+      liste:
+        name: "Liste (leer = Radio bei Sendern, sonst Chill)"
+        selector: { select: { options: [radio, morgen, chill, abend, deutsch, party, familie] } }
+    variables:
+      p: >
+        {% set r = raum | default('') %}
+        {% if r == 'Schlafzimmer' %}media_player.ma_schlafzimmer
+        {% elif r == 'Wohnzimmer' %}media_player.ma_wohnzimmer
+        {% elif is_state('media_player.ma_wohnzimmer', 'playing') %}media_player.ma_wohnzimmer
+        {% else %}media_player.ma_schlafzimmer{% endif %}
+      cid: "{{ state_attr(p, 'media_content_id') or '' }}"
+      typ: >
+        {% set ns = namespace(t='track') %}
+        {% for t in ['radio', 'playlist', 'album', 'artist', 'track'] if ('://' ~ t ~ '/') in cid %}{% set ns.t = t %}{% endfor %}
+        {{ ns.t }}
+      titel: "{{ (name | default('') | trim) or state_attr(p, 'media_title') or 'Musik' }}"
+      ziel: "todo.musik_{{ liste if liste | default('') else ('radio' if typ == 'radio' else 'chill') }}"
+    sequence:
+      - if: "{{ not cid }}"
+        then:
+          - stop: "Gerade läuft nichts."
+            error: true
+      - action: todo.add_item
+        target: { entity_id: "{{ ziel }}" }
+        data: { item: "{{ titel }}", description: "{{ typ }}|{{ cid }}" }
+      - variables:
+          erg: { gespeichert: "{{ titel }}", liste: "{{ ziel }}", typ: "{{ typ }}" }
+      - stop: ok
+        response_variable: erg
+
+automation:
+  # Text eingegeben → nur suchen (Vorschläge), Link → direkt abspielen
+  - id: musik_wunsch_bei_eingabe
+    alias: "Musik: Wunsch im Textfeld → Vorschläge / Link"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_text.musik_wunsch
+    conditions:
+      - "{{ trigger.to_state.state | trim | length > 1 }}"
+    actions:
+      - if: "{{ trigger.to_state.state | trim | regex_match('^(https?://|spotify:)') }}"
+        then:
+          - action: script.musik_link_abspielen
+            data: { link: "{{ trigger.to_state.state }}" }
+        else:
+          - action: script.musik_suchen
+            data: { suchbegriff: "{{ trigger.to_state.state }}" }

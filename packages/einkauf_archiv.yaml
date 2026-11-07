@@ -1,0 +1,149 @@
+# Einkauf-Vorschläge und Aufgaben-Archiv
+# 1) Vorschläge: die häufigsten Artikel aus der Einkaufs-Historie (.shopping_list.json) stehen in
+#    todo.einkauf_vorschlage. Abhaken (auch mehrere) = auf die Einkaufsliste setzen.
+# 2) Archiv: wird in "Haus & Garten" eine Aufgabe gelöscht, landet sie in todo.archiv_aufgaben.
+#    Dort abhaken = Aufgabe wiederherstellen.
+
+command_line:
+  - sensor:
+      name: "Einkauf Häufigkeit"
+      unique_id: einkauf_haeufigkeit
+      command: >-
+        python3 -c "import json,collections;d=json.load(open('/config/.shopping_list.json'));c=collections.Counter(i['name'].strip()[:1].upper()+i['name'].strip()[1:] for i in d if i['name'].strip());print(json.dumps({'anzahl':len(d),'top':[n for n,_ in c.most_common(30)]}))"
+      value_template: "{{ value_json.anzahl }}"
+      json_attributes: [top]
+      scan_interval: 3600
+
+template:
+  - trigger:
+      - trigger: event
+        event_type: aufgaben_snapshot
+    sensor:
+      - name: "Aufgaben Snapshot"
+        unique_id: aufgaben_snapshot
+        state: "{{ trigger.event.data['liste'] | count }}"
+        attributes:
+          items: "{{ trigger.event.data['liste'] }}"
+
+script:
+  einkauf_vorschlaege_aktualisieren:
+    alias: "Einkauf: Vorschläge aktualisieren"
+    icon: mdi:cart-arrow-down
+    sequence:
+      - action: homeassistant.update_entity
+        target: { entity_id: sensor.einkauf_haufigkeit }
+      - action: todo.get_items
+        target: { entity_id: [todo.einkauf_vorschlage, todo.einkaufsliste] }
+        response_variable: listen
+      - variables:
+          alt: "{{ listen['todo.einkauf_vorschlage']['items'] | map(attribute='summary') | list }}"
+          offen: "{{ listen['todo.einkaufsliste']['items'] | selectattr('status', 'eq', 'needs_action') | map(attribute='summary') | map('lower') | list }}"
+          neu: "{{ state_attr('sensor.einkauf_haufigkeit', 'top') or [] }}"
+      - if: "{{ alt | count > 0 }}"
+        then:
+          - action: todo.remove_item
+            target: { entity_id: todo.einkauf_vorschlage }
+            data: { item: "{{ alt }}" }
+      - repeat:
+          for_each: "{{ neu }}"
+          sequence:
+            - if: "{{ repeat.item | lower not in offen }}"
+              then:
+                - action: todo.add_item
+                  target: { entity_id: todo.einkauf_vorschlage }
+                  data: { item: "{{ repeat.item }}" }
+
+automation:
+  - id: einkauf_vorschlaege_taeglich
+    alias: "Einkauf: Vorschläge täglich neu"
+    triggers:
+      - trigger: time
+        at: "04:00:00"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - delay: 30
+      - action: script.einkauf_vorschlaege_aktualisieren
+
+  - id: einkauf_vorschlag_uebernehmen
+    alias: "Einkauf: Vorschlag abgehakt -> Einkaufsliste"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: todo.einkauf_vorschlage
+    actions:
+      - action: todo.get_items
+        target: { entity_id: todo.einkauf_vorschlage }
+        data: { status: completed }
+        response_variable: erledigt
+      - variables:
+          artikel: "{{ erledigt['todo.einkauf_vorschlage']['items'] | map(attribute='summary') | list }}"
+      - if: "{{ artikel | count > 0 }}"
+        then:
+          - repeat:
+              for_each: "{{ artikel }}"
+              sequence:
+                - action: todo.add_item
+                  target: { entity_id: todo.einkaufsliste }
+                  data: { item: "{{ repeat.item }}" }
+          - action: todo.remove_item
+            target: { entity_id: todo.einkauf_vorschlage }
+            data: { item: "{{ artikel }}" }
+
+  # ---------- Archiv ----------
+  - id: aufgaben_archiv_pruefen
+    alias: "Aufgaben: gelöschte ins Archiv"
+    mode: queued
+    max: 3
+    triggers:
+      - trigger: state
+        entity_id: todo.haus_garten
+      - trigger: time_pattern
+        minutes: "/5"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: todo.get_items
+        target: { entity_id: todo.haus_garten }
+        data: { status: [needs_action, completed] }
+        response_variable: aktuell
+      - variables:
+          jetzt: >
+            {{ aktuell['todo.haus_garten']['items'] | map(attribute='summary') | list }}
+          vorher: "{{ state_attr('sensor.aufgaben_snapshot', 'items') or [] }}"
+          geloescht: "{{ vorher | map(attribute='s') | reject('in', jetzt) | list if vorher else [] }}"
+      - repeat:
+          for_each: "{{ vorher | selectattr('s', 'in', geloescht) | list }}"
+          sequence:
+            - action: todo.add_item
+              target: { entity_id: todo.archiv_aufgaben }
+              data:
+                item: "{{ repeat.item.s }}"
+                description: "Gelöscht am {{ now().strftime('%d.%m.%Y %H:%M') }}\n{{ repeat.item.d }}"
+      - event: aufgaben_snapshot
+        event_data:
+          liste: >
+            {% set ns = namespace(l=[]) %}{% for i in aktuell['todo.haus_garten']['items'] %}{% set ns.l = ns.l + [{'s': i.summary, 'd': i.description | default('')}] %}{% endfor %}{{ ns.l }}
+
+  - id: aufgaben_archiv_wiederherstellen
+    alias: "Aufgaben: aus Archiv wiederherstellen"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: todo.archiv_aufgaben
+    actions:
+      - action: todo.get_items
+        target: { entity_id: todo.archiv_aufgaben }
+        data: { status: completed }
+        response_variable: wieder
+      - repeat:
+          for_each: "{{ wieder['todo.archiv_aufgaben']['items'] }}"
+          sequence:
+            - action: todo.add_item
+              target: { entity_id: todo.haus_garten }
+              data:
+                item: "{{ repeat.item.summary }}"
+                description: "{{ (repeat.item.description | default('')).split('\n')[1:] | join('\n') }}"
+            - action: todo.remove_item
+              target: { entity_id: todo.archiv_aufgaben }
+              data: { item: "{{ repeat.item.uid }}" }
