@@ -1,0 +1,140 @@
+# Haus: "Haus verlassen" und "Alles an" (mit Wiederherstellen)
+
+light:
+  - platform: group
+    name: "Alle Lichter"
+    unique_id: alle_lichter
+    entities:
+      # Innen
+      - light.dimmer_kuche_decke_2
+      - light.dimmer_wohnzimmer_esstisch
+      - light.dimmer_wand_sofa
+      - light.licht_eg_flur_decke
+      - light.wled_2
+      - light.dimmer_yvonne_bad
+      - light.licht_malte # = EG Bad Yvonne Spiegel
+      - light.bad_yvonne
+      - light.gastebad_decke
+      - light.eg_gastebad_spiegel
+      - light.dimmer_ankleidezimmer_tobi
+      - light.licht_sauna_decke # = HWR Decke (alte Kennung)
+      - light.ankleide_yvonne_decke
+      - light.ankleide_yvonne_wand
+      - light.schlafzimmer_decke
+      - light.nachtlicht_flur_malte
+      - light.dimmer_flur_og
+      - light.og_bad_tobias_decke
+      - light.licht_schlafzimmer
+      - light.licht_lara_decke
+      - light.wled
+      - light.licht_malte_decke
+      - light.licht_malte_stripe_2
+      # Außen
+      - light.dimmer_aussenbeleuchtung_giebel
+      - light.aussenbeleuchtung_garten
+      - light.licht_decke # Carport
+      # ergänzt 16.10.
+      - light.wled_kuche
+      - light.sauna_decke
+      - light.licht_sauna_wand
+      - light.sauna
+      - light.werkstatt
+      - light.dimmer_aussenbeleuchtung_sauna
+
+input_boolean:
+  alles_an:
+    name: "Alles an"
+    icon: mdi:lightbulb-group
+
+script:
+  alle_lichter_aus:
+    alias: "Alle Lichter aus"
+    icon: mdi:lightbulb-group-off
+    sequence:
+      # erst "Alles an" ohne Wiederherstellen zurücksetzen, dann alles aus
+      - action: light.turn_off
+        target:
+          entity_id: light.alle_lichter
+      - delay: 2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.alles_an
+      - action: input_select.select_option
+        continue_on_error: true
+        target:
+          entity_id: input_select.malte_led_profil
+        data:
+          option: "Aus"
+  haus_verlassen:
+    alias: "Haus verlassen"
+    icon: mdi:exit-run
+    sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.alle_lichter
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.alles_an
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.haus_abwesend
+      - action: vallox.set_profile
+        continue_on_error: true
+        data:
+          profile: away
+      - action: media_player.media_stop
+        continue_on_error: true
+        target:
+          entity_id: [media_player.wohnzimmer, media_player.schlafzimmer]
+      - action: media_player.turn_off
+        continue_on_error: true
+        target:
+          entity_id: media_player.samsung_6_series_55
+      - action: media_player.media_stop
+        continue_on_error: true
+        target:
+          entity_id: [media_player.ma_wohnzimmer, media_player.ma_schlafzimmer]
+      # Heizung: bewusst KEINE sofortige Absenkung (träge Fußbodenheizung) – siehe anwesenheit.yaml:
+      # erst nach längerer Abwesenheit Standby
+      # Sicherheit: Saunaofen aus
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id: switch.saunaofen
+      - action: persistent_notification.create
+        data:
+          notification_id: haus_verlassen
+          title: "Haus verlassen"
+          message: "Lichter aus, Lüftung auf Abwesend, Musik/TV aus, Saunaofen aus ({{ now().strftime('%H:%M') }})."
+
+automation:
+  - id: alles_an_umschalten
+    alias: "Alles an: einschalten / vorherigen Zustand wiederherstellen"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.alles_an
+        to: ["on", "off"]
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_boolean.alles_an
+            state: "on"
+        then:
+          - action: scene.create
+            data:
+              scene_id: vor_alles_an
+              snapshot_entities: "{{ state_attr('light.alle_lichter', 'entity_id') }}"
+          - action: light.turn_on
+            target:
+              entity_id: light.alle_lichter
+            data:
+              brightness_pct: 100
+        else:
+          - condition: state
+            entity_id: light.alle_lichter
+            state: "on"
+          - action: scene.turn_on
+            continue_on_error: true
+            target:
+              entity_id: scene.vor_alles_an

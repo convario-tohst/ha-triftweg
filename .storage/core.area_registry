@@ -6,12 +6,12 @@
     "areas": [
       {
         "aliases": [
-          "Flur EG",
           "Diele",
           "Flur Erdgeschoss",
-          "Erdgeschoss Flur",
-          "Eingang",
           "Flur",
+          "Eingang",
+          "Flur EG",
+          "Erdgeschoss Flur",
           "Flur unten"
         ],
         "floor_id": "eg",
@@ -71,9 +71,9 @@
       },
       {
         "aliases": [
+          "Zimmer Lara",
           "Laras Zimmer",
-          "Kinderzimmer Lara",
-          "Zimmer Lara"
+          "Kinderzimmer Lara"
         ],
         "floor_id": "og",
         "humidity_entity_id": null,
@@ -88,9 +88,9 @@
       },
       {
         "aliases": [
+          "Maltes Zimmer",
           "Kinderzimmer Malte",
-          "Zimmer Malte",
-          "Maltes Zimmer"
+          "Zimmer Malte"
         ],
         "floor_id": "og",
         "humidity_entity_id": null,
@@ -135,11 +135,11 @@
       },
       {
         "aliases": [
-          "Wohnen",
           "Stube",
-          "Sofa",
+          "Wohnen",
           "Wohnzimmer unten",
-          "Wohnbereich"
+          "Wohnbereich",
+          "Sofa"
         ],
         "floor_id": "eg",
         "humidity_entity_id": null,
@@ -154,11 +154,11 @@
       },
       {
         "aliases": [
-          "Bad Erdgeschoss",
           "Badezimmer unten",
-          "Bad unten",
+          "Yvonnes Bad",
           "Badezimmer Yvonne",
-          "Yvonnes Bad"
+          "Bad unten",
+          "Bad Erdgeschoss"
         ],
         "floor_id": "eg",
         "humidity_entity_id": null,
@@ -173,12 +173,12 @@
       },
       {
         "aliases": [
-          "Gäste Bad",
-          "Gäste Badezimmer",
           "Gäste WC",
           "Gästeklo",
+          "Gästetoilette",
+          "Gäste Bad",
           "WC",
-          "Gästetoilette"
+          "Gäste Badezimmer"
         ],
         "floor_id": "eg",
         "humidity_entity_id": null,
@@ -193,9 +193,9 @@
       },
       {
         "aliases": [
+          "Ankleidezimmer",
           "Ankleide unten",
-          "Ankleide Yvonne",
-          "Ankleidezimmer"
+          "Ankleide Yvonne"
         ],
         "floor_id": "eg",
         "humidity_entity_id": null,
@@ -210,8 +210,8 @@
       },
       {
         "aliases": [
-          "Hauswirtschaftsraum",
-          "Waschküche"
+          "Waschküche",
+          "Hauswirtschaftsraum"
         ],
         "floor_id": "eg",
         "humidity_entity_id": null,
@@ -226,11 +226,11 @@
       },
       {
         "aliases": [
-          "Obergeschoss Flur",
+          "Flur OG",
+          "Treppe",
           "Flur oben",
           "Flur Obergeschoss",
-          "Flur OG",
-          "Treppe"
+          "Obergeschoss Flur"
         ],
         "floor_id": "og",
         "humidity_entity_id": null,
@@ -245,10 +245,10 @@
       },
       {
         "aliases": [
-          "Bad oben",
           "Bad Obergeschoss",
           "Bad Tobias",
           "Badezimmer oben",
+          "Bad oben",
           "Badezimmer"
         ],
         "floor_id": "og",
@@ -292,6 +292,19 @@
         "temperature_entity_id": null,
         "created_at": "2026-10-11T11:27:54.689121+00:00",
         "modified_at": "2026-10-11T11:40:30.807349+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": null,
+        "id": "garden",
+        "labels": [],
+        "name": "Garden",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2026-11-07T08:06:50.368917+00:00",
+        "modified_at": "2026-11-07T08:06:50.368921+00:00"
       }
     ]
   }

@@ -1,0 +1,204 @@
+# Raumfeuchte niedrig halten (Milben-Allergie): Vallox-Drehzahl nach Taupunkt innen/außen
+# - Feuchte je Raum: KNX 4/0/N (1-Wire-Wandsensoren über Timberwolf, siehe knx.yaml)
+# - Innen zu feucht und Außenluft deutlich trockener → Lüftung hoch ("trocknen"), nachts gedeckelt
+# - Außenluft feuchter als innen (Sommer, schwül) → Lüftung auf Minimum, sonst wird es feuchter
+# - Innen zu trocken (Winter) → Lüftung runter, damit es nicht unter ~38 % fällt
+# Geregelt werden nur die Drehzahlen der Profile "Home" und "Away"; Boost/Kamin bleiben unberührt.
+
+input_boolean:
+  raumfeuchte_automatik:
+    name: "Raumfeuchte: Lüftung automatisch"
+    icon: mdi:water-percent-alert
+
+input_number:
+  raumfeuchte_ziel:
+    name: "Raumfeuchte: Ziel"
+    icon: mdi:water-percent
+    min: 35
+    max: 60
+    step: 1
+    unit_of_measurement: "%"
+  lueftung_stufe_trocknen:
+    name: "Lüftung: Stufe Trocknen"
+    icon: mdi:fan-chevron-up
+    min: 30
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+  lueftung_stufe_trocknen_nacht:
+    name: "Lüftung: Stufe Trocknen nachts (max.)"
+    icon: mdi:fan-clock
+    min: 20
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+  lueftung_stufe_normal:
+    name: "Lüftung: Stufe normal"
+    icon: mdi:fan
+    min: 10
+    max: 60
+    step: 5
+    unit_of_measurement: "%"
+  lueftung_stufe_minimum:
+    name: "Lüftung: Stufe Minimum (außen feucht / innen trocken)"
+    icon: mdi:fan-chevron-down
+    min: 5
+    max: 40
+    step: 5
+    unit_of_measurement: "%"
+  lueftung_stufe_abwesend_trocknen:
+    name: "Lüftung: Stufe Trocknen, wenn niemand da"
+    icon: mdi:fan-auto
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+
+template:
+  # Feuchte-Summen ignorieren hängende Sensoren: Wert seit > 12 h unverändert (offline; Timberwolf sendet den
+  # letzten Wert weiter, z. B. Lara 52,6 % seit 24.10.) – Wunsch Tobias 26.10.
+  - sensor:
+      - name: "Feuchte OG"
+        unique_id: feuchte_og
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        state: >
+          {% set w = expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
+                     | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | map('float') | list %}
+          {{ (w | sum / w | count) | round(0) if w else none }}
+        availability: >
+          {{ expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
+             | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | list | count > 0 }}
+      - name: "Feuchte EG"
+        unique_id: feuchte_eg
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        state: >
+          {% set w = expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide', 'sensor.feuchte_hwr'])
+                     | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | map('float') | list %}
+          {{ (w | sum / w | count) | round(0) if w else none }}
+        availability: >
+          {{ expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide', 'sensor.feuchte_hwr'])
+             | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | list | count > 0 }}
+      # Regelgröße: feuchtester Wohnraum (ohne Bäder – die regelt der Bad-Boost); ohne Raumsensoren die Vallox-Abluft
+      - name: "Feuchte Haus (max.)"
+        unique_id: feuchte_haus_max
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        state: >
+          {% set w = expand(['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide',
+                      'sensor.feuchte_hwr', 'sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
+                     | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | map('float') | list %}
+          {{ w | max if w else states('sensor.vallox_luftfeuchtigkeit') | float(50) }}
+        attributes:
+          quelle: >
+            {% set ns = namespace(n=none, v=-1) %}
+            {% for e in ['sensor.feuchte_wohnzimmer', 'sensor.feuchte_kuche', 'sensor.feuchte_flur_eg', 'sensor.feuchte_ankleide',
+                         'sensor.feuchte_hwr', 'sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og']
+                 if is_number(states(e)) and states(e) | float > ns.v %}
+              {% set ns.v = states(e) | float %}{% set ns.n = state_attr(e, 'friendly_name') %}
+            {% endfor %}
+            {{ ns.n or 'Vallox Abluft' }}
+      - name: "Taupunkt innen"
+        unique_id: taupunkt_innen
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        # höchster Taupunkt der Wohnräume (Feuchte + Temperatur desselben Raums); ohne Raumsensoren Vallox-Abluft
+        state: >
+          {% set paare = [['wohnzimmer', 'wohnzimmer'], ['flur_eg', 'flur_eg'], ['ankleide', 'ankleide'],
+                          ['hwr', 'hwr'], ['schlafzimmer', 'schlafzimmer'], ['malte', 'malte'], ['lara', 'lara'], ['flur_og', 'og']] %}
+          {% set ns = namespace(dp=[]) %}
+          {% for f, t in paare %}
+            {% set rh = states('sensor.feuchte_' ~ f) %}{% set tt = states('sensor.temperatur_' ~ t) %}
+            {% set tw = states('sensor.taupunkt_' ~ f) %}
+            {# Taupunkt direkt vom 1-Wire-Sensor (Timberwolf), sonst aus Feuchte + Temperatur berechnet #}
+            {% if is_number(tw) %}{% set ns.dp = ns.dp + [tw | float] %}
+            {% elif is_number(rh) and is_number(tt) and rh | float > 0 %}
+              {% set g = log(rh | float / 100) + 17.62 * tt | float / (243.12 + tt | float) %}
+              {% set ns.dp = ns.dp + [243.12 * g / (17.62 - g)] %}
+            {% endif %}
+          {% endfor %}
+          {% if ns.dp %}{{ ns.dp | max | round(1) }}
+          {% else %}
+            {% set t = states('sensor.vallox_luft_absaugen') | float(20.5) %}
+            {% set rh = states('sensor.vallox_luftfeuchtigkeit') | float(50) %}
+            {% set g = log(rh / 100) + 17.62 * t / (243.12 + t) %}
+            {{ (243.12 * g / (17.62 - g)) | round(1) }}
+          {% endif %}
+      - name: "Taupunkt außen"
+        unique_id: taupunkt_aussen
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set dp = state_attr('weather.forecast_home', 'dew_point') %}
+          {% if dp is number %}{{ dp | round(1) }}
+          {% else %}
+            {% set t = states('sensor.vallox_aussenluft') | float(state_attr('weather.forecast_home', 'temperature') | float(10)) %}
+            {% set rh = state_attr('weather.forecast_home', 'humidity') | float(80) %}
+            {% set g = log(rh / 100) + 17.62 * t / (243.12 + t) %}
+            {{ (243.12 * g / (17.62 - g)) | round(1) }}
+          {% endif %}
+      - name: "Lüftung Feuchte-Modus"
+        unique_id: lueftung_feuchte_modus
+        icon: mdi:water-sync
+        state: >
+          {% set rh = states('sensor.feuchte_haus_max') | float(50) %}
+          {% set ziel = states('input_number.raumfeuchte_ziel') | float(45) %}
+          {% set di = states('sensor.taupunkt_innen') | float(10) %}
+          {% set da = states('sensor.taupunkt_aussen') | float(10) %}
+          {% if rh < ziel - 7 %}zu trocken
+          {% elif da > di - 1 %}außen feuchter
+          {% elif rh > ziel + 2 and da < di - 2 %}trocknen
+          {% else %}normal{% endif %}
+
+automation:
+  - id: raumfeuchte_lueftung_regeln
+    alias: "Raumfeuchte: Lüftung nach Taupunkt regeln"
+    description: "Setzt die Vallox-Drehzahlen (Home/Away) je nach Feuchte innen und Taupunkt außen."
+    mode: queued
+    max: 3
+    max_exceeded: silent
+    triggers:
+      - trigger: time_pattern
+        minutes: "/10"
+      - trigger: state
+        entity_id: [sensor.luftung_feuchte_modus, input_boolean.raumfeuchte_automatik]
+      - trigger: state
+        entity_id:
+          - input_number.lueftung_stufe_trocknen
+          - input_number.lueftung_stufe_trocknen_nacht
+          - input_number.lueftung_stufe_normal
+          - input_number.lueftung_stufe_minimum
+          - input_number.lueftung_stufe_abwesend_trocknen
+      - trigger: time
+        at: ["07:00:00", "22:00:00"]
+    conditions:
+      - condition: state
+        entity_id: input_boolean.raumfeuchte_automatik
+        state: "on"
+      - "{{ states('fan.vallox') not in ['unavailable', 'unknown'] }}"
+    variables:
+      modus: "{{ states('sensor.luftung_feuchte_modus') }}"
+      nacht: "{{ now().hour >= 22 or now().hour < 7 }}"
+      trocknen: "{{ states('input_number.lueftung_stufe_trocknen') | int(60) }}"
+      soll_home: >
+        {% if modus == 'trocknen' %}{{ [trocknen, states('input_number.lueftung_stufe_trocknen_nacht') | int(40)] | min if nacht else trocknen }}
+        {% elif modus in ['außen feuchter', 'zu trocken'] %}{{ states('input_number.lueftung_stufe_minimum') | int(20) }}
+        {% else %}{{ states('input_number.lueftung_stufe_normal') | int(30) }}{% endif %}
+      soll_away: >
+        {% if modus == 'trocknen' %}{{ states('input_number.lueftung_stufe_abwesend_trocknen') | int(50) }}
+        {% else %}5{% endif %}
+    actions:
+      - if: "{{ state_attr('fan.vallox', 'fan_speed_home') | int(-1) != soll_home | int }}"
+        then:
+          - action: vallox.set_profile_fan_speed_home
+            data: { fan_speed: "{{ soll_home | int }}" }
+      - if: "{{ state_attr('fan.vallox', 'fan_speed_away') | int(-1) != soll_away | int }}"
+        then:
+          - action: vallox.set_profile_fan_speed_away
+            data: { fan_speed: "{{ soll_away | int }}" }

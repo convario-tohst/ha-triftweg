@@ -1,0 +1,220 @@
+# Luftentfeuchter OG (Comfee MDDF-20DEN7-WF, Midea) – vorbereitet, aktiv sobald das Gerät in HA ist
+# Einbindung: HACS → "Midea AC LAN" → Gerät hinzufügen → Entity-ID unten in input_text.entfeuchter_entity eintragen
+#   (Standard: humidifier.entfeuchter_og). Ohne Gerät tun die Automationen nichts.
+# Logik (zusammen mit packages/raumfeuchte.yaml):
+#   - Feuchte OG über Ziel + 3 % und die Lüftung kann nicht trocknen (außen feuchter / normal) → Entfeuchter an
+#   - Lüftung im Modus "trocknen" (Winter): Entfeuchter nur bei deutlich zu feucht (Ziel + 8 %)
+#   - Feuchte OG unter Ziel - 2 % → aus; Tank voll → Push an Tobias
+#   - Nachts (einstellbar, Standard 22–7 Uhr) je nach Auswahl "Entfeuchter nachts": leise / aus / normal
+
+input_boolean:
+  schlafmodus_og:
+    name: "Schlafmodus OG"
+    icon: mdi:sleep
+  entfeuchter_automatik:
+    name: "Entfeuchter OG automatisch"
+    icon: mdi:air-humidifier
+
+input_select:
+  entfeuchter_nachtmodus:
+    name: "Entfeuchter nachts"
+    icon: mdi:weather-night
+    options: ["leise", "aus", "normal"]
+
+input_datetime:
+  entfeuchter_nacht_beginn:
+    name: "Entfeuchter: Nacht ab"
+    has_date: false
+    has_time: true
+    icon: mdi:weather-night
+  entfeuchter_nacht_ende:
+    name: "Entfeuchter: Nacht bis"
+    has_date: false
+    has_time: true
+    icon: mdi:weather-sunny
+
+input_text:
+  entfeuchter_entity:
+    name: "Entfeuchter OG: Entity-ID"
+    initial: humidifier.entfeuchter_og
+    max: 80
+
+template:
+  # Feuchte-Summen ignorieren hängende Sensoren: Wert seit > 12 h unverändert (offline; Timberwolf sendet den
+  # letzten Wert weiter, z. B. Lara 52,6 % seit 24.10.) – Wunsch Tobias 26.10.
+  - sensor:
+      # Regelgröße OG: feuchtester Raum oben (Bad OG ausgenommen)
+      - name: "Feuchte OG (max.)"
+        unique_id: feuchte_og_max
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        # Regelgröße Entfeuchter (Tobias 26.10.): Prio 1 Schlafräume (Schlafzimmer, Malte, Lara – feuchtester zählt),
+        # nur Wandsensoren mit frischen Werten (seit < 12 h verändert). Ohne Schlafraum-Werte: Flur OG, zuletzt Gerätesensor.
+        state: >
+          {% set frisch = now() - timedelta(hours=12) %}
+          {% set schlaf = expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara'])
+                          | selectattr('last_changed', 'gt', frisch) | map(attribute='state') | select('is_number') | map('float') | list %}
+          {% set flur = expand(['sensor.feuchte_flur_og']) | selectattr('last_changed', 'gt', frisch)
+                        | map(attribute='state') | select('is_number') | map('float') | list %}
+          {% set g = states('sensor.entfeuchter_og_feuchte') %}
+          {{ schlaf | max if schlaf else (flur | max if flur else (g | float if is_number(g) else none)) }}
+        availability: >
+          {{ expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
+              | selectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='state') | select('is_number') | list | count > 0
+             or is_number(states('sensor.entfeuchter_og_feuchte')) }}
+        attributes:
+          quelle: >
+            {% set frisch = now() - timedelta(hours=12) %}
+            {% set s = expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara'])
+                       | selectattr('last_changed', 'gt', frisch) | selectattr('state', 'is_number') | list %}
+            {% set f = expand(['sensor.feuchte_flur_og']) | selectattr('last_changed', 'gt', frisch) | selectattr('state', 'is_number') | list %}
+            {{ (s | sort(attribute='state', reverse=true) | map(attribute='name') | first) if s
+               else ('Feuchte Flur OG (kein Schlafraum-Sensor)' if f else 'Gerätesensor Entfeuchter') }}
+          ignoriert: >
+            {{ expand(['sensor.feuchte_schlafzimmer', 'sensor.feuchte_malte', 'sensor.feuchte_lara', 'sensor.feuchte_flur_og'])
+               | rejectattr('last_changed', 'gt', now() - timedelta(hours=12)) | map(attribute='name') | list | join(', ') or 'keine' }}
+      - name: "Entfeuchter Nacht"
+        unique_id: entfeuchter_nacht
+        icon: mdi:weather-night
+        # an zwischen "Nacht ab" und "Nacht bis" (über Mitternacht) oder wenn "Schlafmodus OG" an ist
+        state: >
+          {% set b = states('input_datetime.entfeuchter_nacht_beginn') %}{% set e = states('input_datetime.entfeuchter_nacht_ende') %}
+          {% set t = now().strftime('%H:%M:%S') %}
+          {{ 'an' if is_state('input_boolean.schlafmodus_og', 'on') or ((t >= b or t < e) if b > e else (b <= t < e)) else 'aus' }}
+      - name: "Entfeuchter OG Soll"
+        unique_id: entfeuchter_og_soll
+        icon: mdi:air-humidifier
+        state: >
+          {% set e = states('input_text.entfeuchter_entity') %}
+          {% set rh = states('sensor.feuchte_og_max') %}
+          {% set ziel = states('input_number.raumfeuchte_ziel') | float(45) %}
+          {% set modus = states('sensor.luftung_feuchte_modus') %}
+          {% set laeuft = is_state(e, 'on') %}
+          {% if states(e) in ['unknown', 'unavailable'] %}kein Gerät
+          {% elif is_state('sensor.entfeuchter_nacht', 'an') and is_state('input_select.entfeuchter_nachtmodus', 'aus') %}aus
+          {% elif not is_number(rh) %}keine Messung
+          {# mit Hysterese: einschalten erst deutlich über Ziel, ausschalten erst knapp unter Ziel (vorher: An/Aus-Pendeln um 53 %, 23.10.) #}
+          {% elif rh | float < ziel - 2 %}aus
+          {# an ab Ziel + 2 (47 %), aus unter Ziel - 2 (43 %) – Tobias 26.10. #}
+          {% elif rh | float > ziel + 2 %}an
+          {% else %}halten{% endif %}
+
+automation:
+  - id: entfeuchter_og_regeln
+    alias: "Entfeuchter OG: nach Feuchte regeln"
+    # restart + kurze Pause: bei mehreren gleichzeitigen Auslösern gewinnt der letzte Stand (23.10.)
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: [sensor.entfeuchter_og_soll, input_boolean.entfeuchter_automatik]
+      - trigger: time_pattern
+        minutes: "/15"
+      - trigger: state
+        entity_id: [sensor.entfeuchter_nacht, input_select.entfeuchter_nachtmodus]
+    conditions:
+      - condition: state
+        entity_id: input_boolean.entfeuchter_automatik
+        state: "on"
+      - "{{ states('sensor.entfeuchter_og_soll') in ['an', 'aus'] }}"
+    variables:
+      e: "{{ states('input_text.entfeuchter_entity') }}"
+      soll: "{{ states('sensor.entfeuchter_og_soll') }}"
+      nacht: "{{ is_state('sensor.entfeuchter_nacht', 'an') and not is_state('input_select.entfeuchter_nachtmodus', 'normal') }}"
+      ziel: "{{ states('input_number.raumfeuchte_ziel') | int(45) }}"
+      modi: "{{ state_attr(e, 'available_modes') or [] }}"
+    actions:
+      - delay: 2
+      - variables:
+          soll: "{{ states('sensor.entfeuchter_og_soll') }}"
+          nacht: "{{ is_state('sensor.entfeuchter_nacht', 'an') and not is_state('input_select.entfeuchter_nachtmodus', 'normal') }}"
+      - condition: "{{ soll in ['an', 'aus'] }}"
+      - if: "{{ soll == 'an' }}"
+        then:
+          - if: "{{ not is_state(e, 'on') }}"
+            then:
+              - action: humidifier.turn_on
+                target: { entity_id: "{{ e }}" }
+          - if: "{{ state_attr(e, 'humidity') | int(0) != ziel | int }}"
+            then:
+              - action: humidifier.set_humidity
+                target: { entity_id: "{{ e }}" }
+                data: { humidity: "{{ ziel }}" }
+          # Modus "set" = regelt auf Zielfeuchte (Comfee/Midea A1)
+          - if: "{{ 'set' in modi and state_attr(e, 'mode') != 'set' }}"
+            then:
+              - action: humidifier.set_mode
+                continue_on_error: true
+                target: { entity_id: "{{ e }}" }
+                data: { mode: set }
+          # Lüfter: nachts "silent" (wenn Nachtmodus "leise"), sonst "comfort"
+          - variables:
+              stufe: "{{ 'silent' if nacht else 'comfort' }}"
+          - if: "{{ states('select.entfeuchter_og_luefter') not in ['unavailable', 'unknown', stufe] }}"
+            then:
+              - action: select.select_option
+                continue_on_error: true
+                target: { entity_id: select.entfeuchter_og_luefter }
+                data: { option: "{{ stufe }}" }
+        else:
+          - if: "{{ is_state(e, 'on') }}"
+            then:
+              - action: humidifier.turn_off
+                target: { entity_id: "{{ e }}" }
+
+  # Schlafmodus OG: 19:30 automatisch an (Kinder im Bett), 7:00 aus; manuell jederzeit früher schaltbar
+  - id: schlafmodus_og_zeit
+    alias: "Schlafmodus OG: 19:30 an, 7:00 aus"
+    triggers:
+      - trigger: time
+        at: "19:30:00"
+        id: an
+      - trigger: time
+        at: "07:00:00"
+        id: aus
+    actions:
+      - action: "input_boolean.turn_{{ 'on' if trigger.id == 'an' else 'off' }}"
+        target: { entity_id: input_boolean.schlafmodus_og }
+
+  # Schlafmodus OG: Flur oben nur 5 % (Melder 1.1.24 schaltet ein → HA dimmt sofort herunter; beim Aktivieren auch sofort)
+  - id: schlafmodus_flur_og
+    alias: "Schlafmodus OG: Flur oben 5 %"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: light.dimmer_flur_og
+        from: "off"
+        to: "on"
+      - trigger: state
+        entity_id: input_boolean.schlafmodus_og
+        to: "on"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.schlafmodus_og
+        state: "on"
+      - condition: state
+        entity_id: light.dimmer_flur_og
+        state: "on"
+      - "{{ state_attr('light.dimmer_flur_og', 'brightness') | int(255) > 20 }}"
+    actions:
+      - delay: 1
+      - action: light.turn_on
+        target: { entity_id: light.dimmer_flur_og }
+        data: { brightness_pct: 5 }
+
+  - id: entfeuchter_og_tank_voll
+    alias: "Entfeuchter OG: Tank voll melden"
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: >
+          {% set tank = states.binary_sensor | selectattr('entity_id', 'search', 'entfeuchter|dehumidifier|comfee|midea')
+                        | selectattr('entity_id', 'search', 'tank|full|voll') | selectattr('state', 'eq', 'on') | list %}
+          {{ tank | count > 0 }}
+        for: "00:02:00"
+    actions:
+      - action: script.system_melden
+        data:
+          titel: "Entfeuchter OG"
+          text: "Wassertank ist voll – bitte leeren (oder Schlauch anschließen)."
+          kennung: entfeuchter_tank
