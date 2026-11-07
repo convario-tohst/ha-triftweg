@@ -1,0 +1,82 @@
+# Nachtlicht Flur Malte (KNX 0/0/3, Aktor 1.1.8) – 07.11. von KNX-Logik nach HA verlagert
+# Vorher: KNX schaltete nach Helligkeit (Melder Sauna außen) an < ~50 lx / aus > ~100 lx und
+# schaltete sofort wieder ein, wenn HA es ausgemacht hatte (auch bei Abwesenheit).
+# Jetzt: an, wenn es draußen dunkel ist UND jemand zu Hause ist; aus bei Tageslicht oder Abwesenheit.
+# Kein ständiges Nachregeln: "Alles aus" / manuell aus bleibt aus bis zum nächsten Wechsel (dunkel/hell/weg/da).
+
+input_boolean:
+  nachtlicht_automatik:
+    name: "Nachtlicht Flur: automatisch"
+    icon: mdi:weather-night
+
+input_number:
+  nachtlicht_an_unter:
+    name: "Nachtlicht Flur: an unter (Helligkeit außen)"
+    icon: mdi:brightness-4
+    min: 0
+    max: 500
+    step: 5
+    unit_of_measurement: lx
+    mode: box
+  nachtlicht_aus_ueber:
+    name: "Nachtlicht Flur: aus über (Helligkeit außen)"
+    icon: mdi:brightness-7
+    min: 0
+    max: 1000
+    step: 5
+    unit_of_measurement: lx
+    mode: box
+
+automation:
+  - id: nachtlicht_flur_malte_steuern
+    alias: "Nachtlicht Flur Malte: nach Helligkeit und Anwesenheit"
+    mode: queued
+    max: 3
+    max_exceeded: silent
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.helligkeit_aussen
+        below: input_number.nachtlicht_an_unter
+        for: "00:03:00"
+        id: dunkel
+      - trigger: numeric_state
+        entity_id: sensor.helligkeit_aussen
+        above: input_number.nachtlicht_aus_ueber
+        for: "00:05:00"
+        id: hell
+      - trigger: state
+        entity_id: input_boolean.haus_abwesend
+        to: ["on", "off"]
+        id: anwesenheit
+      - trigger: state
+        entity_id: input_boolean.nachtlicht_automatik
+        to: "on"
+        id: automatik
+      - trigger: homeassistant
+        event: start
+        id: start
+    conditions:
+      - condition: state
+        entity_id: input_boolean.nachtlicht_automatik
+        state: "on"
+    variables:
+      lux: "{{ states('sensor.helligkeit_aussen') | float(-1) }}"
+      an_unter: "{{ states('input_number.nachtlicht_an_unter') | float(50) }}"
+      aus_ueber: "{{ states('input_number.nachtlicht_aus_ueber') | float(100) }}"
+      # ohne Messwert: Sonnenstand
+      dunkel: "{{ (lux < an_unter) if lux >= 0 else is_state('sun.sun', 'below_horizon') }}"
+      hell: "{{ (lux > aus_ueber) if lux >= 0 else is_state('sun.sun', 'above_horizon') }}"
+      soll: >
+        {% if is_state('input_boolean.haus_abwesend', 'on') %}aus
+        {% elif dunkel %}an
+        {% elif hell %}aus
+        {% else %}halten{% endif %}
+    actions:
+      - if: "{{ soll == 'an' and not is_state('light.nachtlicht_flur_malte', 'on') }}"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.nachtlicht_flur_malte }
+      - if: "{{ soll == 'aus' and is_state('light.nachtlicht_flur_malte', 'on') }}"
+        then:
+          - action: light.turn_off
+            target: { entity_id: light.nachtlicht_flur_malte }
