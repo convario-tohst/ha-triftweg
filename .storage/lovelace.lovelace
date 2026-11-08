@@ -88,10 +88,47 @@
               "cards": [
                 {
                   "type": "heading",
-                  "heading": "Klima außen",
+                  "heading": "Klima",
                   "heading_style": "title",
-                  "icon": "mdi:tree",
+                  "icon": "mdi:home-thermometer",
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "input_boolean.toggle",
+                    "target": {
+                      "entity_id": "input_boolean.klima_details"
+                    }
+                  },
                   "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "sensor.temperatur_aussen",
+                      "show_state": true,
+                      "show_icon": true,
+                      "icon": "mdi:tree",
+                      "color": "deep-orange",
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "input_boolean.toggle",
+                        "target": {
+                          "entity_id": "input_boolean.klima_details"
+                        }
+                      }
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "sensor.feuchte_innen",
+                      "show_state": true,
+                      "show_icon": true,
+                      "icon": "mdi:home-percent",
+                      "color": "blue",
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "input_boolean.toggle",
+                        "target": {
+                          "entity_id": "input_boolean.klima_details"
+                        }
+                      }
+                    },
                     {
                       "type": "entity",
                       "entity": "binary_sensor.frostwarnung",
@@ -106,6 +143,63 @@
                           "state": "on"
                         }
                       ]
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "input_boolean.klima_details",
+                      "show_state": false,
+                      "show_icon": true,
+                      "icon": "mdi:chevron-down",
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "input_boolean.toggle",
+                        "target": {
+                          "entity_id": "input_boolean.klima_details"
+                        }
+                      },
+                      "visibility": [
+                        {
+                          "condition": "state",
+                          "entity": "input_boolean.klima_details",
+                          "state": "off"
+                        }
+                      ],
+                      "color": "amber"
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "input_boolean.klima_details",
+                      "show_state": false,
+                      "show_icon": true,
+                      "icon": "mdi:chevron-up",
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "input_boolean.toggle",
+                        "target": {
+                          "entity_id": "input_boolean.klima_details"
+                        }
+                      },
+                      "visibility": [
+                        {
+                          "condition": "state",
+                          "entity": "input_boolean.klima_details",
+                          "state": "on"
+                        }
+                      ],
+                      "color": "amber"
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "heading": "Außen",
+                  "heading_style": "subtitle",
+                  "icon": "mdi:tree",
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
                     }
                   ]
                 },
@@ -119,7 +213,14 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 },
                 {
                   "type": "tile",
@@ -131,7 +232,14 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 },
                 {
                   "type": "tile",
@@ -143,7 +251,14 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 },
                 {
                   "type": "tile",
@@ -155,25 +270,25 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
-                }
-              ]
-            },
-            {
-              "type": "grid",
-              "cards": [
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
+                },
                 {
                   "type": "heading",
-                  "heading": "Klima innen",
-                  "heading_style": "title",
-                  "icon": "mdi:home-thermometer",
-                  "badges": [
+                  "heading": "Innen",
+                  "heading_style": "subtitle",
+                  "icon": "mdi:home",
+                  "visibility": [
                     {
-                      "type": "entity",
-                      "entity": "sensor.luftung_feuchte_modus",
-                      "show_state": true,
-                      "show_icon": true,
-                      "color": "teal"
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
                     }
                   ]
                 },
@@ -187,7 +302,14 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 },
                 {
                   "type": "tile",
@@ -199,7 +321,14 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 },
                 {
                   "type": "tile",
@@ -211,7 +340,14 @@
                   "grid_options": {
                     "columns": 3,
                     "rows": 2
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 },
                 {
                   "type": "tile",
@@ -226,7 +362,14 @@
                   },
                   "tap_action": {
                     "action": "more-info"
-                  }
+                  },
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.klima_details",
+                      "state": "on"
+                    }
+                  ]
                 }
               ]
             },

@@ -1,0 +1,37 @@
+# Dashboard Übersicht: Klima-Bereich zum Auf-/Zuklappen
+# Zu: nur Überschrift mit Temperatur außen + Feuchte innen (+ Frost-Hinweis). Antippen klappt auf.
+# Klappt nach 3 Minuten und beim HA-Start automatisch wieder zu.
+# Hinweis: Schalter gilt für alle Geräte gemeinsam (HA-Bordmittel, kein Zusatzmodul).
+
+input_boolean:
+  klima_details:
+    name: "Dashboard: Klima aufgeklappt"
+    icon: mdi:chevron-down
+
+template:
+  - sensor:
+      - name: "Feuchte innen"
+        unique_id: feuchte_innen
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        icon: mdi:home-percent
+        state: >
+          {% set w = ['sensor.feuchte_eg', 'sensor.feuchte_og'] | map('states') | select('is_number') | map('float') | list %}
+          {{ (w | sum / w | count) | round(0) if w else none }}
+        availability: "{{ ['sensor.feuchte_eg', 'sensor.feuchte_og'] | map('states') | select('is_number') | list | count > 0 }}"
+
+automation:
+  - id: dashboard_klima_zuklappen
+    alias: "Dashboard: Klima nach 3 min wieder zuklappen"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.klima_details
+        to: "on"
+        for: "00:03:00"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.klima_details }
