@@ -936,6 +936,27 @@ STATUS:NEEDS-ACTION
 SUMMARY:Müll-Erinnerung am Küchen-Stripe: Licht soll schneller blinken\, 
  immer rot-weiß\, für alle Müllsorten gleich (Wunsch von Malte)
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261107T200540Z
+UID:9ae55b24-dae6-11f1-9747-d83addc0128c
+CREATED:20261107T200540Z
+DTSTART;TZID=Europe/Berlin:20261107T210540
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fernprogrammierung über GitHub einrichten (HA holt Änderungen ab\, 
+ prüft\, lädt neu) – vorher info-convario-systems-de ins Repo ha-triftweg 
+ einladen + MCP-Connector in claude.ai verbinden
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261107T200540Z
+UID:9aeb4142-dae6-11f1-9747-d83addc0128c
+CREATED:20261107T200540Z
+DTSTART;TZID=Europe/Berlin:20261107T210540
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Nachtlicht Flur Malte: Logik im Timberwolf (Objekt 303 → 0/0/3) 
+ deaktivieren\, HA steuert jetzt
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
