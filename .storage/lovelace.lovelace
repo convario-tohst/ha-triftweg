@@ -80,49 +80,156 @@
               "show_state": true,
               "show_icon": true,
               "color": "green"
-            },
-            {
-              "type": "entity",
-              "entity": "sensor.vallox_luftergeschwindigkeit",
-              "name": "Lüftung",
-              "icon": "mdi:fan",
-              "show_name": true,
-              "show_state": true,
-              "show_icon": true,
-              "color": "cyan"
-            },
-            {
-              "type": "entity",
-              "entity": "sensor.feuchte_eg",
-              "name": "Feuchte EG",
-              "icon": "mdi:water-percent",
-              "show_name": true,
-              "show_state": true,
-              "show_icon": true,
-              "color": "blue"
-            },
-            {
-              "type": "entity",
-              "entity": "sensor.feuchte_og",
-              "name": "Feuchte OG",
-              "icon": "mdi:water-percent",
-              "show_name": true,
-              "show_state": true,
-              "show_icon": true,
-              "color": "blue"
-            },
-            {
-              "type": "entity",
-              "entity": "sensor.vallox_aussenluft",
-              "name": "Außen",
-              "icon": "mdi:thermometer",
-              "show_name": true,
-              "show_state": true,
-              "show_icon": true,
-              "color": "light-blue"
             }
           ],
           "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Klima außen",
+                  "heading_style": "title",
+                  "icon": "mdi:tree",
+                  "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "binary_sensor.frostwarnung",
+                      "show_state": true,
+                      "show_icon": true,
+                      "color": "light-blue",
+                      "state_content": "name",
+                      "visibility": [
+                        {
+                          "condition": "state",
+                          "entity": "binary_sensor.frostwarnung",
+                          "state": "on"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.temperatur_aussen",
+                  "name": "Temperatur",
+                  "icon": "mdi:thermometer",
+                  "color": "deep-orange",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.luftfeuchtigkeit_aussen",
+                  "name": "Feuchte",
+                  "icon": "mdi:water-percent",
+                  "color": "light-blue",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.taupunkt_aussen",
+                  "name": "Taupunkt",
+                  "icon": "mdi:water-thermometer",
+                  "color": "cyan",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.tiefstwert_aussen_48_h",
+                  "name": "Tiefst 48 h",
+                  "icon": "mdi:snowflake-thermometer",
+                  "color": "indigo",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Klima innen",
+                  "heading_style": "title",
+                  "icon": "mdi:home-thermometer",
+                  "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "sensor.luftung_feuchte_modus",
+                      "show_state": true,
+                      "show_icon": true,
+                      "color": "teal"
+                    }
+                  ]
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.feuchte_eg",
+                  "name": "Feuchte EG",
+                  "icon": "mdi:home-floor-g",
+                  "color": "blue",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.feuchte_og",
+                  "name": "Feuchte OG",
+                  "icon": "mdi:home-floor-1",
+                  "color": "blue",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.taupunkt_innen",
+                  "name": "Taupunkt",
+                  "icon": "mdi:water-thermometer-outline",
+                  "color": "cyan",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.vallox_luftergeschwindigkeit",
+                  "name": "Lüftung",
+                  "icon": "mdi:fan",
+                  "color": "teal",
+                  "vertical": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  },
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
             {
               "type": "grid",
               "cards": [
