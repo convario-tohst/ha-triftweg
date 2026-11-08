@@ -1,0 +1,136 @@
+# Außenwerte + Frostwarnung (Quelle: Wettervorhersage met.no, weather.forecast_home)
+# - Sensoren Temperatur / Luftfeuchtigkeit außen (für Dashboard)
+# - Frost-Vorhersage für die nächsten 48 h (stündlich) → Warnung mind. 1 Tag vorher aufs Handy
+# - HA-Design: bei Frostwarnung "Triftweg Frost" (eisblau), sonst "Triftweg" (warm)
+
+input_number:
+  frost_grenze:
+    name: "Frostwarnung ab (°C)"
+    icon: mdi:snowflake-thermometer
+    min: -5
+    max: 5
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: box
+
+template:
+  - sensor:
+      - name: "Temperatur außen"
+        unique_id: temperatur_aussen
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: "{{ state_attr('weather.forecast_home', 'temperature') }}"
+        availability: "{{ state_attr('weather.forecast_home', 'temperature') is number }}"
+      - name: "Luftfeuchtigkeit außen"
+        unique_id: luftfeuchtigkeit_aussen
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        state: "{{ state_attr('weather.forecast_home', 'humidity') }}"
+        availability: "{{ state_attr('weather.forecast_home', 'humidity') is number }}"
+
+  - triggers:
+      - trigger: time_pattern
+        minutes: "/30"
+      - trigger: homeassistant
+        event: start
+      - trigger: state
+        entity_id: input_number.frost_grenze
+    actions:
+      - action: weather.get_forecasts
+        target: { entity_id: weather.forecast_home }
+        data: { type: hourly }
+        response_variable: vh
+    sensor:
+      - name: "Tiefstwert außen 48 h"
+        unique_id: tiefstwert_aussen_48h
+        unit_of_measurement: "°C"
+        device_class: temperature
+        icon: mdi:thermometer-low
+        state: >
+          {% set f = vh['weather.forecast_home'].forecast[:48] %}
+          {{ f | map(attribute='temperature') | min if f else none }}
+        attributes:
+          zeitpunkt: >
+            {% set f = vh['weather.forecast_home'].forecast[:48] %}
+            {% if f %}{{ (f | sort(attribute='temperature') | first).datetime }}{% endif %}
+          erster_frost: >
+            {% set g = states('input_number.frost_grenze') | float(1) %}
+            {% set f = vh['weather.forecast_home'].forecast[:48] | selectattr('temperature', 'le', g) | list %}
+            {{ f[0].datetime if f else none }}
+          frost_stunden: >
+            {% set g = states('input_number.frost_grenze') | float(1) %}
+            {{ vh['weather.forecast_home'].forecast[:48] | selectattr('temperature', 'le', g) | list | count }}
+    binary_sensor:
+      - name: "Frostwarnung"
+        unique_id: frostwarnung
+        device_class: cold
+        icon: mdi:snowflake-alert
+        state: >
+          {% set g = states('input_number.frost_grenze') | float(1) %}
+          {{ vh['weather.forecast_home'].forecast[:48] | selectattr('temperature', 'le', g) | list | count > 0 }}
+
+automation:
+  - id: frost_warnung_handy
+    alias: "Frost: Warnung aufs Handy (bis 48 h vorher)"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.frostwarnung
+        from: "off"
+        to: "on"
+        id: neu
+      # Erinnerung am Vorabend, wenn in den nächsten 24 h Frost kommt
+      - trigger: time
+        at: "18:00:00"
+        id: abend
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.frostwarnung
+        state: "on"
+      - "{{ trigger.id == 'neu' or (state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost') and
+            (as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost')) - now()).total_seconds() < 86400) }}"
+    variables:
+      erster: "{{ as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost')) | as_local }}"
+      tiefst: "{{ states('sensor.tiefstwert_aussen_48h') }}"
+      tiefst_zeit: "{{ as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'zeitpunkt')) | as_local }}"
+      tage: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+      wann: >
+        {% set d = (erster.date() - now().date()).days %}
+        {{ 'heute' if d == 0 else 'morgen' if d == 1 else 'übermorgen' if d == 2 else tage[erster.weekday()] }}
+        ab {{ erster.strftime('%H:%M') }} Uhr
+    actions:
+      - repeat:
+          for_each:
+            - mobile_app_t_ohst_2026_android
+            - mobile_app_yvonneiphone2026
+          sequence:
+            - action: "notify.{{ repeat.item }}"
+              continue_on_error: true
+              data:
+                title: "❄️ Frost {{ wann }}"
+                message: >
+                  Tiefstwert {{ tiefst }} °C ({{ tage[tiefst_zeit.weekday()] }} {{ tiefst_zeit.strftime('%H:%M') }} Uhr).
+                  Pflanzen, Wasserleitungen außen, Boote und Autoscheiben bedenken.
+                data:
+                  tag: frost
+      - action: logbook.log
+        data: { name: "Frost", message: "Warnung verschickt: {{ wann }}, Tiefstwert {{ tiefst }} °C" }
+
+  - id: frost_design
+    alias: "Frost: Design umschalten (eisblau bei Frost)"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.frostwarnung
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: frontend.set_theme
+        data:
+          name: "{{ 'Triftweg Frost' if is_state('binary_sensor.frostwarnung', 'on') else 'Triftweg' }}"
+      - action: frontend.set_theme
+        data:
+          name: "{{ 'Triftweg Frost' if is_state('binary_sensor.frostwarnung', 'on') else 'Triftweg' }}"
+          mode: dark

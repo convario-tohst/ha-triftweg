@@ -1,0 +1,38 @@
+# Designs Triftweg – werden von packages/frost.yaml automatisch umgeschaltet
+"Triftweg":
+  modes:
+    light:
+      primary-color: "#b0703c"
+      accent-color: "#d9924a"
+      primary-background-color: "#fbf5ec"
+      lovelace-background: "linear-gradient(180deg, #f6ead8 0%, #fbf5ec 45%, #fffdf9 100%) fixed"
+      card-background-color: "rgba(255, 255, 255, 0.88)"
+      ha-card-border-radius: "14px"
+      app-header-background-color: "#b0703c"
+    dark:
+      primary-color: "#e0a066"
+      accent-color: "#e8b07a"
+      primary-background-color: "#1c1712"
+      lovelace-background: "linear-gradient(180deg, #2a2119 0%, #1c1712 60%, #15110d 100%) fixed"
+      card-background-color: "rgba(40, 32, 25, 0.88)"
+      ha-card-border-radius: "14px"
+      app-header-background-color: "#3a2b1e"
+
+"Triftweg Frost":
+  modes:
+    light:
+      primary-color: "#2f7fb8"
+      accent-color: "#5fb4e0"
+      primary-background-color: "#eef7fc"
+      lovelace-background: "linear-gradient(180deg, #cfe9f8 0%, #e8f5fc 40%, #f8fcff 100%) fixed"
+      card-background-color: "rgba(255, 255, 255, 0.85)"
+      ha-card-border-radius: "14px"
+      app-header-background-color: "#4a9fd4"
+    dark:
+      primary-color: "#7cc4ee"
+      accent-color: "#a6dcf7"
+      primary-background-color: "#0e1a24"
+      lovelace-background: "linear-gradient(180deg, #16324a 0%, #0f2232 50%, #0b1620 100%) fixed"
+      card-background-color: "rgba(20, 40, 58, 0.85)"
+      ha-card-border-radius: "14px"
+      app-header-background-color: "#16324a"

@@ -1,0 +1,90 @@
+# Bad Yvonne (EG): Wohlfühl-Licht – WLED-Leiste (light.bad_yvonne) zeigt immer einen ruhigen,
+# zufälligen Effekt in romantischen Farben. Wechselt sanft alle 10 Minuten, solange die Leiste an ist.
+# Ein-/Ausschalten der Leiste bleibt wie bisher (folgt dem Deckenlicht, licht_eg.yaml).
+# Nur Effekte/Paletten, die die Leiste wirklich kennt, werden genommen (Abgleich mit der Effektliste).
+
+input_boolean:
+  bad_yvonne_stimmung:
+    name: "Bad Yvonne: Wohlfühl-Effekte"
+    icon: mdi:spa
+
+script:
+  bad_yvonne_stimmung_wechseln:
+    alias: "Bad Yvonne: neuen Wohlfühl-Effekt wählen"
+    icon: mdi:auto-fix
+    mode: restart
+    variables:
+      effekte_wunsch:
+        - Breathe
+        - Colorwaves
+        - Pacifica
+        - Aurora
+        - Twinklefox
+        - Fairytwinkle
+        - Candle Multi
+        - Lake
+        - Flow
+        - Palette
+        - Drift
+        - Glitter
+      paletten_wunsch:
+        - Sakura
+        - Sunset
+        - Pink Candy
+        - Magenta
+        - Orangery
+        - Fairy Reaf
+        - Tiamat
+        - Aurora 2
+        - April Night
+        - Rivendell
+        - Beech
+      effekte: "{{ effekte_wunsch | select('in', state_attr('light.bad_yvonne', 'effect_list') or []) | reject('eq', state_attr('light.bad_yvonne', 'effect')) | list }}"
+      paletten: "{{ paletten_wunsch | select('in', state_attr('select.bad_yvonne_farbpalette', 'options') or []) | reject('eq', states('select.bad_yvonne_farbpalette')) | list }}"
+      nacht: "{{ now().hour >= 22 or now().hour < 6 }}"
+    sequence:
+      - condition: state
+        entity_id: light.bad_yvonne
+        state: "on"
+      - if: "{{ effekte | count > 0 }}"
+        then:
+          - action: light.turn_on
+            target: { entity_id: light.bad_yvonne }
+            data:
+              effect: "{{ effekte | random }}"
+              brightness_pct: "{{ 20 if nacht else 55 }}"
+              transition: 3
+      - if: "{{ paletten | count > 0 }}"
+        then:
+          - action: select.select_option
+            target: { entity_id: select.bad_yvonne_farbpalette }
+            data: { option: "{{ paletten | random }}" }
+      # ruhig und langsam
+      - action: number.set_value
+        target: { entity_id: number.bad_yvonne_geschwindigkeit }
+        data: { value: "{{ range(25, 70) | random }}" }
+      - action: number.set_value
+        target: { entity_id: number.bad_yvonne_intensitat }
+        data: { value: "{{ range(90, 170) | random }}" }
+
+automation:
+  - id: bad_yvonne_stimmung
+    alias: "Bad Yvonne: Wohlfühl-Effekte (beim Einschalten + alle 10 min)"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: light.bad_yvonne
+        from: "off"
+        to: "on"
+      - trigger: time_pattern
+        minutes: "/10"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.bad_yvonne_stimmung
+        state: "on"
+      - condition: state
+        entity_id: light.bad_yvonne
+        state: "on"
+    actions:
+      - delay: { seconds: 2 }   # erst einschalten lassen (licht_eg.yaml)
+      - action: script.bad_yvonne_stimmung_wechseln
