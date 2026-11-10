@@ -129,6 +129,17 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:lichter aus dem schlafzimmer
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261109T194042Z
+UID:72d7a4f8-dc75-11f1-9747-d83addc0128c
+CREATED:20261109T194042Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.licht_schlafzimmer"]
+ \,"daten":{}\,"antwort":"Das Licht im Schlafzimmer ist aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261109T204042
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:licht aus dem schlafzimmer
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
