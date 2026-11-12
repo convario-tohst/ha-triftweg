@@ -5235,6 +5235,98 @@
                   "features_position": "bottom"
                 },
                 {
+                  "type": "heading",
+                  "heading": "Wohlfühlen",
+                  "heading_style": "subtitle",
+                  "icon": "mdi:spa"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.bad_yvonne_entspannen",
+                  "name": "Entspannen",
+                  "icon": "mdi:bathtub",
+                  "color": "pink",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  },
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "script.bad_yvonne_stimmung_wechseln",
+                  "name": "Neuer Effekt",
+                  "icon": "mdi:auto-fix",
+                  "color": "purple",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  },
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.bad_yvonne_stimmung_wechseln"
+                  },
+                  "hide_state": true
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.bad_yvonne_stimmung",
+                  "name": "Wohlfühl-Effekte",
+                  "icon": "mdi:creation",
+                  "color": "purple",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  },
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.bad_yvonne_licht_automatik",
+                  "name": "Licht nach Präsenz",
+                  "icon": "mdi:motion-sensor",
+                  "color": "amber",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  },
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "binary_sensor.prasenz_bad_yvonne",
+                  "name": "Präsenz",
+                  "icon": "mdi:account",
+                  "color": "green",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_number.bad_yvonne_hell_entspannen",
+                  "name": "Helligkeit Entspannen",
+                  "icon": "mdi:brightness-4",
+                  "color": "pink",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 2
+                  },
+                  "features": [
+                    {
+                      "type": "numeric-input",
+                      "style": "slider"
+                    }
+                  ]
+                },
+                {
                   "type": "tile",
                   "entity": "cover.bad_yvonne_rolladen",
                   "name": "Rollladen",
