@@ -1777,6 +1777,38 @@
                         "name": "Ankleide Tobias: Präsenz-Licht ausführen"
                       },
                       {
+                        "entity": "input_boolean.bad_yvonne_licht_automatik",
+                        "name": "Bad Yvonne: Licht nach Präsenz"
+                      },
+                      {
+                        "entity": "input_boolean.bad_yvonne_entspannen",
+                        "name": "Bad Yvonne: Entspannen (Licht bleibt an)"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_nachlauf",
+                        "name": "Bad Yvonne: aus nach"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_hell_tag",
+                        "name": "Bad Yvonne: Helligkeit tagsüber"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_hell_nacht",
+                        "name": "Bad Yvonne: Helligkeit nachts"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_hell_entspannen",
+                        "name": "Bad Yvonne: Helligkeit Entspannen"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_lux_schwelle",
+                        "name": "Bad Yvonne: nur unter (Lux im Raum)"
+                      },
+                      {
+                        "entity": "input_boolean.bad_yvonne_stimmung",
+                        "name": "Bad Yvonne: Wohlfühl-Effekte LED"
+                      },
+                      {
                         "entity": "automation.aussensauna_beleuchtung_nachts_dimmen",
                         "name": "Außensauna: Beleuchtung dimmen"
                       },
