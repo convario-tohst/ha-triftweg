@@ -140,6 +140,18 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:licht aus dem schlafzimmer
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261112T174831Z
+UID:463719f8-dec1-11f1-9747-d83addc0128c
+CREATED:20261112T174831Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.aussenbeleuchtung_ga
+ rten"\,"light.licht_decke"]\,"daten":{}\,"antwort":"Garten und Carport 
+ sind aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261112T184831
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:bitte garten und carport licht ausmachen
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD

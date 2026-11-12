@@ -37,7 +37,8 @@ template:
                           'binary_sensor.prasenzmelder_og_malte_decke', 'binary_sensor.prasenzmelder_og_lara_decke',
                           'binary_sensor.prasenzmelder_og_schlafzimmer_decke', 'binary_sensor.prasenzmelder_eg_flur_decke',
                           'binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_sauna',
-                          'binary_sensor.prasenz_wohnzimmer', 'binary_sensor.prasenz_hwr', 'binary_sensor.prasenz_ankleide_tobias'] %}
+                          'binary_sensor.prasenz_wohnzimmer', 'binary_sensor.prasenz_hwr', 'binary_sensor.prasenz_ankleide_tobias',
+                          'binary_sensor.prasenz_bad_yvonne'] %}
           {# hängende Durchgangsmelder (> 2 h ununterbrochen besetzt) zählen nicht, wie bei "Jemand im Haus" #}
           {% set durchgang = ['binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_eg_flur_decke',
                               'binary_sensor.prasenz_gastebad', 'binary_sensor.prasenzmelder_sauna'] %}
@@ -62,7 +63,8 @@ template:
                           'binary_sensor.prasenzmelder_og_malte_decke', 'binary_sensor.prasenzmelder_og_lara_decke',
                           'binary_sensor.prasenzmelder_og_schlafzimmer_decke', 'binary_sensor.prasenzmelder_eg_flur_decke',
                           'binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_sauna',
-                          'binary_sensor.prasenz_wohnzimmer', 'binary_sensor.prasenz_hwr', 'binary_sensor.prasenz_ankleide_tobias'] %}
+                          'binary_sensor.prasenz_wohnzimmer', 'binary_sensor.prasenz_hwr', 'binary_sensor.prasenz_ankleide_tobias',
+                          'binary_sensor.prasenz_bad_yvonne'] %}
           {# Durchgangsräume: ein Melder, der länger als 2 h ununterbrochen "besetzt" meldet, hängt (26.10.: Flur OG
              hing 2 Tage → Haus galt nie als leer, Licht blieb beim Weggehen an) – dann nicht mitzählen #}
           {% set durchgang = ['binary_sensor.prasenz_flur_og', 'binary_sensor.prasenzmelder_eg_flur_decke',
@@ -214,6 +216,7 @@ automation:
           - binary_sensor.prasenz_ankleide_tobias
           - binary_sensor.prasenz_flur_og
           - binary_sensor.prasenzmelder_sauna
+          - binary_sensor.prasenz_bad_yvonne
         to: "on"
         id: bewegung
       - trigger: state

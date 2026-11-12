@@ -356,6 +356,10 @@ binary_sensor:
     state_address: "0/7/5" # Präsenzmelder Sauna außen 1.1.38, HLK schalten (seit 12.10.)
     device_class: occupancy
     sync_state: true
+  - name: "Präsenz Bad Yvonne"
+    state_address: "0/7/10" # Präsenzmelder Bad Yvonne 1.1.32, Lichtgruppe 1 Schalten (HA schaltet das Licht, seit 12.11.)
+    device_class: occupancy
+    sync_state: true
   - name: "Präsenz HWR"
     state_address: "0/7/8" # Präsenzmelder HWR 1.1.41, Lichtkanal 1 Schalten (HA schaltet das Licht, seit 18.10.)
     device_class: occupancy
