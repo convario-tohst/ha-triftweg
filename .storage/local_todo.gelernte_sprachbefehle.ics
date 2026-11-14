@@ -152,6 +152,18 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:bitte garten und carport licht ausmachen
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261113T155147Z
+UID:21f8adfe-df7a-11f1-9747-d83addc0128c
+CREATED:20261113T155147Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.dimmer_aussenbeleucht
+ ung_giebel"\,"light.aussenbeleuchtung_garten"\,"light.licht_decke"]\,"date
+ n":{}\,"antwort":"Garten- und Carportlicht sind an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261113T165147
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:gartenlicht und carportlicht an
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD

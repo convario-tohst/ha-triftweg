@@ -957,6 +957,18 @@ STATUS:NEEDS-ACTION
 SUMMARY:Nachtlicht Flur Malte: Logik im Timberwolf (Objekt 303 → 0/0/3) 
  deaktivieren\, HA steuert jetzt
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261113T115539Z
+UID:255c686c-df59-11f1-9747-d83addc0128c
+CREATED:20261113T115539Z
+DESCRIPTION:Kein Werkzeug zum Umstellen der Melder-Auswahl (select) 
+ verfügbar – 13.11.2026 12:55
+DTSTART;TZID=Europe/Berlin:20261113T125539
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Präsenzmelder Wohnzimmer einschalten\, im Schlafzimmer 
+ Präsenzmelder ausschalten
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
