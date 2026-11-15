@@ -21,10 +21,13 @@ template:
         icon: mdi:playlist-music
         state: >
           {% set ns = namespace(t=[]) %}
-          {% for raum, p in [('Wohnzimmer', 'media_player.ma_wohnzimmer'), ('Schlafzimmer', 'media_player.ma_schlafzimmer')] %}
+          {# 15.11.: auch Musik, die direkt am Lautsprecher (LinkPlay-App, Sender-Taste) läuft, ohne Music Assistant #}
+          {% for raum, ma, lp in [('Wohnzimmer', 'media_player.ma_wohnzimmer', 'media_player.wohnzimmer'),
+                                  ('Schlafzimmer', 'media_player.ma_schlafzimmer', 'media_player.schlafzimmer')] %}
+            {% set p = ma if is_state(ma, 'playing') else lp %}
             {% if is_state(p, 'playing') %}
-              {% set q = states('input_text.musik_quelle_' ~ raum | lower) %}
-              {% set q = q | from_json if q.startswith('{') else {} %}
+              {% set q = states('input_text.musik_quelle_' ~ raum | lower) if p == ma else '' %}
+              {% set q = q | from_json if q.startswith('{') else ({} if p == ma else {'n': 'direkt am Lautsprecher (App/Sender)'}) %}
               {% set ns.t = ns.t + [raum ~ ': ' ~ (state_attr(p, 'media_title') or '?') ~ ' – aus ' ~ (q.n | default('unbekannt (Spotify-App?)'))
                  ~ ((', gestartet von ' ~ q.w ~ ' um ' ~ q.z) if q.w is defined else '')] %}
             {% endif %}
@@ -95,10 +98,12 @@ script:
     variables:
       p: >
         {% set r = raum | default('') %}
-        {% if r == 'Schlafzimmer' %}media_player.ma_schlafzimmer
-        {% elif r == 'Wohnzimmer' %}media_player.ma_wohnzimmer
-        {% elif is_state('media_player.ma_wohnzimmer', 'playing') %}media_player.ma_wohnzimmer
-        {% else %}media_player.ma_schlafzimmer{% endif %}
+        {% set wz = 'media_player.ma_wohnzimmer' if is_state('media_player.ma_wohnzimmer', 'playing') or not is_state('media_player.wohnzimmer', 'playing') else 'media_player.wohnzimmer' %}
+        {% set sz = 'media_player.ma_schlafzimmer' if is_state('media_player.ma_schlafzimmer', 'playing') or not is_state('media_player.schlafzimmer', 'playing') else 'media_player.schlafzimmer' %}
+        {% if r == 'Schlafzimmer' %}{{ sz }}
+        {% elif r == 'Wohnzimmer' %}{{ wz }}
+        {% elif is_state(wz, 'playing') %}{{ wz }}
+        {% else %}{{ sz }}{% endif %}
       raumname: "{{ 'Schlafzimmer' if 'schlafzimmer' in p else 'Wohnzimmer' }}"
       titel: "{{ state_attr(p, 'media_title') or '' }}"
       kuenstler: "{{ state_attr(p, 'media_artist') or '' }}"
@@ -201,9 +206,12 @@ intent_script:
     speech:
       text: >
         {% set ns = namespace(t=[]) %}
-        {% for raum, p in [('Wohnzimmer', 'media_player.ma_wohnzimmer'), ('Schlafzimmer', 'media_player.ma_schlafzimmer')] if is_state(p, 'playing') %}
-          {% set q = states('input_text.musik_quelle_' ~ raum | lower) %}
-          {% set q = q | from_json if q.startswith('{') else {} %}
+        {% for raum, ma, lp in [('Wohnzimmer', 'media_player.ma_wohnzimmer', 'media_player.wohnzimmer'),
+                                ('Schlafzimmer', 'media_player.ma_schlafzimmer', 'media_player.schlafzimmer')]
+             if is_state(ma, 'playing') or is_state(lp, 'playing') %}
+          {% set p = ma if is_state(ma, 'playing') else lp %}
+          {% set q = states('input_text.musik_quelle_' ~ raum | lower) if p == ma else '' %}
+          {% set q = q | from_json if q.startswith('{') else ({} if p == ma else {'n': 'direkt am Lautsprecher, nicht über Music Assistant'}) %}
           {% set k = state_attr(p, 'media_artist') %}
           {% set ns.t = ns.t + ['Im ' ~ raum ~ ' läuft „' ~ (state_attr(p, 'media_title') or 'Musik') ~ '“' ~ (' von ' ~ k if k else '')
              ~ (' aus ' ~ q.n if q.n is defined else ', die Quelle kenne ich nicht, vermutlich aus der Spotify-App')
