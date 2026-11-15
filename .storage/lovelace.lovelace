@@ -1813,32 +1813,220 @@
                     "show_header_toggle": false,
                     "entities": [
                       {
+                        "type": "section",
+                        "label": "Allgemein"
+                      },
+                      {
                         "entity": "input_boolean.praesenz_zeitplan_automatik",
                         "name": "Zeitplan Kinder & Schlafzimmer"
                       },
                       {
                         "type": "section",
-                        "label": "Räume"
+                        "label": "EG · Wohnzimmer"
                       },
                       {
-                        "entity": "automation.malte_prasenz",
-                        "name": "Malte"
+                        "entity": "input_boolean.wohnzimmer_melder_gesperrt",
+                        "name": "Melder gesperrt"
                       },
                       {
-                        "entity": "automation.prasenz_lara_stripe",
-                        "name": "Lara"
+                        "entity": "input_number.wohnzimmer_sperre_stunden",
+                        "name": "Sperre aufheben nach"
                       },
                       {
-                        "entity": "automation.prasenz_schlafzimmer",
-                        "name": "Schlafzimmer"
+                        "entity": "input_boolean.wohnzimmer_praesenz_licht",
+                        "name": "Licht nach Präsenz"
+                      },
+                      {
+                        "entity": "input_number.wohnzimmer_raum_lux",
+                        "name": "Licht an unter (Lux im Raum)"
+                      },
+                      {
+                        "entity": "automation.wohnzimmer_licht_nach_prasenz",
+                        "name": "Präsenz-Licht ausführen"
+                      },
+                      {
+                        "type": "section",
+                        "label": "EG · Flur"
                       },
                       {
                         "entity": "automation.prasenz_eg_flur",
                         "name": "Flur EG (Stripe)"
                       },
                       {
+                        "entity": "select.melder_flur_eg",
+                        "name": "Melder am Bus (Sperre)"
+                      },
+                      {
+                        "type": "section",
+                        "label": "EG · Gästebad"
+                      },
+                      {
                         "entity": "automation.gastebad_licht_nach_prasenz",
                         "name": "Gästebad"
+                      },
+                      {
+                        "type": "section",
+                        "label": "EG · Bad Yvonne"
+                      },
+                      {
+                        "entity": "input_boolean.bad_yvonne_licht_automatik",
+                        "name": "Licht nach Präsenz"
+                      },
+                      {
+                        "entity": "input_boolean.bad_yvonne_entspannen",
+                        "name": "Entspannen (Licht bleibt an)"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_nachlauf",
+                        "name": "aus nach"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_hell_tag",
+                        "name": "Helligkeit tagsüber"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_hell_nacht",
+                        "name": "Helligkeit nachts"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_hell_entspannen",
+                        "name": "Helligkeit Entspannen"
+                      },
+                      {
+                        "entity": "input_number.bad_yvonne_lux_schwelle",
+                        "name": "nur unter (Lux im Raum)"
+                      },
+                      {
+                        "entity": "input_boolean.bad_yvonne_stimmung",
+                        "name": "Wohlfühl-Effekte LED"
+                      },
+                      {
+                        "type": "section",
+                        "label": "EG · HWR"
+                      },
+                      {
+                        "entity": "input_boolean.hwr_praesenz_licht",
+                        "name": "Licht nach Präsenz"
+                      },
+                      {
+                        "entity": "input_number.hwr_nachlauf",
+                        "name": "aus nach"
+                      },
+                      {
+                        "entity": "input_number.hwr_helligkeit_tag",
+                        "name": "Helligkeit tagsüber"
+                      },
+                      {
+                        "entity": "input_number.hwr_helligkeit_nacht",
+                        "name": "Helligkeit nachts"
+                      },
+                      {
+                        "entity": "input_number.hwr_lux_schwelle",
+                        "name": "nur unter (Lux im Raum)"
+                      },
+                      {
+                        "entity": "automation.hwr_licht_nach_prasenz",
+                        "name": "Präsenz-Licht ausführen"
+                      },
+                      {
+                        "type": "section",
+                        "label": "OG · Malte"
+                      },
+                      {
+                        "entity": "automation.malte_prasenz",
+                        "name": "Malte"
+                      },
+                      {
+                        "entity": "input_datetime.malte_schlafen",
+                        "name": "aus ab"
+                      },
+                      {
+                        "entity": "input_datetime.malte_aufstehen_schule",
+                        "name": "an (Schultag)"
+                      },
+                      {
+                        "entity": "input_datetime.malte_aufstehen_frei",
+                        "name": "an (frei)"
+                      },
+                      {
+                        "type": "section",
+                        "label": "OG · Lara"
+                      },
+                      {
+                        "entity": "automation.prasenz_lara_stripe",
+                        "name": "Lara"
+                      },
+                      {
+                        "entity": "input_datetime.lara_schlafen",
+                        "name": "aus ab"
+                      },
+                      {
+                        "entity": "input_datetime.lara_aufstehen_schule",
+                        "name": "an (Schultag)"
+                      },
+                      {
+                        "entity": "input_datetime.lara_aufstehen_frei",
+                        "name": "an (frei)"
+                      },
+                      {
+                        "type": "section",
+                        "label": "OG · Schlafzimmer"
+                      },
+                      {
+                        "entity": "automation.prasenz_schlafzimmer",
+                        "name": "Schlafzimmer"
+                      },
+                      {
+                        "entity": "input_datetime.schlafzimmer_schlafen",
+                        "name": "aus ab"
+                      },
+                      {
+                        "entity": "input_datetime.schlafzimmer_aufstehen_schule",
+                        "name": "an (Arbeitstag)"
+                      },
+                      {
+                        "entity": "input_datetime.schlafzimmer_aufstehen_frei",
+                        "name": "an (frei)"
+                      },
+                      {
+                        "entity": "automation.zeit_prasenzmelder_kinder_schlafzimmer",
+                        "name": "Zeitplan ausführen"
+                      },
+                      {
+                        "type": "section",
+                        "label": "OG · Ankleide Tobias"
+                      },
+                      {
+                        "entity": "input_boolean.ankleide_tobias_praesenz_licht",
+                        "name": "Licht nach Präsenz"
+                      },
+                      {
+                        "entity": "input_number.ankleide_tobias_nachlauf",
+                        "name": "aus nach"
+                      },
+                      {
+                        "entity": "input_number.ankleide_tobias_helligkeit_tag",
+                        "name": "Helligkeit tagsüber"
+                      },
+                      {
+                        "entity": "input_number.ankleide_tobias_helligkeit_nacht",
+                        "name": "Helligkeit nachts"
+                      },
+                      {
+                        "entity": "automation.ankleide_tobias_licht_nach_prasenz",
+                        "name": "Präsenz-Licht ausführen"
+                      },
+                      {
+                        "type": "section",
+                        "label": "OG · Bad OG"
+                      },
+                      {
+                        "entity": "select.melder_bad_og",
+                        "name": "Melder am Bus (Sperre)"
+                      },
+                      {
+                        "type": "section",
+                        "label": "Sauna & Außensauna"
                       },
                       {
                         "entity": "automation.sauna_licht_nach_prasenz",
@@ -1849,96 +2037,8 @@
                         "name": "Außensauna (LED)"
                       },
                       {
-                        "entity": "input_boolean.hwr_praesenz_licht",
-                        "name": "HWR: Licht nach Präsenz"
-                      },
-                      {
-                        "entity": "input_number.hwr_nachlauf",
-                        "name": "HWR: aus nach"
-                      },
-                      {
-                        "entity": "input_number.hwr_helligkeit_tag",
-                        "name": "HWR: Helligkeit tagsüber"
-                      },
-                      {
-                        "entity": "input_number.hwr_helligkeit_nacht",
-                        "name": "HWR: Helligkeit nachts"
-                      },
-                      {
-                        "entity": "input_number.hwr_lux_schwelle",
-                        "name": "HWR: nur unter (Lux im Raum)"
-                      },
-                      {
-                        "entity": "automation.hwr_licht_nach_prasenz",
-                        "name": "HWR: Präsenz-Licht ausführen"
-                      },
-                      {
-                        "entity": "input_boolean.ankleide_tobias_praesenz_licht",
-                        "name": "Ankleide Tobias: Licht nach Präsenz"
-                      },
-                      {
-                        "entity": "input_number.ankleide_tobias_nachlauf",
-                        "name": "Ankleide Tobias: aus nach"
-                      },
-                      {
-                        "entity": "input_number.ankleide_tobias_helligkeit_tag",
-                        "name": "Ankleide Tobias: Helligkeit tagsüber"
-                      },
-                      {
-                        "entity": "input_number.ankleide_tobias_helligkeit_nacht",
-                        "name": "Ankleide Tobias: Helligkeit nachts"
-                      },
-                      {
-                        "entity": "automation.ankleide_tobias_licht_nach_prasenz",
-                        "name": "Ankleide Tobias: Präsenz-Licht ausführen"
-                      },
-                      {
-                        "entity": "input_boolean.bad_yvonne_licht_automatik",
-                        "name": "Bad Yvonne: Licht nach Präsenz"
-                      },
-                      {
-                        "entity": "input_boolean.bad_yvonne_entspannen",
-                        "name": "Bad Yvonne: Entspannen (Licht bleibt an)"
-                      },
-                      {
-                        "entity": "input_number.bad_yvonne_nachlauf",
-                        "name": "Bad Yvonne: aus nach"
-                      },
-                      {
-                        "entity": "input_number.bad_yvonne_hell_tag",
-                        "name": "Bad Yvonne: Helligkeit tagsüber"
-                      },
-                      {
-                        "entity": "input_number.bad_yvonne_hell_nacht",
-                        "name": "Bad Yvonne: Helligkeit nachts"
-                      },
-                      {
-                        "entity": "input_number.bad_yvonne_hell_entspannen",
-                        "name": "Bad Yvonne: Helligkeit Entspannen"
-                      },
-                      {
-                        "entity": "input_number.bad_yvonne_lux_schwelle",
-                        "name": "Bad Yvonne: nur unter (Lux im Raum)"
-                      },
-                      {
-                        "entity": "input_boolean.bad_yvonne_stimmung",
-                        "name": "Bad Yvonne: Wohlfühl-Effekte LED"
-                      },
-                      {
                         "entity": "automation.aussensauna_beleuchtung_nachts_dimmen",
                         "name": "Außensauna: Beleuchtung dimmen"
-                      },
-                      {
-                        "entity": "input_number.wohnzimmer_raum_lux",
-                        "name": "Wohnzimmer: Licht an unter (Lux im Raum)"
-                      },
-                      {
-                        "entity": "input_boolean.wohnzimmer_melder_gesperrt",
-                        "name": "Wohnzimmer: Melder gesperrt"
-                      },
-                      {
-                        "entity": "input_number.wohnzimmer_sperre_stunden",
-                        "name": "Wohnzimmer: Sperre aufheben nach"
                       },
                       {
                         "entity": "input_number.aussensauna_lux_schwelle",
@@ -1953,72 +2053,12 @@
                         "name": "Außensauna: Helligkeit nachts"
                       },
                       {
-                        "type": "section",
-                        "label": "Melder am Bus"
-                      },
-                      {
-                        "entity": "select.melder_wohnzimmer",
-                        "name": "Melder Wohnzimmer"
-                      },
-                      {
-                        "entity": "select.melder_flur_eg",
-                        "name": "Melder Flur EG"
-                      },
-                      {
-                        "entity": "select.melder_bad_og",
-                        "name": "Melder Bad OG"
-                      },
-                      {
                         "entity": "select.melder_sauna_aussen",
-                        "name": "Melder Sauna außen"
-                      },
-                      {
-                        "type": "section",
-                        "label": "Zeiten"
-                      },
-                      {
-                        "entity": "input_datetime.malte_schlafen",
-                        "name": "Malte: aus ab"
-                      },
-                      {
-                        "entity": "input_datetime.malte_aufstehen_schule",
-                        "name": "Malte: an (Schultag)"
-                      },
-                      {
-                        "entity": "input_datetime.malte_aufstehen_frei",
-                        "name": "Malte: an (frei)"
-                      },
-                      {
-                        "entity": "input_datetime.lara_schlafen",
-                        "name": "Lara: aus ab"
-                      },
-                      {
-                        "entity": "input_datetime.lara_aufstehen_schule",
-                        "name": "Lara: an (Schultag)"
-                      },
-                      {
-                        "entity": "input_datetime.lara_aufstehen_frei",
-                        "name": "Lara: an (frei)"
-                      },
-                      {
-                        "entity": "input_datetime.schlafzimmer_schlafen",
-                        "name": "Schlafzimmer: aus ab"
-                      },
-                      {
-                        "entity": "input_datetime.schlafzimmer_aufstehen_schule",
-                        "name": "Schlafzimmer: an (Arbeitstag)"
-                      },
-                      {
-                        "entity": "input_datetime.schlafzimmer_aufstehen_frei",
-                        "name": "Schlafzimmer: an (frei)"
+                        "name": "Melder Sauna außen (Sperre)"
                       },
                       {
                         "type": "section",
                         "label": "Hintergrund"
-                      },
-                      {
-                        "entity": "automation.zeit_prasenzmelder_kinder_schlafzimmer",
-                        "name": "Zeitplan ausführen"
                       },
                       {
                         "entity": "automation.zeit_prasenzmelder_nach_neustart_nachholen",
@@ -2031,10 +2071,6 @@
                       {
                         "entity": "automation.prasenz_raum_leer_licht_aus",
                         "name": "Raum leer → Licht aus"
-                      },
-                      {
-                        "entity": "automation.wohnzimmer_licht_nach_prasenz",
-                        "name": "Wohnzimmer: Licht nach Präsenz"
                       },
                       {
                         "entity": "automation.melder_sperre_zwangsfuhrung_melden",
