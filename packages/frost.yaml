@@ -89,12 +89,14 @@ automation:
       - condition: state
         entity_id: binary_sensor.frostwarnung
         state: "on"
-      - "{{ trigger.id == 'neu' or (state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost') and
-            (as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost')) - now()).total_seconds() < 86400) }}"
+      # Zeitpunkt des ersten Frosts muss bekannt sein (15.11.: Entitätsname korrigiert, None abgefangen)
+      - "{{ state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') | as_datetime is not none }}"
+      - "{{ trigger.id == 'neu' or
+            ((state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') | as_datetime) - now()).total_seconds() < 86400 }}"
     variables:
-      erster: "{{ as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost')) | as_local }}"
-      tiefst: "{{ states('sensor.tiefstwert_aussen_48h') }}"
-      tiefst_zeit: "{{ as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'zeitpunkt')) | as_local }}"
+      erster: "{{ state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') | as_datetime | as_local }}"
+      tiefst: "{{ states('sensor.tiefstwert_aussen_48_h') }}"
+      tiefst_zeit: "{{ (state_attr('sensor.tiefstwert_aussen_48_h', 'zeitpunkt') | as_datetime or now()) | as_local }}"
       tage: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
       wann: >
         {% set d = (erster.date() - now().date()).days %}
