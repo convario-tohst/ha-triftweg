@@ -4,13 +4,26 @@
 # - beide Melder X Minuten leer   → Szene "Aus"
 # - Dosen werden NICHT mehr automatisch geschaltet.
 # Glastaster (Szenen 10/0/0) funktionieren unabhängig davon – auch wenn HA ausfällt.
+# 15.11.: "Melder Wohnzimmer gesperrt" – Licht reagiert nicht auf Präsenz (kein Relax beim Betreten, kein Aus
+#   wenn leer), z. B. Filmabend. Präsenz zählt weiter für Anwesenheit. Hebt sich nach X Stunden und um 5 Uhr selbst auf.
 
 input_boolean:
   wohnzimmer_praesenz_licht:
     name: "Wohnzimmer: Licht nach Präsenz"
     icon: mdi:motion-sensor
+  wohnzimmer_melder_gesperrt:
+    name: "Melder Wohnzimmer gesperrt"
+    icon: mdi:motion-sensor-off
 
 input_number:
+  wohnzimmer_sperre_stunden:
+    name: "Melder Wohnzimmer: Sperre aufheben nach"
+    icon: mdi:lock-clock
+    min: 1
+    max: 12
+    step: 1
+    unit_of_measurement: h
+    mode: box
   wohnzimmer_lux_schwelle:
     name: "Wohnzimmer: Licht an unter (Lux außen)"
     icon: mdi:brightness-5
@@ -73,6 +86,9 @@ automation:
       - condition: state
         entity_id: input_boolean.disco
         state: "off"
+      - condition: state
+        entity_id: input_boolean.wohnzimmer_melder_gesperrt
+        state: "off"
     actions:
       - choose:
           - conditions:
@@ -95,3 +111,23 @@ automation:
             sequence:
               - action: scene.turn_on
                 target: { entity_id: scene.aus }
+
+  - id: wohnzimmer_melder_sperre_aufheben
+    alias: "Melder Wohnzimmer: Sperre automatisch aufheben"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.wohnzimmer_melder_gesperrt
+        to: "on"
+        for: { hours: "{{ states('input_number.wohnzimmer_sperre_stunden') | int(3) }}" }
+      - trigger: time
+        at: "05:00:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.wohnzimmer_melder_gesperrt
+        state: "on"
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.wohnzimmer_melder_gesperrt }
+      - action: logbook.log
+        data: { name: "Melder Wohnzimmer", message: "Sperre automatisch aufgehoben" }

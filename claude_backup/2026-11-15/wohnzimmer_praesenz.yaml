@@ -1,0 +1,97 @@
+# Wohnzimmer/Küche/Essen: Präsenz-Licht über HA (statt Szenen direkt aus den Meldern 1.1.23/1.1.31)
+# Melder melden nur noch Präsenz: 0/7/6 (Wohnzimmer), 0/7/7 (Essen).
+# - Präsenz + dunkel + Licht aus  → Szene "Relax"
+# - beide Melder X Minuten leer   → Szene "Aus"
+# - Dosen werden NICHT mehr automatisch geschaltet.
+# Glastaster (Szenen 10/0/0) funktionieren unabhängig davon – auch wenn HA ausfällt.
+
+input_boolean:
+  wohnzimmer_praesenz_licht:
+    name: "Wohnzimmer: Licht nach Präsenz"
+    icon: mdi:motion-sensor
+
+input_number:
+  wohnzimmer_lux_schwelle:
+    name: "Wohnzimmer: Licht an unter (Lux außen)"
+    icon: mdi:brightness-5
+    min: 50
+    max: 5000
+    step: 50
+    unit_of_measurement: lx
+    mode: box
+  wohnzimmer_raum_lux:
+    name: "Wohnzimmer: Licht an unter (Lux im Raum)"
+    icon: mdi:brightness-4
+    min: 5
+    max: 500
+    step: 5
+    unit_of_measurement: lx
+    mode: box
+  wohnzimmer_leer_minuten:
+    name: "Wohnzimmer: aus nach leer"
+    icon: mdi:timer-outline
+    min: 1
+    max: 60
+    step: 1
+    unit_of_measurement: min
+    mode: box
+
+template:
+  - binary_sensor:
+      - name: "Präsenz Wohnbereich"
+        unique_id: praesenz_wohnbereich
+        device_class: occupancy
+        # Nur noch Melder Wohnzimmer 1.1.23 (0/7/6). Einen 2. Melder Essen (1.1.31, 0/7/7) gibt es nicht mehr
+        # (23.10.); dessen Phantom-"an" hatte den Wohnbereich nie leer werden lassen.
+        # Sauger unterwegs + Haus abwesend → Melder ignorieren (Sauger löste sonst Licht aus, 26.10.)
+        state: >
+          {{ is_state('binary_sensor.prasenz_wohnzimmer', 'on') and not
+             (is_state('binary_sensor.sauger_unterwegs', 'on') and is_state('input_boolean.haus_abwesend', 'on')) }}
+        # bei KNX-Ausfall nicht "leer" melden (sonst Szene Aus und danach Relax, 18.10.)
+        availability: "{{ states('binary_sensor.prasenz_wohnzimmer') not in ['unavailable', 'unknown'] }}"
+
+automation:
+  - id: wohnzimmer_praesenz_licht
+    alias: "Wohnzimmer: Licht nach Präsenz"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.prasenz_wohnbereich
+        from: "off"
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: binary_sensor.prasenz_wohnbereich
+        from: "on"
+        to: "off"
+        for: { minutes: "{{ states('input_number.wohnzimmer_leer_minuten') | int(15) }}" }
+        id: aus
+    conditions:
+      - condition: state
+        entity_id: input_boolean.wohnzimmer_praesenz_licht
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.disco
+        state: "off"
+    actions:
+      - choose:
+          - conditions:
+              - "{{ trigger.id == 'an' }}"
+              # dunkel genug: Raumhelligkeit (1-Wire-Wandsensor, Licht ist hier noch aus) unter Schwelle;
+              # ohne Raumwert wie bisher: Nachtmodus ODER Außenhelligkeit unter Wohnzimmer-Schwelle
+              - >
+                {% set raum = states('sensor.helligkeit_wohnzimmer') %}
+                {% if is_number(raum) %}{{ raum | float < states('input_number.wohnzimmer_raum_lux') | float(60) }}
+                {% else %}{{ is_state('binary_sensor.draussen_dunkel', 'on')
+                             or states('sensor.helligkeit_aussen') | float(0) < states('input_number.wohnzimmer_lux_schwelle') | float(1000) }}
+                {% endif %}
+              # nur wenn im Wohnbereich noch kein Licht an ist (manuell gewählte Szene nicht überschreiben)
+              - "{{ ['light.licht_wohnen_und_kuche', 'light.dimmer_kuche_decke_2', 'light.dimmer_wohnzimmer_esstisch',
+                    'light.dimmer_wand_sofa'] | select('is_state', 'on') | list | count == 0 }}"
+            sequence:
+              - action: scene.turn_on
+                target: { entity_id: scene.relax }
+          - conditions: "{{ trigger.id == 'aus' }}"
+            sequence:
+              - action: scene.turn_on
+                target: { entity_id: scene.aus }

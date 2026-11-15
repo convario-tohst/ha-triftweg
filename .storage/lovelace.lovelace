@@ -428,6 +428,20 @@
                       "columns": "full"
                     }
                   }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.wohnzimmer_melder_gesperrt",
+                  "name": "Melder Wohnzimmer sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 }
               ]
             },
@@ -1917,6 +1931,14 @@
                       {
                         "entity": "input_number.wohnzimmer_raum_lux",
                         "name": "Wohnzimmer: Licht an unter (Lux im Raum)"
+                      },
+                      {
+                        "entity": "input_boolean.wohnzimmer_melder_gesperrt",
+                        "name": "Wohnzimmer: Melder gesperrt"
+                      },
+                      {
+                        "entity": "input_number.wohnzimmer_sperre_stunden",
+                        "name": "Wohnzimmer: Sperre aufheben nach"
                       },
                       {
                         "entity": "input_number.aussensauna_lux_schwelle",
@@ -4862,6 +4884,20 @@
                   "type": "heading",
                   "heading": "Wohnen & Küche",
                   "icon": "mdi:sofa"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.wohnzimmer_melder_gesperrt",
+                  "name": "Melder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
