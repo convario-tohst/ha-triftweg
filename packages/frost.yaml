@@ -94,14 +94,20 @@ automation:
       - "{{ trigger.id == 'neu' or
             ((state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') | as_datetime) - now()).total_seconds() < 86400 }}"
     variables:
-      erster: "{{ state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') | as_datetime | as_local }}"
-      tiefst: "{{ states('sensor.tiefstwert_aussen_48_h') }}"
-      tiefst_zeit: "{{ (state_attr('sensor.tiefstwert_aussen_48_h', 'zeitpunkt') | as_datetime or now()) | as_local }}"
       tage: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+      tiefst: "{{ states('sensor.tiefstwert_aussen_48_h') }}"
       wann: >
-        {% set d = (erster.date() - now().date()).days %}
-        {{ 'heute' if d == 0 else 'morgen' if d == 1 else 'übermorgen' if d == 2 else tage[erster.weekday()] }}
-        ab {{ erster.strftime('%H:%M') }} Uhr
+        {% set e = state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') %}
+        {% set e = (e | as_datetime | as_local) if e else none %}
+        {% if e is none %}in den nächsten 2 Tagen
+        {% else %}
+          {% set d = (e.date() - now().date()).days %}
+          {{ 'heute' if d == 0 else 'morgen' if d == 1 else 'übermorgen' if d == 2 else tage[e.weekday()] }} ab {{ e.strftime('%H:%M') }} Uhr
+        {% endif %}
+      tiefst_wann: >
+        {% set z = state_attr('sensor.tiefstwert_aussen_48_h', 'zeitpunkt') %}
+        {% set z = (z | as_datetime | as_local) if z else none %}
+        {{ (tage[z.weekday()] ~ ' ' ~ z.strftime('%H:%M') ~ ' Uhr') if z else '' }}
     actions:
       - repeat:
           for_each:
@@ -113,7 +119,7 @@ automation:
               data:
                 title: "❄️ Frost {{ wann }}"
                 message: >
-                  Tiefstwert {{ tiefst }} °C ({{ tage[tiefst_zeit.weekday()] }} {{ tiefst_zeit.strftime('%H:%M') }} Uhr).
+                  Tiefstwert {{ tiefst }} °C{{ ' (' ~ tiefst_wann ~ ')' if tiefst_wann else '' }}.
                   Pflanzen, Wasserleitungen außen, Boote und Autoscheiben bedenken.
                 data:
                   tag: frost

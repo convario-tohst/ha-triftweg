@@ -13,6 +13,16 @@ Projektunterlagen: `docs/bestandsaufnahme.md`, `docs/aenderungen.md` (Änderungs
   0/7/2 Schlafzimmer, 0/7/3 Gästebad, 0/7/4 Flur OG, 0/7/5 Außensauna, 0/7/6 Wohnzimmer, 0/7/8 HWR,
   0/7/9 Ankleide Tobias, 0/7/10 Bad Yvonne; geplant 0/7/11 Ankleide Yvonne, 0/7/12 Bad OG, 0/7/13 Flur EG, 0/7/14 Sauna Bad
 
+## Zugriff (Claude Code auf Tobias' Windows-PC)
+- Arbeitsordner = `H:\` (Samba-Freigabe von `/config`), das ist zugleich das Git-Repo.
+- **Nicht selbst auf H:\ committen/pushen** – Git-Sicherung macht der HA (nachts + `shell_command.git_backup`),
+  sonst kollidieren zwei Git-Clients auf demselben `.git`.
+- HA-API: `http://192.168.11.18:8123/api/…` mit Token aus Umgebungsvariable `HA_TOKEN`
+  (Header `Authorization: Bearer $HA_TOKEN`). Token nie ausgeben oder in Dateien schreiben.
+  - Prüfen: `POST /api/config/core/check_config`
+  - Neu laden: `POST /api/services/<domain>/reload` (input_boolean, input_number, template, script, automation, knx)
+  - Sichern: `POST /api/services/shell_command/git_backup` mit `{"nachricht": "…"}`
+
 ## Arbeitsweise
 - Logik gehört in `packages/<thema>.yaml` (ein Thema pro Datei), KNX-Entitäten in `knx.yaml`.
 - Vor Änderungen: Kopie nach `claude_backup/<datum>/` und Git-Sicherung (`shell_command.git_backup` mit Nachricht).

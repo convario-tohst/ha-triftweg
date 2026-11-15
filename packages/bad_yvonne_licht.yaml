@@ -1,7 +1,9 @@
-# Bad Yvonne: HA schaltet das Deckenlicht nach Präsenz (seit 12.11.)
-# Melder 1.1.32 meldet nur noch Präsenz auf 0/7/10 (vorher schaltete er 0/0/10 direkt).
-# - Präsenz → Decke an: tagsüber "Helligkeit Tag", im Nachtmodus EG "Helligkeit nachts" (licht_nacht.yaml)
-# - keine Präsenz → aus (Nachlauf macht der Melder; hier zusätzlich 1 min Puffer)
+# Bad Yvonne: Licht nach Präsenz über HA (Melder 1.1.32 meldet nur noch Präsenz auf 0/7/10, schaltet 0/0/10 nicht mehr)
+# Gleiches Schema wie HWR / Ankleide Tobias:
+# - Präsenz kommt + Raum dunkel genug (1-Wire Helligkeit Bad Yvonne) → Licht an (tagsüber / nachts eigene Helligkeit,
+#   Nacht = Nachtmodus-Zeiten EG)
+# - keine Präsenz mehr für "Nachlauf" Minuten → aus
+# - Manuell ausgeschaltet bei Präsenz → bleibt aus, bis der Raum einmal leer war. Glastaster schalten weiter direkt.
 # - "Entspannen" (z. B. Badewanne): Licht bleibt an, gedimmt/warm, auch ohne Bewegung; endet nach 2 h von selbst
 # Die LED-Leiste folgt weiter der Decke (licht_eg.yaml) inkl. Wohlfühl-Effekte (bad_yvonne_stimmung.yaml).
 
@@ -14,6 +16,21 @@ input_boolean:
     icon: mdi:bathtub
 
 input_number:
+  bad_yvonne_nachlauf:
+    name: "Bad Yvonne: Licht aus nach (ohne Präsenz)"
+    icon: mdi:timer-outline
+    min: 1
+    max: 60
+    step: 1
+    unit_of_measurement: min
+  bad_yvonne_lux_schwelle:
+    name: "Bad Yvonne: Licht nur unter (Lux im Raum)"
+    icon: mdi:brightness-5
+    min: 10
+    max: 1000
+    step: 10
+    unit_of_measurement: lx
+    mode: box
   bad_yvonne_hell_tag:
     name: "Bad Yvonne: Helligkeit tagsüber"
     icon: mdi:brightness-6
@@ -36,29 +53,42 @@ automation:
     triggers:
       - trigger: state
         entity_id: binary_sensor.prasenz_bad_yvonne
+        from: "off"
         to: "on"
         id: an
       - trigger: state
         entity_id: binary_sensor.prasenz_bad_yvonne
+        from: "on"
         to: "off"
-        for: "00:01:00"
+        for: { minutes: "{{ states('input_number.bad_yvonne_nachlauf') | int(1) }}" }
         id: aus
     conditions:
       - condition: state
         entity_id: input_boolean.bad_yvonne_licht_automatik
         state: "on"
+      - condition: state
+        entity_id: input_boolean.bad_yvonne_entspannen
+        state: "off"
+    variables:
+      # Nacht = Nachtmodus-Zeiten EG
+      nacht: >
+        {% set b = states('input_datetime.nacht_eg_beginn') %}{% set e = states('input_datetime.nacht_eg_ende') %}
+        {% set t = now().strftime('%H:%M:%S') %}
+        {{ (t >= b or t < e) if b > e else (b <= t < e) }}
     actions:
       - choose:
-          - conditions: "{{ trigger.id == 'an' and not is_state('input_boolean.bad_yvonne_entspannen', 'on') }}"
+          - conditions:
+              - "{{ trigger.id == 'an' }}"
+              - >
+                {% set lx = states('sensor.helligkeit_bad_yvonne') %}
+                {{ not is_number(lx) or lx | float < states('input_number.bad_yvonne_lux_schwelle') | float(300) }}
             sequence:
               - action: light.turn_on
                 target: { entity_id: light.dimmer_yvonne_bad }
                 data:
-                  transition: 1
                   brightness_pct: >
-                    {{ states('input_number.bad_yvonne_hell_nacht') | int(20) if is_state('switch.tag_nacht_eg', 'on')
-                       else states('input_number.bad_yvonne_hell_tag') | int(80) }}
-          - conditions: "{{ trigger.id == 'aus' and not is_state('input_boolean.bad_yvonne_entspannen', 'on') }}"
+                    {{ states('input_number.bad_yvonne_hell_nacht' if nacht else 'input_number.bad_yvonne_hell_tag') | int(80) }}
+          - conditions: "{{ trigger.id == 'aus' }}"
             sequence:
               - action: light.turn_off
                 target: { entity_id: light.dimmer_yvonne_bad }
