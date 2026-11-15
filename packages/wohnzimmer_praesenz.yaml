@@ -5,7 +5,8 @@
 # - Dosen werden NICHT mehr automatisch geschaltet.
 # Glastaster (Szenen 10/0/0) funktionieren unabhängig davon – auch wenn HA ausfällt.
 # 15.11.: "Melder Wohnzimmer gesperrt" – Licht reagiert nicht auf Präsenz (kein Relax beim Betreten, kein Aus
-#   wenn leer), z. B. Filmabend. Präsenz zählt weiter für Anwesenheit. Hebt sich nach X Stunden und um 5 Uhr selbst auf.
+#   wenn leer), z. B. Filmabend. Sperrt zugleich den Melder per KNX (0/5/5 = 1, LED rot). Hebt sich nach X Stunden
+#   und um 5 Uhr selbst auf. Sperrt jemand per Taster, folgt der Schalter.
 
 input_boolean:
   wohnzimmer_praesenz_licht:
@@ -131,3 +132,29 @@ automation:
         target: { entity_id: input_boolean.wohnzimmer_melder_gesperrt }
       - action: logbook.log
         data: { name: "Melder Wohnzimmer", message: "Sperre automatisch aufgehoben" }
+
+  - id: wohnzimmer_melder_sperre_knx
+    alias: "Melder Wohnzimmer: Sperre an KNX senden / vom Taster übernehmen"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.wohnzimmer_melder_gesperrt
+        to: ["on", "off"]
+        id: ha
+      - trigger: event
+        event_type: knx_event
+        event_data: { destination: "0/5/5", telegramtype: GroupValueWrite }
+        id: knx
+      - trigger: homeassistant
+        event: start
+        id: ha
+    actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'ha' }}"
+            sequence:
+              - action: "switch.turn_{{ 'on' if is_state('input_boolean.wohnzimmer_melder_gesperrt', 'on') else 'off' }}"
+                target: { entity_id: switch.melder_wohnzimmer_sperre }
+          - conditions: "{{ trigger.id == 'knx' }}"
+            sequence:
+              - action: "input_boolean.turn_{{ 'on' if trigger.event.data.data in [1, [1]] else 'off' }}"
+                target: { entity_id: input_boolean.wohnzimmer_melder_gesperrt }

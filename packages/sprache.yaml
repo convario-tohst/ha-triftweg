@@ -176,14 +176,14 @@ intent_script:
         {% set an = state_attr('light.alle_lichter', 'entity_id') | select('is_state', 'on') | map('state_attr', 'friendly_name') | list %}
         {% if an | count == 0 %}Im Haus ist kein Licht an.{% else %}An sind: {{ an | join(', ') }}.{% endif %}
   MelderWohnzimmer:
+    # 15.11.: Sperre über input_boolean (sendet 1-Bit-Sperre 0/5/5, LED rot, hebt sich nach X h / 5 Uhr auf)
     action:
-      - action: select.select_option
-        target: { entity_id: select.melder_wohnzimmer }
-        data: { option: "{{ modus }}" }
+      - action: "input_boolean.turn_{{ 'off' if modus == 'Automatik' else 'on' }}"
+        target: { entity_id: input_boolean.wohnzimmer_melder_gesperrt }
     speech:
       text: >
-        {{ 'Präsenzmelder im Wohnzimmer gesperrt, das Licht bleibt an.' if modus == 'An erzwingen'
-           else 'Präsenzmelder im Wohnzimmer wieder auf Automatik.' }}
+        {{ 'Präsenzmelder im Wohnzimmer wieder auf Automatik.' if modus == 'Automatik'
+           else 'Präsenzmelder im Wohnzimmer gesperrt, das Licht reagiert nicht mehr auf Bewegung.' }}
   WieWarmUeberall:
     speech:
       text: >

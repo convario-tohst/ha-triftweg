@@ -15,6 +15,11 @@ event:
 
 # switch
 switch:
+  # Melder Wohnzimmer 1.1.23: Lichtkanal 1 Obj. 7 "Bewegungserkennung sperren" (1 = gesperrt, LED rot), seit 15.11.
+  # Bedient über input_boolean.wohnzimmer_melder_gesperrt (packages/wohnzimmer_praesenz.yaml)
+  - name: "Melder Wohnzimmer Sperre"
+    address: "0/5/5"
+    respond_to_read: false
   # Wohnzimmer-Steckdosen: Schaltaktor 1.1.7, automatisch geschaltet vom Präsenzmelder 1.1.23 (Obj. 15)
   - name: "Dosen Wohnzimmer"
     address: "1/0/111"
@@ -36,17 +41,14 @@ switch:
 
 # Sperre / Zwangsführung der Präsenzmelder (DPT 2.001, 2 Bit): 0 = Automatik, 2 = Aus erzwingen, 3 = An erzwingen
 select:
-  - name: "Melder Wohnzimmer"
-    address: "0/5/5" # 1.1.23 Lichtkanal 1+2 Zwangsführung
+  # Wohnzimmer 0/5/5 seit 15.11. 1-Bit-Sperre (siehe switch "Melder Wohnzimmer Sperre")
+  - name: "Melder Flur EG"
+    address: "0/5/1" # 1.1.22 Sperre
     payload_length: 0
     options: &zwang
       - { option: "Automatik", payload: 0 }
       - { option: "Aus erzwingen", payload: 2 }
       - { option: "An erzwingen", payload: 3 }
-  - name: "Melder Flur EG"
-    address: "0/5/1" # 1.1.22 Sperre
-    payload_length: 0
-    options: *zwang
   - name: "Melder Sauna außen"
     address: "0/5/2" # 1.1.38 Zwangsführung
     payload_length: 0
