@@ -4,6 +4,9 @@
 - Musik: „Läuft gerade“, Musik-Karten und Sprachantworten erkennen auch Wiedergabe direkt am Lautsprecher (LinkPlay-App/Sender), nicht nur Music Assistant (packages/musik_quelle.yaml, Dashboard Start + Musik)
 - Frostwarnung: Fehler behoben – Automation nutzte falschen Sensornamen (`sensor.tiefstwert_aussen_48h` statt `_48_h`), Push wäre nie gekommen; Zeitangaben robust gegen fehlende Werte
 - Projektunterlagen + CLAUDE.md ins Repo übernommen (für Arbeit mit Claude Code im persönlichen Konto)
+- Melder Wohnzimmer sperren: Schalter „Melder Wohnzimmer gesperrt“ (Startseite Schnell, Wohnen & Küche, Automatik, Sprache). HA-Licht reagiert nicht auf Präsenz; KNX 0/5/5 (1 Bit) → Melder 1.1.23 Lichtkanal 1 **Objekt 8 „Sperre“** (Sperrobjekt, aktuellen Zustand verriegeln), LED rot bei Sperre ohne Präsenz / grün mit Präsenz. Hebt sich nach 3 h bzw. um 5 Uhr auf; Taster-Sperre wird übernommen. Alte 2-Bit-Auswahl „Melder Wohnzimmer“ entfernt.
+- Automatik-Seite: Präsenzmelder nach Räumen gegliedert (EG/OG/Sauna), Zeiten bei den Zimmern, fehlende Einträge behoben
+- Hinweis Übertragung: Wiederholtes Überschreiben derselben Datei über die PC-Brücke kam teils nicht an (Bad Yvonne, Frost, CLAUDE.md) – nachgereicht und per Dateivergleich geprüft
 
 ## 12.11.2026
 **Bad Yvonne: HA schaltet Licht nach Präsenz** (packages/bad_yvonne_licht.yaml)
