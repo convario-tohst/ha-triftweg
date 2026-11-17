@@ -969,6 +969,18 @@ STATUS:NEEDS-ACTION
 SUMMARY:Fehler: Präsenzmelder Wohnzimmer einschalten\, im Schlafzimmer 
  Präsenzmelder ausschalten
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261116T061647Z
+UID:4da9168e-e185-11f1-9747-d83addc0128c
+CREATED:20261116T061647Z
+DESCRIPTION:Kein Werkzeug zum Umschalten der Präsenzmelder-Modi oben – 
+ 16.11.2026 07:16
+DTSTART;TZID=Europe/Berlin:20261116T071647
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Fehler: Wir sind aufgestanden\, oben können alle Präsenzmelder 
+ eingeschaltet werden
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD

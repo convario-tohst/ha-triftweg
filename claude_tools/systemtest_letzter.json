@@ -9,198 +9,205 @@
 {
 "p": 2,
 "k": "Automationen",
-"t": "„Frost: Warnung aufs Handy (bis 48 h vorher)“: Entitäten vorhanden",
-"s": "fehler",
-"i": "sensor.tiefstwert_aussen_48h"
-},
-{
-"p": 2,
-"k": "Automationen",
 "t": "„Frost: Warnung aufs Handy (bis 48 h vorher)“: ohne Laufzeitfehler (24 h)",
 "s": "fehler",
 "i": "ValueError: Template error: as_datetime got invalid input 'None' when rendering template '{{ as_datetime(state_attr('sensor.tiefstwert_aussen_48h', 'erster_frost')) | as_local }}' but no default was specified"
 },
 {
 "p": 2,
-"k": "Automationen",
-"t": "„Musiklisten: abgehakt = abspielen / neu = bei Spotify suchen“: ohne Laufzeitfehler (24 h)",
-"s": "fehler",
-"i": "The requested media item could not be found."
-},
-{
-"p": 1,
-"k": "Präsenz & Licht",
-"t": "Präsenz Anwesenheit hängt nicht auf 'besetzt'",
-"s": "warnung",
-"i": "seit 59 h ununterbrochen besetzt – Melder prüfen"
-},
-{
-"p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Lara aktuell",
 "s": "warnung",
-"i": "unknown, 59 h alt (1-Wire OG offline)"
+"i": "unknown, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Malte aktuell",
 "s": "warnung",
-"i": "8.86, 59 h alt (1-Wire OG offline)"
+"i": "8.86, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Schlafzimmer aktuell",
 "s": "warnung",
-"i": "8.02, 23 h alt (1-Wire OG offline)"
+"i": "7.72, 8 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Flur EG aktuell",
+"s": "warnung",
+"i": "47.4, 7 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte HWR aktuell",
+"s": "warnung",
+"i": "43.32, 6 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Lara aktuell",
 "s": "warnung",
-"i": "49.24, 59 h alt (1-Wire OG offline)"
+"i": "49.24, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Malte aktuell",
 "s": "warnung",
-"i": "48.64, 59 h alt (1-Wire OG offline)"
+"i": "48.64, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Schlafzimmer aktuell",
 "s": "warnung",
-"i": "45.16, 25 h alt (1-Wire OG offline)"
+"i": "41.04, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Ankleide aktuell",
 "s": "warnung",
-"i": "7.0, 59 h alt"
+"i": "1.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Bad Yvonne aktuell",
 "s": "warnung",
-"i": "2.0, 13 h alt"
+"i": "1.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Flur EG aktuell",
 "s": "warnung",
-"i": "7.0, 14 h alt"
+"i": "1.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Flur OG aktuell",
 "s": "warnung",
-"i": "1.0, 9 h alt"
+"i": "1.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Gästebad Wand aktuell",
 "s": "warnung",
-"i": "5.0, 17 h alt"
+"i": "1.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit HWR aktuell",
 "s": "warnung",
-"i": "9.0, 14 h alt"
+"i": "3.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Lara aktuell",
 "s": "warnung",
-"i": "1.0, 13 h alt (1-Wire OG offline)"
+"i": "1.0, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Malte aktuell",
 "s": "warnung",
-"i": "8.0, 13 h alt (1-Wire OG offline)"
+"i": "19.0, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Sauna Aufenthaltsraum aktuell",
 "s": "warnung",
-"i": "1.0, 20 h alt"
+"i": "1.0, 6 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Schlafzimmer aktuell",
 "s": "warnung",
-"i": "1.0, 11 h alt (1-Wire OG offline)"
+"i": "1.0, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Werkstatt aktuell",
 "s": "warnung",
-"i": "0.0, 20 h alt"
+"i": "0.0, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Wohnzimmer aktuell",
 "s": "warnung",
-"i": "1.0, 6 h alt"
+"i": "1.0, 7 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Ankleide aktuell",
 "s": "warnung",
-"i": "8.59, 9 h alt"
+"i": "8.5, 7 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Bad Yvonne aktuell",
+"s": "warnung",
+"i": "10.72, 8 h alt"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Flur EG aktuell",
+"s": "warnung",
+"i": "9.35, 8 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Lara aktuell",
 "s": "warnung",
-"i": "unknown, 59 h alt (1-Wire OG offline)"
+"i": "unknown, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Malte aktuell",
 "s": "warnung",
-"i": "unknown, 59 h alt (1-Wire OG offline)"
+"i": "unknown, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Schlafzimmer aktuell",
 "s": "warnung",
-"i": "8.32, 25 h alt (1-Wire OG offline)"
+"i": "7.51, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
-"t": "Raumwert Temperatur Ankleide aktuell",
+"t": "Raumwert Temperatur Flur EG aktuell",
 "s": "warnung",
-"i": "20.0, 7 h alt"
+"i": "21.26, 7 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Temperatur Schlafzimmer aktuell",
 "s": "warnung",
-"i": "unknown, 59 h alt (1-Wire OG offline)"
+"i": "unknown, 8 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
@@ -222,6 +229,20 @@
 "t": "Keine nicht erreichbaren Geräte für Sprache freigegeben",
 "s": "warnung",
 "i": "['binary_sensor.browser_mod_5bc0dd37_30fa0ee0', 'binary_sensor.waschtrockner_door', 'light.einfahrt_licht', 'light.mulltonne_licht', 'media_player.browser_mod_5bc0dd37_30fa0ee0', 'media_player.tv_samsung_6_series_55_2', "
+},
+{
+"p": 2,
+"k": "Anwesenheit",
+"t": "Handy Tobias Ohst meldet sich",
+"s": "info",
+"i": "seit 6.6 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
+},
+{
+"p": 2,
+"k": "Anwesenheit",
+"t": "Handy Yvonne Ohst meldet sich",
+"s": "info",
+"i": "seit 10.2 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
 },
 {
 "p": 3,
@@ -570,6 +591,13 @@
 "p": 1,
 "k": "Präsenz & Licht",
 "t": "Präsenz Präsenz Ankleide Tobias antwortet am Bus (0/7/9)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Anwesenheit hängt nicht auf 'besetzt'",
 "s": "ok",
 "i": ""
 },
@@ -1072,13 +1100,6 @@
 },
 {
 "p": 2,
-"k": "Anwesenheit",
-"t": "Handy Tobias Ohst meldet sich",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
 "k": "Automationen",
 "t": "„Alles an: einschalten / vorherigen Zustand wiederherstellen“: Entitäten vorhanden",
 "s": "ok",
@@ -1500,6 +1521,13 @@
 {
 "p": 2,
 "k": "Automationen",
+"t": "„Frost: Warnung aufs Handy (bis 48 h vorher)“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
 "t": "„Heizung: lange abwesend → Standby“: Entitäten vorhanden",
 "s": "ok",
 "i": ""
@@ -1682,6 +1710,34 @@
 {
 "p": 2,
 "k": "Automationen",
+"t": "„Melder Wohnzimmer: Sperre an KNX senden / vom Taster übernehmen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder Wohnzimmer: Sperre an KNX senden / vom Taster übernehmen“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder Wohnzimmer: Sperre automatisch aufheben“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder Wohnzimmer: Sperre automatisch aufheben“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
 "t": "„Müll: Durchsage beim Betreten des Wohnzimmers“: Entitäten vorhanden",
 "s": "ok",
 "i": ""
@@ -1851,6 +1907,13 @@
 "p": 2,
 "k": "Automationen",
 "t": "„Musiklisten: abgehakt = abspielen / neu = bei Spotify suchen“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Musiklisten: abgehakt = abspielen / neu = bei Spotify suchen“: ohne Laufzeitfehler (24 h)",
 "s": "ok",
 "i": ""
 },
@@ -2592,13 +2655,6 @@
 {
 "p": 2,
 "k": "Heizung & Klima",
-"t": "Raumwert Feuchte Flur EG aktuell",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
 "t": "Raumwert Feuchte Flur OG aktuell",
 "s": "ok",
 "i": ""
@@ -2607,13 +2663,6 @@
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Gästebad aktuell",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Feuchte HWR aktuell",
 "s": "ok",
 "i": ""
 },
@@ -2642,20 +2691,6 @@
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Gästebad aktuell",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Taupunkt Bad Yvonne aktuell",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Taupunkt Flur EG aktuell",
 "s": "ok",
 "i": ""
 },
@@ -2697,6 +2732,13 @@
 {
 "p": 2,
 "k": "Heizung & Klima",
+"t": "Raumwert Temperatur Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
 "t": "Raumwert Temperatur Bad OG aktuell",
 "s": "ok",
 "i": ""
@@ -2705,13 +2747,6 @@
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Temperatur Bad Yvonne aktuell",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Temperatur Flur EG aktuell",
 "s": "ok",
 "i": ""
 },
