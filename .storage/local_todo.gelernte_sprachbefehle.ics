@@ -164,6 +164,17 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:gartenlicht und carportlicht an
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261118T195636Z
+UID:2953423a-e38a-11f1-9747-d83addc0128c
+CREATED:20261118T195636Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.licht_decke"]\,"daten
+ ":{}\,"antwort":"Carportlicht ist an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261118T205636
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:carport licht anmachen
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
