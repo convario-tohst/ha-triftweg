@@ -1,5 +1,9 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
+## 21.11.2026
+- Voice PE Wohnzimmer: neues Startwort „Hey Ludwig“ (microWakeWord, auf Colab mit deutschen Piper-Stimmen trainiert; www/ludwig/hey_ludwig.json + .tflite, Schwelle 0,8). Aktivierungswort 1 = Okay Nabu, 2 = Hey Ludwig
+- Firmware-Paket fest auf Voice-PE-Release 26.9.0 (Hauptzweig braucht neueres ESPHome als 2026.10)
+
 ## 15.11.2026
 - Musik: „Läuft gerade“, Musik-Karten und Sprachantworten erkennen auch Wiedergabe direkt am Lautsprecher (LinkPlay-App/Sender), nicht nur Music Assistant (packages/musik_quelle.yaml, Dashboard Start + Musik)
 - Frostwarnung: Fehler behoben – Automation nutzte falschen Sensornamen (`sensor.tiefstwert_aussen_48h` statt `_48_h`), Push wäre nie gekommen; Zeitangaben robust gegen fehlende Werte
