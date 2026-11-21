@@ -8,6 +8,10 @@ input_boolean:
   nachtlicht_automatik:
     name: "Nachtlicht Flur: automatisch"
     icon: mdi:weather-night
+  # 21.11.: für eine Nacht abschalten – Licht geht aus, bleibt aus, morgens 10 Uhr automatisch zurückgesetzt
+  nachtlicht_heute_aus:
+    name: "Nachtlicht Flur: heute Nacht aus"
+    icon: mdi:weather-night-partly-cloudy
 
 input_number:
   nachtlicht_an_unter:
@@ -55,10 +59,17 @@ automation:
       - trigger: homeassistant
         event: start
         id: start
+      - trigger: state
+        entity_id: input_boolean.nachtlicht_heute_aus
+        to: "off"
+        id: heute_aus_ende
     conditions:
       - condition: state
         entity_id: input_boolean.nachtlicht_automatik
         state: "on"
+      - condition: state
+        entity_id: input_boolean.nachtlicht_heute_aus
+        state: "off"
     variables:
       lux: "{{ states('sensor.helligkeit_aussen') | float(-1) }}"
       an_unter: "{{ states('input_number.nachtlicht_an_unter') | float(50) }}"
@@ -80,3 +91,31 @@ automation:
         then:
           - action: light.turn_off
             target: { entity_id: light.nachtlicht_flur_malte }
+
+  # "Heute Nacht aus": sofort aus und aus halten (auch wenn KNX/Timberwolf es wieder einschaltet)
+  - id: nachtlicht_heute_aus
+    alias: "Nachtlicht Flur: heute Nacht aus"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.nachtlicht_heute_aus
+        to: "on"
+        id: an
+      - trigger: state
+        entity_id: light.nachtlicht_flur_malte
+        to: "on"
+        id: licht_an
+      - trigger: time
+        at: "10:00:00"
+        id: zuruecksetzen
+    actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'zuruecksetzen' }}"
+            sequence:
+              - action: input_boolean.turn_off
+                target: { entity_id: input_boolean.nachtlicht_heute_aus }
+          - conditions: "{{ is_state('input_boolean.nachtlicht_heute_aus', 'on') }}"
+            sequence:
+              - delay: 2
+              - action: light.turn_off
+                target: { entity_id: light.nachtlicht_flur_malte }

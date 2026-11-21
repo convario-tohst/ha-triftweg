@@ -1,8 +1,11 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
 ## 21.11.2026
+- Nachtlicht Flur OG: Schalter „Nachtlicht Flur: heute Nacht aus“ (Licht sofort aus und bleibt aus, auch wenn KNX es wieder einschaltet; 10 Uhr automatisch zurück) + „automatisch“ auf der Startseite (Schnell)
+- Dashboard „Wohnen & Küche“: toter Regler „Präsenzmelder“ (alte Select-Entität) entfernt, Entität gelöscht
 - Voice PE Wohnzimmer: neues Startwort „Hey Ludwig“ (microWakeWord, auf Colab mit deutschen Piper-Stimmen trainiert; www/ludwig/hey_ludwig.json + .tflite, Schwelle 0,8). Aktivierungswort 1 = Okay Nabu, 2 = Hey Ludwig
 - Erkennung zu schwach → Schwelle 0,6; neue Entität `number.wohnzimmer_voice_wohnzimmer_hey_ludwig_schwelle` (0,3–0,99) stellt die Schwelle ohne Neukompilieren ein
+- Test 18:45–18:55: Modell trennt nicht (eigene Stimme Ø 0,3–0,45, Fehlauslösungen durch Geräusche ähnlich) → „Hey Ludwig“ wieder abgeschaltet (Aktivierungswort 2 = aus). Offen: Nachtraining mit echten Sprachaufnahmen
 - Firmware-Paket fest auf Voice-PE-Release 26.9.0 (Hauptzweig braucht neueres ESPHome als 2026.10)
 
 ## 15.11.2026

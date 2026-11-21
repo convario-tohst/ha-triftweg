@@ -442,6 +442,34 @@
                     "columns": 6,
                     "rows": 1
                   }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.nachtlicht_heute_aus",
+                  "name": "Nachtlicht oben heute aus",
+                  "icon": "mdi:weather-night-partly-cloudy",
+                  "color": "indigo",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.nachtlicht_automatik",
+                  "name": "Nachtlicht oben automatisch",
+                  "icon": "mdi:weather-night",
+                  "color": "amber",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 }
               ]
             },
@@ -5122,22 +5150,6 @@
                     }
                   ],
                   "features_position": "inline"
-                },
-                {
-                  "type": "tile",
-                  "entity": "select.melder_wohnzimmer",
-                  "name": "Präsenzmelder",
-                  "icon": "mdi:motion-sensor",
-                  "color": "green",
-                  "features": [
-                    {
-                      "type": "select-options"
-                    }
-                  ],
-                  "features_position": "inline",
-                  "grid_options": {
-                    "columns": "full"
-                  }
                 }
               ]
             },
