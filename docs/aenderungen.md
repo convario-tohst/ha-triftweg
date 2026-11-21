@@ -2,6 +2,7 @@
 
 ## 21.11.2026
 - Voice PE Wohnzimmer: neues Startwort „Hey Ludwig“ (microWakeWord, auf Colab mit deutschen Piper-Stimmen trainiert; www/ludwig/hey_ludwig.json + .tflite, Schwelle 0,8). Aktivierungswort 1 = Okay Nabu, 2 = Hey Ludwig
+- Erkennung zu schwach → Schwelle 0,6; neue Entität `number.wohnzimmer_voice_wohnzimmer_hey_ludwig_schwelle` (0,3–0,99) stellt die Schwelle ohne Neukompilieren ein
 - Firmware-Paket fest auf Voice-PE-Release 26.9.0 (Hauptzweig braucht neueres ESPHome als 2026.10)
 
 ## 15.11.2026
