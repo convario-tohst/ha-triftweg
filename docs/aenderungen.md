@@ -1,6 +1,12 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
 ## 21.11.2026
+**Fehlerbereinigung (Systemprotokoll)**
+- Müll-Durchsage Wohnzimmer: Skript brach seit 20.11. ab (`response_variable` bei play_announcement) → behoben; Rückfall ohne Music Assistant direkt auf media_player.wohnzimmer
+- Heizung Ankleide: Betriebsart-Status 3/4/2 wird nicht mehr gelesen (antwortet nicht, 46.000 Warnungen)
+- Sauna-Lüftung (oxxify.py): 5 statt 3 UDP-Versuche (vorher ~3 Aussetzer/Tag)
+- Ring: Anmeldung abgelaufen (seit ~09.11. alle Kamera-Entitäten nicht verfügbar) → Neuanmeldung durch Tobias nötig
+- Musik „nicht gefunden“: Music Assistant hat nur TuneIn (Radio) – Künstler/Titel brauchen einen Musikdienst (SoundCloud geplant)
 - Nachtlicht Flur OG: Schalter „Nachtlicht Flur: heute Nacht aus“ (Licht sofort aus und bleibt aus, auch wenn KNX es wieder einschaltet; 10 Uhr automatisch zurück) + „automatisch“ auf der Startseite (Schnell)
 - Dashboard „Wohnen & Küche“: toter Regler „Präsenzmelder“ (alte Select-Entität) entfernt, Entität gelöscht
 - Voice PE Wohnzimmer: neues Startwort „Hey Ludwig“ (microWakeWord, auf Colab mit deutschen Piper-Stimmen trainiert; www/ludwig/hey_ludwig.json + .tflite, Schwelle 0,8). Aktivierungswort 1 = Okay Nabu, 2 = Hey Ludwig

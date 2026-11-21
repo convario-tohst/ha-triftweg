@@ -18,8 +18,8 @@ def paket(func, data):
 
 def senden(func, data, antwort=True):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.settimeout(2)
-    for _ in range(3):  # UDP: bis zu 3 Versuche
+    s.settimeout(2.5)
+    for _ in range(5):  # UDP: bis zu 5 Versuche (21.11.: ~3 Aussetzer/Tag bei 3 Versuchen) – max. 12,5 s < command_timeout 15
         s.sendto(paket(func, data), (IP, 4000))
         if not antwort:
             return None

@@ -259,7 +259,7 @@ climate:
     target_temperature_address: "3/3/29"
     target_temperature_state_address: "3/3/1"
     operation_mode_address: "3/4/2"
-    operation_mode_state_address: "3/4/2"
+    # 21.11.: kein Status-Abfragen – 3/4/2 antwortet nicht auf Lesen (46.000 Warnungen im Protokoll)
     command_value_state_address: "3/6/2"
     sync_state: "every 10" # Timberwolf sendet nur bei Änderung -> alle 10 min nachfragen
     operation_modes: ["Comfort", "Standby", "Night", "Frost Protection"]

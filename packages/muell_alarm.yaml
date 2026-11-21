@@ -84,26 +84,28 @@ script:
     variables:
       war_still: "{{ not is_state('media_player.ma_wohnzimmer', 'playing') }}"
     sequence:
-      # 1. Versuch: Music Assistant Durchsage mit fester Lautstärke 20 % (laufende Musik wird kurz abgesenkt)
-      - action: music_assistant.play_announcement
-        continue_on_error: true
-        response_variable: ok1
-        target: { entity_id: media_player.ma_wohnzimmer }
-        data:
-          url: "media-source://tts/tts.home_assistant_cloud?message={{ text | urlencode }}&language=de-DE"
-          announce_volume: 20
-      - delay: 1
-      # Rückfall: normale Sprachausgabe (nur wenn gerade keine Musik läuft, mit 20 %)
-      - if: "{{ ok1 is not defined and war_still }}"
+      # 21.11.: play_announcement liefert keine Antwort → response_variable entfernt (ließ das Skript seit 20.11. abbrechen)
+      # Music Assistant erreichbar: Durchsage mit fester Lautstärke 20 % (laufende Musik wird kurz abgesenkt)
+      - if: "{{ states('media_player.ma_wohnzimmer') not in ['unavailable', 'unknown'] }}"
         then:
-          - action: media_player.volume_set
+          - action: music_assistant.play_announcement
             continue_on_error: true
             target: { entity_id: media_player.ma_wohnzimmer }
-            data: { volume_level: 0.2 }
-          - action: tts.speak
-            continue_on_error: true
-            target: { entity_id: tts.home_assistant_cloud }
-            data: { media_player_entity_id: media_player.ma_wohnzimmer, message: "{{ text }}", language: de-DE }
+            data:
+              url: "media-source://tts/tts.home_assistant_cloud?message={{ text | urlencode }}&language=de-DE"
+              announce_volume: 20
+        else:
+          # Rückfall ohne Music Assistant: direkt auf den Lautsprecher (nur wenn dort gerade nichts läuft)
+          - if: "{{ war_still }}"
+            then:
+              - action: media_player.volume_set
+                continue_on_error: true
+                target: { entity_id: media_player.wohnzimmer }
+                data: { volume_level: 0.2 }
+              - action: tts.speak
+                continue_on_error: true
+                target: { entity_id: tts.home_assistant_cloud }
+                data: { media_player_entity_id: media_player.wohnzimmer, message: "{{ text }}", language: de-DE }
 
 automation:
   # Stripe-Erinnerung starten: mit der Vorabend-Erinnerung und morgens am Abholtag (falls nicht erledigt)
