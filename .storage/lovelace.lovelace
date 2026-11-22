@@ -1881,7 +1881,7 @@
                         "name": "Flur EG (Stripe)"
                       },
                       {
-                        "entity": "select.melder_flur_eg",
+                        "entity": "switch.melder_flur_eg_sperre",
                         "name": "Melder am Bus (Sperre)"
                       },
                       {
@@ -5267,6 +5267,20 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "switch.melder_flur_eg_sperre",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "climate.heizung_flur_eg",
                   "name": "Heizung",
                   "color": "deep-orange",
@@ -5330,22 +5344,6 @@
                     }
                   ],
                   "features_position": "inline"
-                },
-                {
-                  "type": "tile",
-                  "entity": "select.melder_flur_eg",
-                  "name": "Präsenzmelder",
-                  "icon": "mdi:motion-sensor",
-                  "color": "green",
-                  "features": [
-                    {
-                      "type": "select-options"
-                    }
-                  ],
-                  "features_position": "inline",
-                  "grid_options": {
-                    "columns": "full"
-                  }
                 }
               ]
             },
@@ -5460,6 +5458,20 @@
                   "type": "heading",
                   "heading": "Bad Yvonne",
                   "icon": "mdi:shower-head"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.melder_bad_yvonne_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
@@ -5745,6 +5757,20 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "switch.melder_gaestebad_sperre",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "light.gastebad_decke",
                   "name": "Decke",
                   "color": "amber",
@@ -5904,6 +5930,20 @@
                   "type": "heading",
                   "heading": "Ankleide Yvonne",
                   "icon": "mdi:hanger"
+                },
+                {
+                  "type": "tile",
+                  "entity": "switch.melder_ankleide_yvonne_sperre",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
@@ -6071,6 +6111,20 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "input_boolean.melder_hwr_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "climate.heizung_hwr",
                   "name": "Heizung",
                   "color": "deep-orange",
@@ -6214,6 +6268,20 @@
                   "type": "heading",
                   "heading": "Flur OG",
                   "icon": "mdi:stairs"
+                },
+                {
+                  "type": "tile",
+                  "entity": "switch.melder_flur_og_sperre",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
@@ -6387,6 +6455,20 @@
                   "type": "heading",
                   "heading": "Schlafzimmer",
                   "icon": "mdi:bed-king"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.melder_schlafzimmer_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
@@ -6748,6 +6830,20 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "input_boolean.melder_malte_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "light.licht_malte_decke",
                   "name": "Decke",
                   "color": "amber",
@@ -6954,6 +7050,20 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "input_boolean.melder_lara_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "light.licht_lara_decke",
                   "name": "Decke",
                   "color": "amber",
@@ -7134,6 +7244,20 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "switch.melder_bad_og_sperre",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "light.og_bad_tobias_decke",
                   "name": "Decke",
                   "color": "amber",
@@ -7185,6 +7309,20 @@
                   "type": "heading",
                   "heading": "Ankleide Tobias",
                   "icon": "mdi:hanger"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.melder_ankleide_tobias_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
@@ -7360,6 +7498,20 @@
                   "type": "heading",
                   "heading": "Sauna",
                   "icon": "mdi:hot-tub"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.melder_sauna_gesperrt",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",
@@ -7578,6 +7730,20 @@
                   "type": "heading",
                   "heading": "Werkstatt",
                   "icon": "mdi:tools"
+                },
+                {
+                  "type": "tile",
+                  "entity": "switch.melder_werkstatt_sperre",
+                  "name": "Präsenzmelder sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 },
                 {
                   "type": "tile",

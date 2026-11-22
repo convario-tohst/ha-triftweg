@@ -60,6 +60,9 @@ automation:
       - condition: state
         entity_id: input_boolean.hwr_praesenz_licht
         state: "on"
+      - condition: state
+        entity_id: input_boolean.melder_hwr_gesperrt
+        state: "off"
     variables:
       nacht: >
         {% set b = states('input_datetime.nacht_eg_beginn') %}{% set e = states('input_datetime.nacht_eg_ende') %}

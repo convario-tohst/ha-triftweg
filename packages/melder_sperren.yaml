@@ -34,7 +34,7 @@ automation:
             (Wert {{ trigger.event.data.data }}) von {{ trigger.event.data.source }}
             {{ '= Home Assistant' if trigger.event.data.source == '1.1.204' else
                ('= Timberwolf' if trigger.event.data.source == '1.1.10' else '') }}
-            um {{ now().strftime('%d.%m. %H:%M:%S') }}. Entsperren: Seite „Automatik“ → Präsenzmelder → „Automatik“.
+            um {{ now().strftime('%d.%m. %H:%M:%S') }}. Entsperren: Raumseite → „Präsenzmelder sperren“ ausschalten.
 
   # Flur EG: Ein Taster (1.1.14) sperrt den Melder 1.1.22 über 0/5/1 – unbemerkt, danach geht das Flurlicht nicht mehr
   # (13.10. und 28.10.). Gesperrt von einem Gerät (nicht HA) → nach X Minuten automatisch wieder "Automatik".
@@ -49,13 +49,12 @@ automation:
         event: start
         id: start
     conditions:
-      - "{{ trigger.id == 'start' or (trigger.event.data.source != '1.1.204' and trigger.event.data.data not in [0, [0], none]) }}"
+      - "{{ trigger.id == 'start' or (trigger.event.data.source not in ['1.1.203', '1.1.204'] and trigger.event.data.data not in [0, [0], none]) }}"
     actions:
       - delay:
           minutes: "{{ 1 if trigger.id == 'start' else states('input_number.melder_flur_eg_sperre_max') | int(30) }}"
-      - action: select.select_option
-        target: { entity_id: select.melder_flur_eg }
-        data: { option: Automatik }
+      - action: switch.turn_off
+        target: { entity_id: switch.melder_flur_eg_sperre }
       - action: persistent_notification.dismiss
         data: { notification_id: "melder_sperre_0_5_1" }
       - action: logbook.log

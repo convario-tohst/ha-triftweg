@@ -18,6 +18,10 @@ automation:
         to: "off"
         for: "00:03:00"
         id: aus
+    conditions:
+      - condition: state
+        entity_id: input_boolean.melder_sauna_gesperrt
+        state: "off"
     actions:
       - choose:
           - conditions: "{{ trigger.id == 'an' }}"

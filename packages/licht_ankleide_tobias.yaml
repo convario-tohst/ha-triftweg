@@ -51,6 +51,9 @@ automation:
       - condition: state
         entity_id: input_boolean.ankleide_tobias_praesenz_licht
         state: "on"
+      - condition: state
+        entity_id: input_boolean.melder_ankleide_tobias_gesperrt
+        state: "off"
     variables:
       # Nacht = Nachtmodus-Zeiten OG
       nacht: >

@@ -1,0 +1,104 @@
+# Präsenzmelder pro Raum sperren (22.11.) – Schalter "Präsenzmelder sperren" auf jeder Raumseite.
+# Gesperrt = der Melder schaltet kein Licht (an/aus), Licht bleibt wie es ist und lässt sich normal bedienen.
+# Alle Sperren heben sich morgens um 5 Uhr selbst auf (Wohnzimmer hat zusätzlich seine eigene Stunden-Sperre).
+#
+# Umsetzung je Raum:
+#  - HA schaltet das Licht nach Präsenz (HWR, Ankleide Tobias, Bad Yvonne, Sauna innen):
+#      input_boolean.melder_<raum>_gesperrt ist Bedingung in der jeweiligen Licht-Automation
+#  - Malte, Lara, Schlafzimmer (Präsenz-Blueprints + Zeitplan): Sperre schaltet die Präsenz-Automation aus,
+#      Entsperren schaltet sie wieder an, wenn laut Zeitplan "wach" ist
+#  - Melder schaltet das Licht selbst (KNX-Sperrobjekt, 1 Bit): switch.melder_<raum>_sperre (knx.yaml)
+#      Flur EG 0/5/1 (verknüpft), Bad OG 0/5/3, Gästebad 0/5/6, Ankleide Yvonne 0/5/7, Flur OG 0/5/8,
+#      Werkstatt 0/5/9, Sauna Bad 0/5/10 (diese noch in der ETS verknüpfen)
+#  - Sauna: ein Schalter für beide Melder (innen über HA, Sauna Bad per KNX 0/5/10)
+
+input_boolean:
+  melder_hwr_gesperrt:
+    name: "HWR: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+  melder_ankleide_tobias_gesperrt:
+    name: "Ankleide Tobias: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+  melder_bad_yvonne_gesperrt:
+    name: "Bad Yvonne: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+  melder_sauna_gesperrt:
+    name: "Sauna: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+  melder_malte_gesperrt:
+    name: "Malte: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+  melder_lara_gesperrt:
+    name: "Lara: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+  melder_schlafzimmer_gesperrt:
+    name: "Schlafzimmer: Präsenzmelder gesperrt"
+    icon: mdi:motion-sensor-off
+
+automation:
+  # Malte / Lara / Schlafzimmer: Sperre schaltet die Präsenz-Automation aus bzw. (wenn "wach") wieder an
+  - id: melder_raumsperre_kinder_schlafzimmer
+    alias: "Melder: Raumsperre Malte/Lara/Schlafzimmer"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [input_boolean.melder_malte_gesperrt, input_boolean.melder_lara_gesperrt, input_boolean.melder_schlafzimmer_gesperrt]
+        from: ["on", "off"]
+        to: ["on", "off"]
+    variables:
+      raum: "{{ trigger.entity_id.split('.')[1] | replace('melder_', '') | replace('_gesperrt', '') }}"
+      ziel: >
+        {{ {'malte': 'automation.malte_prasenz', 'lara': 'automation.prasenz_lara_stripe',
+            'schlafzimmer': 'automation.prasenz_schlafzimmer'}[raum] }}
+      frei: "{{ is_state('binary_sensor.freier_tag', 'on') }}"
+      n: "{{ now().strftime('%H:%M:%S') }}"
+      an_ab: "{{ states('input_datetime.' ~ raum ~ ('_aufstehen_frei' if frei else '_aufstehen_schule')) }}"
+      aus_ab: "{{ states('input_datetime.' ~ raum ~ '_schlafen') }}"
+    actions:
+      - if: "{{ trigger.to_state.state == 'on' }}"
+        then:
+          - action: automation.turn_off
+            target: { entity_id: "{{ ziel }}" }
+            data: { stop_actions: true }
+        else:
+          - if: "{{ is_state('input_boolean.praesenz_zeitplan_automatik', 'off') or an_ab <= n < aus_ab }}"
+            then:
+              - action: automation.turn_on
+                target: { entity_id: "{{ ziel }}" }
+
+  # Sauna: ein Schalter sperrt auch den Melder im Sauna-Bad (KNX)
+  - id: melder_raumsperre_sauna_bad
+    alias: "Melder: Raumsperre Sauna → Sauna Bad"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.melder_sauna_gesperrt
+        from: ["on", "off"]
+        to: ["on", "off"]
+    actions:
+      - action: "switch.turn_{{ trigger.to_state.state }}"
+        continue_on_error: true
+        target: { entity_id: switch.melder_sauna_bad_sperre }
+
+  # Morgens 5 Uhr alle Sperren aufheben (vergessene Sperre soll nicht tagelang das Licht lahmlegen)
+  - id: melder_raumsperre_morgens_aufheben
+    alias: "Melder: Raumsperren morgens aufheben"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "05:00:00"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: >
+            {{ ['input_boolean.melder_hwr_gesperrt', 'input_boolean.melder_ankleide_tobias_gesperrt',
+                'input_boolean.melder_bad_yvonne_gesperrt', 'input_boolean.melder_sauna_gesperrt',
+                'input_boolean.melder_malte_gesperrt', 'input_boolean.melder_lara_gesperrt',
+                'input_boolean.melder_schlafzimmer_gesperrt'] | select('is_state', 'on') | list or 'none' }}
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id: >
+            {{ ['switch.melder_flur_eg_sperre', 'switch.melder_bad_og_sperre', 'switch.melder_gaestebad_sperre',
+                'switch.melder_ankleide_yvonne_sperre', 'switch.melder_flur_og_sperre', 'switch.melder_werkstatt_sperre',
+                'switch.melder_sauna_bad_sperre'] | select('is_state', 'on') | list or 'none' }}

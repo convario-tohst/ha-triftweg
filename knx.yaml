@@ -20,6 +20,30 @@ switch:
   - name: "Melder Wohnzimmer Sperre"
     address: "0/5/5"
     respond_to_read: false
+  # Präsenzmelder-Sperren (1 Bit, 1 = gesperrt) für die Raumseiten, 22.11. (packages/melder_raumsperre.yaml)
+  # Flur EG: Sperrobjekt schon verknüpft (auch vom Taster 1.1.14 benutzt)
+  - name: "Melder Flur EG Sperre"
+    address: "0/5/1" # 1.1.22 Obj. 4
+    respond_to_read: false
+  # Folgende brauchen noch die Verknüpfung in der ETS (Sperrobjekt des Lichtkanals, "bei Sperre: keine Änderung"):
+  - name: "Melder Bad OG Sperre"
+    address: "0/5/3" # 1.1.18 – Obj. 4 ist z. Z. Zwangsführung 0/4/2, auf Sperre umstellen
+    respond_to_read: false
+  - name: "Melder Gästebad Sperre"
+    address: "0/5/6" # 1.1.25 Lichtkanal 1
+    respond_to_read: false
+  - name: "Melder Ankleide Yvonne Sperre"
+    address: "0/5/7" # 1.1.27 Lichtkanal 1
+    respond_to_read: false
+  - name: "Melder Flur OG Sperre"
+    address: "0/5/8" # 1.1.24 Lichtkanal 1
+    respond_to_read: false
+  - name: "Melder Werkstatt Sperre"
+    address: "0/5/9" # 1.1.37 Lichtgruppe 1
+    respond_to_read: false
+  - name: "Melder Sauna Bad Sperre"
+    address: "0/5/10" # 1.1.39 Lichtgruppe 1
+    respond_to_read: false
   # Wohnzimmer-Steckdosen: Schaltaktor 1.1.7, automatisch geschaltet vom Präsenzmelder 1.1.23 (Obj. 15)
   - name: "Dosen Wohnzimmer"
     address: "1/0/111"
@@ -42,17 +66,14 @@ switch:
 # Sperre / Zwangsführung der Präsenzmelder (DPT 2.001, 2 Bit): 0 = Automatik, 2 = Aus erzwingen, 3 = An erzwingen
 select:
   # Wohnzimmer 0/5/5 seit 15.11. 1-Bit-Sperre (siehe switch "Melder Wohnzimmer Sperre")
-  - name: "Melder Flur EG"
-    address: "0/5/1" # 1.1.22 Sperre
+  # Flur EG 0/5/1 ist eine 1-Bit-Sperre (DPT 1.003) → seit 22.11. switch "Melder Flur EG Sperre"
+  - name: "Melder Sauna außen"
+    address: "0/5/2" # 1.1.38 Zwangsführung
     payload_length: 0
     options: &zwang
       - { option: "Automatik", payload: 0 }
       - { option: "Aus erzwingen", payload: 2 }
       - { option: "An erzwingen", payload: 3 }
-  - name: "Melder Sauna außen"
-    address: "0/5/2" # 1.1.38 Zwangsführung
-    payload_length: 0
-    options: *zwang
   - name: "Melder Bad OG"
     address: "0/4/2" # 1.1.18 Zwangsführung
     payload_length: 0

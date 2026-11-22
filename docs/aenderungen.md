@@ -1,5 +1,13 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
+## 22.11.2026
+**Präsenzmelder sperren auf jeder Raumseite** (packages/melder_raumsperre.yaml)
+- Schalter „Präsenzmelder sperren“ oben auf jeder Raumseite; gesperrt = Melder schaltet kein Licht, alle Sperren heben sich um 5 Uhr auf
+- HA-Räume (HWR, Ankleide Tobias, Bad Yvonne, Sauna innen): Sperre als Bedingung in der Licht-Automation
+- Malte, Lara, Schlafzimmer: Sperre schaltet die Präsenz-Automation aus, Entsperren nur innerhalb der Wachzeit wieder an; Zeitplan respektiert die Sperre
+- KNX-Sperrobjekte (1 Bit, 1 = gesperrt): Flur EG 0/5/1 (bisher fälschlich als 2-Bit-Select angelegt → jetzt Schalter), neu Bad OG 0/5/3, Gästebad 0/5/6, Ankleide Yvonne 0/5/7, Flur OG 0/5/8, Werkstatt 0/5/9, Sauna Bad 0/5/10 – **in der ETS noch verknüpfen**
+- Garten & Einfahrt: bestehende Auswahl „Melder Sauna außen“ (Automatik / Aus / An)
+
 ## 21.11.2026
 **Fehlerbereinigung (Systemprotokoll)**
 - Müll-Durchsage Wohnzimmer: Skript brach seit 20.11. ab (`response_variable` bei play_announcement) → behoben; Rückfall ohne Music Assistant direkt auf media_player.wohnzimmer

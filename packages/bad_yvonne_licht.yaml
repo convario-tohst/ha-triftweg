@@ -67,6 +67,9 @@ automation:
         entity_id: input_boolean.bad_yvonne_licht_automatik
         state: "on"
       - condition: state
+        entity_id: input_boolean.melder_bad_yvonne_gesperrt
+        state: "off"
+      - condition: state
         entity_id: input_boolean.bad_yvonne_entspannen
         state: "off"
     variables:

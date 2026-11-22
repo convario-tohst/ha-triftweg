@@ -215,7 +215,7 @@ automation:
               - action: automation.turn_off
                 target: { entity_id: "{{ ziel }}" }
                 data: { stop_actions: true }
-          - conditions: "{{ (art == 'schule' and not frei) or (art == 'frei' and frei) }}"
+          - conditions: "{{ ((art == 'schule' and not frei) or (art == 'frei' and frei)) and is_state('input_boolean.melder_' ~ raum ~ '_gesperrt', 'off') }}"
             sequence:
               - action: automation.turn_on
                 target: { entity_id: "{{ ziel }}" }
@@ -248,7 +248,7 @@ automation:
             - variables:
                 an_ab: "{{ states('input_datetime.' ~ repeat.item.raum ~ ('_aufstehen_frei' if frei else '_aufstehen_schule')) }}"
                 aus_ab: "{{ states('input_datetime.' ~ repeat.item.raum ~ '_schlafen') }}"
-            - if: "{{ an_ab <= n < aus_ab }}"
+            - if: "{{ an_ab <= n < aus_ab and is_state('input_boolean.melder_' ~ repeat.item.raum ~ '_gesperrt', 'off') }}"
               then:
                 - action: automation.turn_on
                   target: { entity_id: "{{ repeat.item.ziel }}" }
