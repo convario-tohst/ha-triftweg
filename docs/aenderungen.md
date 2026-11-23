@@ -2,6 +2,7 @@
 
 ## 23.11.2026
 - Frost: Küchen-Stripe blinkt schnell weiß am Tag vor dem Frost und am Frosttag, 6–22 Uhr (packages/frost_stripe.yaml); abstellbar mit „Frost-Blinken aus“ (gilt bis Frostwarnung vorbei) oder ganz mit „Frost: Küchen-Stripe blinkt“; Müll-Erinnerung hat Vorrang
+- Schnee heute/morgen in der Vorhersage: statt Blinken weißes Glitzern auf Eisblau (WLED „Sparkle“), Sensor `binary_sensor.schnee_heute_oder_morgen`
 
 ## 22.11.2026
 **Präsenzmelder sperren auf jeder Raumseite** (packages/melder_raumsperre.yaml)

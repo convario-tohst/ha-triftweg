@@ -1,4 +1,5 @@
 # Frost: Küchen-Stripe blinkt schnell weiß (Wunsch Tobias 23.11.)
+# Schnee angesagt (heute/morgen): statt Blinken weißes Glitzern auf eisblauem Grund ("Sparkle")
 # - am Tag vor dem Frost und am Frosttag (Frost = Vorhersage ≤ input_number.frost_grenze, siehe frost.yaml)
 # - nur 6–22 Uhr, nachts ist Ruhe; morgens geht es weiter, solange Frost ansteht
 # - abstellbar: "Frost-Blinken aus" (gilt bis die Frostwarnung vorbei ist) bzw. ganz abschalten mit "Frost: Küchen-Stripe blinkt"
@@ -20,11 +21,44 @@ rest_command:
     url: "http://192.168.11.162/json/state"
     method: post
     content_type: "application/json"
+    # schnee=true: Sparkle (fx 20) – weiße Glitzerpunkte auf Eisblau; sonst Blink (fx 1) weiß/schwarz schnell
     payload: >
+      {% if schnee | default(false) %}
+      {"on": true, "bri": 255, "transition": 0,
+       "seg": [{"id": 0, "fx": 20, "sx": 200, "ix": 160, "col": [[255, 255, 255, 255], [0, 25, 70, 0], [0, 0, 0, 0]]}]}
+      {% else %}
       {"on": true, "bri": 255, "transition": 0,
        "seg": [{"id": 0, "fx": 1, "sx": 235, "ix": 128, "col": [[255, 255, 255, 255], [0, 0, 0, 0], [0, 0, 0, 0]]}]}
+      {% endif %}
 
 template:
+  # Schnee in der Vorhersage heute oder morgen (stündliche Vorhersage met.no)
+  - triggers:
+      - trigger: time_pattern
+        minutes: "/30"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: weather.get_forecasts
+        target: { entity_id: weather.forecast_home }
+        data: { type: hourly }
+        response_variable: vh
+    binary_sensor:
+      - name: "Schnee heute oder morgen"
+        unique_id: schnee_heute_oder_morgen
+        icon: mdi:snowflake
+        state: >
+          {% set bis = (now() + timedelta(days=1)).date() %}
+          {% set ns = namespace(s=false) %}
+          {% for f in vh['weather.forecast_home'].forecast %}
+            {% if f.condition in ['snowy', 'snowy-rainy'] and as_local(as_datetime(f.datetime)).date() <= bis %}{% set ns.s = true %}{% endif %}
+          {% endfor %}
+          {{ ns.s }}
+        attributes:
+          erster_schnee: >
+            {% set f = vh['weather.forecast_home'].forecast | selectattr('condition', 'in', ['snowy', 'snowy-rainy']) | list %}
+            {{ f[0].datetime if f else none }}
+
   - binary_sensor:
       - name: "Frost heute oder morgen"
         unique_id: frost_heute_oder_morgen
@@ -50,6 +84,8 @@ script:
         target: { entity_id: input_boolean.frost_stripe_aktiv }
       - action: rest_command.wled_kueche_frost
         continue_on_error: true
+        data:
+          schnee: "{{ is_state('binary_sensor.schnee_heute_oder_morgen', 'on') }}"
 
   frost_stripe_stop:
     alias: "Frost: Stripe-Blinken beenden"
@@ -79,7 +115,7 @@ automation:
     mode: queued
     triggers:
       - trigger: state
-        entity_id: [binary_sensor.frost_heute_oder_morgen, input_boolean.frost_stripe_aus,
+        entity_id: [binary_sensor.frost_heute_oder_morgen, binary_sensor.schnee_heute_oder_morgen, input_boolean.frost_stripe_aus,
                     input_boolean.frost_stripe_automatik, input_boolean.muell_alarm_aktiv]
       - trigger: time
         at: ["06:00:00", "22:00:00"]
@@ -88,8 +124,9 @@ automation:
       - trigger: homeassistant
         event: start
     variables:
+      effekt: "{{ 'Sparkle' if is_state('binary_sensor.schnee_heute_oder_morgen', 'on') else 'Blink' }}"
       soll: >
-        {{ is_state('binary_sensor.frost_heute_oder_morgen', 'on')
+        {{ (is_state('binary_sensor.frost_heute_oder_morgen', 'on') or is_state('binary_sensor.schnee_heute_oder_morgen', 'on'))
            and is_state('input_boolean.frost_stripe_automatik', 'on')
            and is_state('input_boolean.frost_stripe_aus', 'off')
            and is_state('input_boolean.muell_alarm_aktiv', 'off')
@@ -98,7 +135,7 @@ automation:
       - if: "{{ soll }}"
         then:
           # starten bzw. wieder herstellen, falls jemand den Stripe umgestellt hat
-          - if: "{{ is_state('input_boolean.frost_stripe_aktiv', 'off') or state_attr('light.wled_kuche', 'effect') != 'Blink' or is_state('light.wled_kuche', 'off') }}"
+          - if: "{{ is_state('input_boolean.frost_stripe_aktiv', 'off') or state_attr('light.wled_kuche', 'effect') != effekt or is_state('light.wled_kuche', 'off') }}"
             then:
               - action: script.frost_stripe_start
         else:
@@ -111,9 +148,8 @@ automation:
     alias: "Frost: Blinken-aus zurücksetzen, wenn Frostwarnung vorbei"
     mode: single
     triggers:
-      - trigger: state
-        entity_id: binary_sensor.frost_heute_oder_morgen
-        to: "off"
+      - trigger: template
+        value_template: "{{ is_state('binary_sensor.frost_heute_oder_morgen', 'off') and is_state('binary_sensor.schnee_heute_oder_morgen', 'off') }}"
         for: "06:00:00"
     actions:
       - action: input_boolean.turn_off
