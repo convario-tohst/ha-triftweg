@@ -470,6 +470,44 @@
                     "columns": 6,
                     "rows": 1
                   }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "condition": "state",
+                      "entity": "binary_sensor.frost_heute_oder_morgen",
+                      "state": "on"
+                    }
+                  ],
+                  "card": {
+                    "type": "tile",
+                    "entity": "input_boolean.frost_stripe_aus",
+                    "name": "Frost-Blinken aus",
+                    "icon": "mdi:snowflake-off",
+                    "color": "blue",
+                    "tap_action": {
+                      "action": "toggle"
+                    },
+                    "grid_options": {
+                      "columns": 6,
+                      "rows": 1
+                    }
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.frost_stripe_automatik",
+                  "name": "Frost: Küchen-Stripe blinkt",
+                  "icon": "mdi:snowflake-alert",
+                  "color": "light-blue",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
                 }
               ]
             },

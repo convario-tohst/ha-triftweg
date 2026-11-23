@@ -11,84 +11,98 @@
 "k": "Präsenz & Licht",
 "t": "Präsenz Anwesenheit hängt nicht auf 'besetzt'",
 "s": "warnung",
-"i": "seit 155 h ununterbrochen besetzt – Melder prüfen"
+"i": "seit 179 h ununterbrochen besetzt – Melder prüfen"
 },
 {
 "p": 1,
 "k": "Präsenz & Licht",
 "t": "Präsenz Jemand im Haus hängt nicht auf 'besetzt'",
 "s": "warnung",
-"i": "seit 61 h ununterbrochen besetzt – Melder prüfen"
+"i": "seit 85 h ununterbrochen besetzt – Melder prüfen"
 },
 {
 "p": 1,
 "k": "Präsenz & Licht",
 "t": "„Bad Yvonne: Entspannen an/aus“: lief zuletzt erfolgreich (72 h)",
 "s": "warnung",
-"i": "letzte Auslösung vor 203 h"
+"i": "letzte Auslösung vor 227 h"
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Melder Flur EG nicht gesperrt",
+"s": "warnung",
+"i": "None"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Lara aktuell",
 "s": "warnung",
-"i": "unknown, 8 h alt (1-Wire OG offline)"
+"i": "unknown, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Malte aktuell",
 "s": "warnung",
-"i": "8.86, 8 h alt (1-Wire OG offline)"
+"i": "8.86, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Schlafzimmer aktuell",
 "s": "warnung",
-"i": "7.77, 8 h alt (1-Wire OG offline)"
+"i": "7.77, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Lara aktuell",
 "s": "warnung",
-"i": "49.24, 8 h alt (1-Wire OG offline)"
+"i": "49.24, 22 h alt (1-Wire OG offline)"
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Feuchte Malte aktuell",
+"s": "warnung",
+"i": "41.24, 12 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Schlafzimmer aktuell",
 "s": "warnung",
-"i": "42.8, 8 h alt (1-Wire OG offline)"
+"i": "42.8, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Ankleide aktuell",
 "s": "warnung",
-"i": "2.0, 8 h alt"
+"i": "1.0, 13 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Bad Yvonne aktuell",
 "s": "warnung",
-"i": "10.0, 8 h alt"
+"i": "1.0, 13 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Flur EG aktuell",
 "s": "warnung",
-"i": "2.0, 8 h alt"
+"i": "1.0, 11 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Flur OG aktuell",
 "s": "warnung",
-"i": "1.0, 8 h alt"
+"i": "1.0, 10 h alt"
 },
 {
 "p": 2,
@@ -102,91 +116,77 @@
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Gästebad Wand aktuell",
 "s": "warnung",
-"i": "3.0, 8 h alt"
+"i": "1.0, 10 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit HWR aktuell",
 "s": "warnung",
-"i": "5.0, 8 h alt"
+"i": "3.0, 10 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Lara aktuell",
 "s": "warnung",
-"i": "1.0, 8 h alt (1-Wire OG offline)"
+"i": "1.0, 12 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Malte aktuell",
 "s": "warnung",
-"i": "3.0, 8 h alt (1-Wire OG offline)"
+"i": "1.0, 9 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Sauna Aufenthaltsraum aktuell",
 "s": "warnung",
-"i": "1.0, 8 h alt"
+"i": "1.0, 22 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Schlafzimmer aktuell",
 "s": "warnung",
-"i": "1.0, 8 h alt (1-Wire OG offline)"
+"i": "1.0, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Werkstatt aktuell",
 "s": "warnung",
-"i": "0.0, 8 h alt"
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Helligkeit Wohnzimmer aktuell",
-"s": "warnung",
-"i": "1.0, 7 h alt"
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Taupunkt Bad Yvonne aktuell",
-"s": "warnung",
-"i": "7.55, 8 h alt"
+"i": "0.0, 16 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Lara aktuell",
 "s": "warnung",
-"i": "unknown, 8 h alt (1-Wire OG offline)"
+"i": "unknown, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Malte aktuell",
 "s": "warnung",
-"i": "unknown, 8 h alt (1-Wire OG offline)"
+"i": "unknown, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Schlafzimmer aktuell",
 "s": "warnung",
-"i": "7.82, 8 h alt (1-Wire OG offline)"
+"i": "7.82, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Temperatur Schlafzimmer aktuell",
 "s": "warnung",
-"i": "unknown, 8 h alt (1-Wire OG offline)"
+"i": "unknown, 22 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
@@ -194,13 +194,6 @@
 "t": "Keine neuen Fehler im HA-Log (2 h)",
 "s": "warnung",
 "i": "homeassistant.components.roborock.coordinator: Error fetching roborock data: Failed to update data"
-},
-{
-"p": 2,
-"k": "System",
-"t": "Backup jünger als 36 h",
-"s": "warnung",
-"i": "2026-11-15T04:05:44+00:00"
 },
 {
 "p": 3,
@@ -219,16 +212,9 @@
 {
 "p": 2,
 "k": "Anwesenheit",
-"t": "Handy Tobias Ohst meldet sich",
-"s": "info",
-"i": "seit 6.5 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
-},
-{
-"p": 2,
-"k": "Anwesenheit",
 "t": "Handy Yvonne Ohst meldet sich",
 "s": "info",
-"i": "seit 6.6 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
+"i": "seit 18.2 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
 },
 {
 "p": 3,
@@ -590,13 +576,6 @@
 {
 "p": 1,
 "k": "Präsenz & Licht",
-"t": "Präsenz Präsenz Flur OG hängt nicht auf 'besetzt'",
-"s": "ok",
-"i": ""
-},
-{
-"p": 1,
-"k": "Präsenz & Licht",
 "t": "Präsenz Bad belegt meldet Bewegung (48 h)",
 "s": "ok",
 "i": ""
@@ -619,6 +598,13 @@
 "p": 1,
 "k": "Präsenz & Licht",
 "t": "Präsenz Präsenz Bad Yvonne meldet Bewegung (48 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Präsenz Präsenz Flur OG meldet Bewegung (48 h)",
 "s": "ok",
 "i": ""
 },
@@ -1038,13 +1024,6 @@
 {
 "p": 1,
 "k": "Präsenz & Licht",
-"t": "Melder Flur EG nicht gesperrt",
-"s": "ok",
-"i": ""
-},
-{
-"p": 1,
-"k": "Präsenz & Licht",
 "t": "Flur OG: Sicherheitsnetz schneidet tagsüber nicht ab (sonst geht das Licht nicht mehr)",
 "s": "ok",
 "i": ""
@@ -1067,6 +1046,13 @@
 "p": 2,
 "k": "Anwesenheit",
 "t": "Handy Malte Ohst meldet sich",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Anwesenheit",
+"t": "Handy Tobias Ohst meldet sich",
 "s": "ok",
 "i": ""
 },
@@ -1669,6 +1655,48 @@
 "p": 2,
 "k": "Automationen",
 "t": "„Melder Flur EG: Sperre durch Taster automatisch aufheben“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Raumsperre Malte/Lara/Schlafzimmer“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Raumsperre Malte/Lara/Schlafzimmer“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Raumsperre Sauna → Sauna Bad“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Raumsperre Sauna → Sauna Bad“: ohne Laufzeitfehler (24 h)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Raumsperren morgens aufheben“: Entitäten vorhanden",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Automationen",
+"t": "„Melder: Raumsperren morgens aufheben“: ohne Laufzeitfehler (24 h)",
 "s": "ok",
 "i": ""
 },
@@ -2676,13 +2704,6 @@
 {
 "p": 2,
 "k": "Heizung & Klima",
-"t": "Raumwert Feuchte Malte aktuell",
-"s": "ok",
-"i": ""
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
 "t": "Raumwert Feuchte Sauna Aufenthaltsraum aktuell",
 "s": "ok",
 "i": ""
@@ -2704,7 +2725,21 @@
 {
 "p": 2,
 "k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Wohnzimmer aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Taupunkt Bad Yvonne aktuell",
 "s": "ok",
 "i": ""
 },
@@ -3325,6 +3360,13 @@
 "i": ""
 },
 {
+"p": 2,
+"k": "System",
+"t": "Backup jünger als 36 h",
+"s": "ok",
+"i": ""
+},
+{
 "p": 3,
 "k": "Integrationen",
 "t": "hassio: Supervisor",
@@ -3838,7 +3880,7 @@
 {
 "p": 3,
 "k": "Komfort",
-"t": "Musik-Blacklist: Prüfung erkennt 3 Einträge",
+"t": "Musik-Blacklist: Prüfung erkennt 4 Einträge",
 "s": "ok",
 "i": ""
 },

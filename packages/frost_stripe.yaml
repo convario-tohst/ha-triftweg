@@ -1,0 +1,120 @@
+# Frost: Küchen-Stripe blinkt schnell weiß (Wunsch Tobias 23.11.)
+# - am Tag vor dem Frost und am Frosttag (Frost = Vorhersage ≤ input_number.frost_grenze, siehe frost.yaml)
+# - nur 6–22 Uhr, nachts ist Ruhe; morgens geht es weiter, solange Frost ansteht
+# - abstellbar: "Frost-Blinken aus" (gilt bis die Frostwarnung vorbei ist) bzw. ganz abschalten mit "Frost: Küchen-Stripe blinkt"
+# - Müll-Erinnerung hat Vorrang (blinkt dann in Müllfarben)
+
+input_boolean:
+  frost_stripe_automatik:
+    name: "Frost: Küchen-Stripe blinkt"
+    icon: mdi:snowflake-alert
+  frost_stripe_aus:
+    name: "Frost-Blinken aus"
+    icon: mdi:snowflake-off
+  frost_stripe_aktiv:
+    name: "Frost: Stripe blinkt gerade"
+    icon: mdi:alarm-light
+
+rest_command:
+  wled_kueche_frost:
+    url: "http://192.168.11.162/json/state"
+    method: post
+    content_type: "application/json"
+    payload: >
+      {"on": true, "bri": 255, "transition": 0,
+       "seg": [{"id": 0, "fx": 1, "sx": 235, "ix": 128, "col": [[255, 255, 255, 255], [0, 0, 0, 0], [0, 0, 0, 0]]}]}
+
+template:
+  - binary_sensor:
+      - name: "Frost heute oder morgen"
+        unique_id: frost_heute_oder_morgen
+        device_class: cold
+        icon: mdi:snowflake
+        # erster Frostzeitpunkt (48-h-Vorhersage) liegt heute oder morgen
+        state: >
+          {% set f = state_attr('sensor.tiefstwert_aussen_48_h', 'erster_frost') %}
+          {% set d = as_datetime(f, none) if f and f not in ['None', 'unknown'] else none %}
+          {{ d is not none and as_local(d).date() <= (now() + timedelta(days=1)).date() }}
+
+script:
+  frost_stripe_start:
+    alias: "Frost: Stripe blinken lassen"
+    icon: mdi:snowflake-alert
+    mode: single
+    sequence:
+      - if: "{{ is_state('input_boolean.frost_stripe_aktiv', 'off') }}"
+        then:
+          - action: scene.create
+            data: { scene_id: frost_stripe_vorher, snapshot_entities: [light.wled_kuche] }
+      - action: input_boolean.turn_on
+        target: { entity_id: input_boolean.frost_stripe_aktiv }
+      - action: rest_command.wled_kueche_frost
+        continue_on_error: true
+
+  frost_stripe_stop:
+    alias: "Frost: Stripe-Blinken beenden"
+    icon: mdi:snowflake-off
+    mode: single
+    sequence:
+      - condition: state
+        entity_id: input_boolean.frost_stripe_aktiv
+        state: "on"
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.frost_stripe_aktiv }
+      # läuft gerade die Müll-Erinnerung, gehört der Stripe ihr
+      - condition: state
+        entity_id: input_boolean.muell_alarm_aktiv
+        state: "off"
+      - if: "{{ states.scene.frost_stripe_vorher is not none }}"
+        then:
+          - action: scene.turn_on
+            target: { entity_id: scene.frost_stripe_vorher }
+        else:
+          - action: light.turn_off
+            target: { entity_id: light.wled_kuche }
+
+automation:
+  - id: frost_stripe_steuerung
+    alias: "Frost: Küchen-Stripe blinken"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: [binary_sensor.frost_heute_oder_morgen, input_boolean.frost_stripe_aus,
+                    input_boolean.frost_stripe_automatik, input_boolean.muell_alarm_aktiv]
+      - trigger: time
+        at: ["06:00:00", "22:00:00"]
+      - trigger: time_pattern
+        minutes: "/10"
+      - trigger: homeassistant
+        event: start
+    variables:
+      soll: >
+        {{ is_state('binary_sensor.frost_heute_oder_morgen', 'on')
+           and is_state('input_boolean.frost_stripe_automatik', 'on')
+           and is_state('input_boolean.frost_stripe_aus', 'off')
+           and is_state('input_boolean.muell_alarm_aktiv', 'off')
+           and today_at('06:00') <= now() < today_at('22:00') }}
+    actions:
+      - if: "{{ soll }}"
+        then:
+          # starten bzw. wieder herstellen, falls jemand den Stripe umgestellt hat
+          - if: "{{ is_state('input_boolean.frost_stripe_aktiv', 'off') or state_attr('light.wled_kuche', 'effect') != 'Blink' or is_state('light.wled_kuche', 'off') }}"
+            then:
+              - action: script.frost_stripe_start
+        else:
+          - if: "{{ is_state('input_boolean.frost_stripe_aktiv', 'on') }}"
+            then:
+              - action: script.frost_stripe_stop
+
+  # "Frost-Blinken aus" gilt nur für die aktuelle Frostphase
+  - id: frost_stripe_aus_zuruecksetzen
+    alias: "Frost: Blinken-aus zurücksetzen, wenn Frostwarnung vorbei"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.frost_heute_oder_morgen
+        to: "off"
+        for: "06:00:00"
+    actions:
+      - action: input_boolean.turn_off
+        target: { entity_id: input_boolean.frost_stripe_aus }

@@ -1,5 +1,8 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
+## 23.11.2026
+- Frost: Küchen-Stripe blinkt schnell weiß am Tag vor dem Frost und am Frosttag, 6–22 Uhr (packages/frost_stripe.yaml); abstellbar mit „Frost-Blinken aus“ (gilt bis Frostwarnung vorbei) oder ganz mit „Frost: Küchen-Stripe blinkt“; Müll-Erinnerung hat Vorrang
+
 ## 22.11.2026
 **Präsenzmelder sperren auf jeder Raumseite** (packages/melder_raumsperre.yaml)
 - Schalter „Präsenzmelder sperren“ oben auf jeder Raumseite; gesperrt = Melder schaltet kein Licht, alle Sperren heben sich um 5 Uhr auf
