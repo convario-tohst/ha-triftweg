@@ -981,6 +981,16 @@ STATUS:NEEDS-ACTION
 SUMMARY:Fehler: Wir sind aufgestanden\, oben können alle Präsenzmelder 
  eingeschaltet werden
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261122T181027Z
+UID:ff0d6f8c-e69f-11f1-9747-d83addc0128c
+CREATED:20261122T181027Z
+DTSTART;TZID=Europe/Berlin:20261122T191027
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Gartenbeleuchtung/Gartenlicht bedeutet nur Außenbeleuchtung 
+ Garten\, nicht den Giebel. Giebel nur bei ausdrücklichem Wunsch schalten.
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
