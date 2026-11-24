@@ -184,9 +184,13 @@ automation:
         after: "07:00:00"
         before: "22:00:00"
       # Ausnahmen: jemand sitzt still vor TV/Musik, Sauna/Disco laufen, Sauger fährt
-      - "{{ not is_state('media_player.samsung_6_series_55', 'on') }}"
-      - "{{ ['media_player.ma_wohnzimmer', 'media_player.ma_schlafzimmer', 'media_player.wohnzimmer', 'media_player.schlafzimmer']
-            | select('is_state', 'playing') | list | count == 0 }}"
+      # 24.11.: TV/Musik schützen nur bis 45 min ohne Bewegung (15 + 30) – sonst hielt die morgens
+      #   laufende Musik das Haus "bewohnt", obwohl alle weg waren (Lichter innen/außen blieben an)
+      - >
+        {% set medien = is_state('media_player.samsung_6_series_55', 'on') or
+             ['media_player.ma_wohnzimmer', 'media_player.ma_schlafzimmer', 'media_player.wohnzimmer', 'media_player.schlafzimmer']
+             | select('is_state', 'playing') | list | count > 0 %}
+        {{ not medien or (now() - states.binary_sensor.bewegung_im_haus.last_changed).total_seconds() > 1800 }}
       - "{{ not is_state('switch.saunaofen', 'on') }}"
       - "{{ not is_state('input_boolean.disco', 'on') }}"
       - "{{ not is_state('binary_sensor.sauger_unterwegs', 'on') }}"

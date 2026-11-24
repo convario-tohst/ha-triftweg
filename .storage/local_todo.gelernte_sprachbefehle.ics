@@ -175,6 +175,18 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:carport licht anmachen
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261124T061723Z
+UID:b66c8c10-e7ce-11f1-9747-d83addc0128c
+CREATED:20261124T061723Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.licht_eg_flur_decke"]
+ \,"daten":{"brightness_pct":100}\,"antwort":"Flurlicht unten ist voll 
+ an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261124T071723
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:das licht im flur unten mitte komplett an
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD

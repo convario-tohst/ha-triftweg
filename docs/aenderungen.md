@@ -1,6 +1,8 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
 ## 24.11.2026
+- Abwesenheit: Musik/TV verhindern „Abwesend ohne Bewegung“ nur noch bis 45 min ohne Bewegung (morgens lief die Morgenmusik weiter, Haus galt als bewohnt, Lichter blieben an)
+- Haus verlassen: tagsüber gehen alle Lichter aus, auch draußen und der Giebel (Giebel bleibt nur abends an); Gruppe „Alle Lichter“ um Außensauna-Leiste, Mülltonne, Einfahrt ergänzt
 - Wohnzimmer Morgenlicht (packages/wohnzimmer_praesenz.yaml): bei Präsenz 04:30–10 Uhr (wenn dunkel und noch kein Licht an) statt Szene Relax: Küche 31 %, Esstisch 35 %, Sofa 20 %, Küchen-Stripe 70 % – vor 6 Uhr ×0,7, bei Dämmerung außen (5–100 lx) ×0,8, darüber ×0,6; Stripe nicht bei Müll-/Frost-Blinken; Schalter „Morgenlicht“ auf der Raumseite Wohnen & Küche
 
 ## 23.11.2026

@@ -40,6 +40,10 @@ light:
       - light.sauna
       - light.werkstatt
       - light.dimmer_aussenbeleuchtung_sauna
+      # ergänzt 24.11. (Außen fehlte: Außensauna-Leiste, Mülltonne, Einfahrt)
+      - light.aussensauna
+      - light.mulltonne_licht
+      - light.einfahrt_licht
 
 input_boolean:
   alles_an:
@@ -69,10 +73,15 @@ script:
     alias: "Haus verlassen"
     icon: mdi:exit-run
     sequence:
-      # 07.11.: Giebel bleibt an (Wunsch) – geht um 23 Uhr selbst aus
+      # 07.11.: Giebel bleibt abends an (Wunsch) – geht um 23 Uhr selbst aus.
+      # 24.11.: morgens/tagsüber gehen beim Verlassen ALLE Lichter aus, auch draußen und der Giebel
       - action: light.turn_off
+        continue_on_error: true
         target:
-          entity_id: "{{ state_attr('light.alle_lichter', 'entity_id') | reject('eq', 'light.dimmer_aussenbeleuchtung_giebel') | list }}"
+          entity_id: >
+            {% set alle = state_attr('light.alle_lichter', 'entity_id') | select('has_value') | list %}
+            {% if now().hour >= 15 and is_state('sun.sun', 'below_horizon') %}{{ alle | reject('eq', 'light.dimmer_aussenbeleuchtung_giebel') | list }}
+            {% else %}{{ alle }}{% endif %}
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.alles_an
