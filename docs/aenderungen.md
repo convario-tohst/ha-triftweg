@@ -1,5 +1,8 @@
 # Home Assistant Triftweg – Änderungsprotokoll
 
+## 24.11.2026
+- Wohnzimmer Morgenlicht (packages/wohnzimmer_praesenz.yaml): bei Präsenz 04:30–10 Uhr (wenn dunkel und noch kein Licht an) statt Szene Relax: Küche 31 %, Esstisch 35 %, Sofa 20 %, Küchen-Stripe 70 % – vor 6 Uhr ×0,7, bei Dämmerung außen (5–100 lx) ×0,8, darüber ×0,6; Stripe nicht bei Müll-/Frost-Blinken; Schalter „Morgenlicht“ auf der Raumseite Wohnen & Küche
+
 ## 23.11.2026
 - Frost: Küchen-Stripe blinkt schnell weiß am Tag vor dem Frost und am Frosttag, 6–22 Uhr (packages/frost_stripe.yaml); abstellbar mit „Frost-Blinken aus“ (gilt bis Frostwarnung vorbei) oder ganz mit „Frost: Küchen-Stripe blinkt“; Müll-Erinnerung hat Vorrang
 - Schnee heute/morgen in der Vorhersage: statt Blinken weißes Glitzern auf Eisblau (WLED „Sparkle“), Sensor `binary_sensor.schnee_heute_oder_morgen`

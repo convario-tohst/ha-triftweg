@@ -9,6 +9,9 @@
 #   und um 5 Uhr selbst auf. Sperrt jemand per Taster, folgt der Schalter.
 
 input_boolean:
+  wohnzimmer_morgenlicht:
+    name: "Wohnzimmer: Morgenlicht (04:30–10 Uhr)"
+    icon: mdi:weather-sunset-up
   wohnzimmer_praesenz_licht:
     name: "Wohnzimmer: Licht nach Präsenz"
     icon: mdi:motion-sensor
@@ -106,8 +109,46 @@ automation:
               - "{{ ['light.licht_wohnen_und_kuche', 'light.dimmer_kuche_decke_2', 'light.dimmer_wohnzimmer_esstisch',
                     'light.dimmer_wand_sofa'] | select('is_state', 'on') | list | count == 0 }}"
             sequence:
-              - action: scene.turn_on
-                target: { entity_id: scene.relax }
+              - if:
+                  # Morgenlicht (Wunsch 24.11.): morgens 04:30–10:00 statt Relax eigene Werte,
+                  # angepasst an Uhrzeit und Außenhelligkeit (früh/dunkel = gedämpfter, Dämmerung = weniger nötig)
+                  - condition: state
+                    entity_id: input_boolean.wohnzimmer_morgenlicht
+                    state: "on"
+                  - condition: time
+                    after: "04:30:00"
+                    before: "10:00:00"
+                then:
+                  - variables:
+                      lux: "{{ states('sensor.helligkeit_aussen') | float(0) }}"
+                      f_zeit: "{{ 0.7 if now().hour < 6 else 1.0 }}"
+                      f_lux: "{{ 1.0 if lux < 5 else (0.8 if lux < 100 else 0.6) }}"
+                      f: "{{ f_zeit * f_lux }}"
+                      pct: "{{ {'kueche': [31 * f, 10] | max | round(0) | int, 'esstisch': [35 * f, 10] | max | round(0) | int,
+                                'sofa': [20 * f, 8] | max | round(0) | int, 'stripe': [70 * f, 20] | max | round(0) | int} }}"
+                  - action: light.turn_on
+                    target: { entity_id: light.dimmer_kuche_decke_2 }
+                    data: { brightness_pct: "{{ pct.kueche }}", transition: 3 }
+                  - action: light.turn_on
+                    target: { entity_id: light.dimmer_wohnzimmer_esstisch }
+                    data: { brightness_pct: "{{ pct.esstisch }}", transition: 3 }
+                  - action: light.turn_on
+                    target: { entity_id: light.dimmer_wand_sofa }
+                    data: { brightness_pct: "{{ pct.sofa }}", transition: 3 }
+                  # Küchen-Stripe nur, wenn er nicht gerade für Müll/Frost blinkt
+                  - if: "{{ is_state('input_boolean.muell_alarm_aktiv', 'off') and is_state('input_boolean.frost_stripe_aktiv', 'off') }}"
+                    then:
+                      - action: light.turn_on
+                        continue_on_error: true
+                        target: { entity_id: light.wled_kuche }
+                        data: { brightness_pct: "{{ pct.stripe }}", transition: 3 }
+                  - action: logbook.log
+                    data:
+                      name: "Wohnzimmer Morgenlicht"
+                      message: "Küche {{ pct.kueche }} %, Esstisch {{ pct.esstisch }} %, Sofa {{ pct.sofa }} %, Stripe {{ pct.stripe }} % (außen {{ lux | round(0) }} lx)"
+                else:
+                  - action: scene.turn_on
+                    target: { entity_id: scene.relax }
           - conditions: "{{ trigger.id == 'aus' }}"
             sequence:
               - action: scene.turn_on

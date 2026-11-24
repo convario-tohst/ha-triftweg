@@ -5013,6 +5013,16 @@
                 },
                 {
                   "type": "tile",
+                  "entity": "input_boolean.wohnzimmer_morgenlicht",
+                  "name": "Morgenlicht",
+                  "icon": "mdi:weather-sunset-up",
+                  "color": "amber",
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                },
+                {
+                  "type": "tile",
                   "entity": "climate.heizung_wohnzimmer",
                   "name": "Heizung",
                   "color": "deep-orange",

@@ -991,6 +991,19 @@ STATUS:NEEDS-ACTION
 SUMMARY:Gartenbeleuchtung/Gartenlicht bedeutet nur Außenbeleuchtung 
  Garten\, nicht den Giebel. Giebel nur bei ausdrücklichem Wunsch schalten.
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261124T054156Z
+UID:56d103fa-e7c7-11f1-9747-d83addc0128c
+COMPLETED:20261124T054156Z
+CREATED:20261124T052436Z
+DTSTART;TZID=Europe/Berlin:20261124T062436
+LAST-MODIFIED:20261124T054156Z
+SEQUENCE:1
+STATUS:COMPLETED
+SUMMARY:Morgens beim ersten Betreten des Wohnzimmers mit Musikstart: Licht 
+ unten auf aktuelle Helligkeit setzen – Küchenlicht 31 %\, Esstisch 35 %\, 
+ Sofa 20 %\, Küchenstripe 70 %
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
