@@ -187,6 +187,30 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:das licht im flur unten mitte komplett an
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261124T153805Z
+UID:0a8e57bc-e81d-11f1-9747-d83addc0128c
+CREATED:20261124T153805Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.dimmer_aussenbeleucht
+ ung_giebel"\,"light.aussenbeleuchtung_garten"]\,"daten":{}\,"antwort":"Das
+  Gartenlicht ist an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261124T163805
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:gartenlicht draußen an
+END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261124T164656Z
+UID:a8bfe528-e826-11f1-9747-d83addc0128c
+CREATED:20261124T164656Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.dimmer_aussenbeleucht
+ ung_sauna"]\,"daten":{}\,"antwort":"Das Saunalicht draußen ist 
+ an."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261124T174656
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:licht draußen bei der sauna an
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD

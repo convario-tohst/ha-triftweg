@@ -1004,6 +1004,16 @@ SUMMARY:Morgens beim ersten Betreten des Wohnzimmers mit Musikstart: Licht
  unten auf aktuelle Helligkeit setzen – Küchenlicht 31 %\, Esstisch 35 %\, 
  Sofa 20 %\, Küchenstripe 70 %
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261124T182308Z
+UID:194c29ca-e834-11f1-9747-d83addc0128c
+CREATED:20261124T182308Z
+DTSTART;TZID=Europe/Berlin:20261124T192308
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Kochen-Funktion für die Lüftung (z. B. eine Stunde 100 %\, danach 
+ automatisch zurück auf normal)
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
