@@ -1014,6 +1014,17 @@ STATUS:NEEDS-ACTION
 SUMMARY:Kochen-Funktion für die Lüftung (z. B. eine Stunde 100 %\, danach 
  automatisch zurück auf normal)
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261125T190849Z
+UID:a54e1918-e903-11f1-9747-d83addc0128c
+CREATED:20261125T190849Z
+DTSTART;TZID=Europe/Berlin:20261125T200849
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Bei "Carport und Gartenlicht aus" nur Carport und Außenbeleuchtung 
+ Garten ausschalten\, nicht den Giebel (Giebel nur auf ausdrücklichen 
+ Wunsch)
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
