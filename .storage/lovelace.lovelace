@@ -87,6 +87,239 @@
               "type": "grid",
               "cards": [
                 {
+                  "type": "custom:mushroom-chips-card",
+                  "alignment": "center",
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "chips": [
+                    {
+                      "type": "template",
+                      "icon": "mdi:floor-plan",
+                      "content": "Räume",
+                      "icon_color": "amber",
+                      "tap_action": {
+                        "action": "navigate",
+                        "navigation_path": "/lovelace/raeume"
+                      }
+                    },
+                    {
+                      "type": "template",
+                      "icon": "mdi:robot",
+                      "content": "Automatik",
+                      "icon_color": "deep-purple",
+                      "tap_action": {
+                        "action": "navigate",
+                        "navigation_path": "/lovelace/zeiten"
+                      }
+                    },
+                    {
+                      "type": "template",
+                      "icon": "mdi:music",
+                      "content": "Musik",
+                      "icon_color": "pink",
+                      "tap_action": {
+                        "action": "navigate",
+                        "navigation_path": "/lovelace/musik"
+                      }
+                    },
+                    {
+                      "type": "template",
+                      "icon": "mdi:cctv",
+                      "content": "Kameras",
+                      "icon_color": "blue",
+                      "tap_action": {
+                        "action": "navigate",
+                        "navigation_path": "/lovelace/kamera"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "column_span": 3
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Schnell",
+                  "icon": "mdi:flash"
+                },
+                {
+                  "type": "tile",
+                  "entity": "script.ich_gehe_ins_bett",
+                  "name": "Ich gehe ins Bett",
+                  "icon": "mdi:bed",
+                  "hide_state": true,
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.ich_gehe_ins_bett"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "script.alles_aus",
+                  "name": "Alles aus",
+                  "icon": "mdi:power",
+                  "hide_state": true,
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.alles_aus"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "script.haus_verlassen",
+                  "name": "Haus verlassen",
+                  "color": "red",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  },
+                  "icon": "mdi:exit-run",
+                  "hide_state": true,
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.haus_verlassen",
+                    "confirmation": {
+                      "text": "Alle Lichter aus, Lüftung auf Abwesend, Musik/TV und Saunaofen aus?"
+                    }
+                  },
+                  "icon_tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.haus_verlassen",
+                    "confirmation": {
+                      "text": "Alle Lichter aus, Lüftung auf Abwesend, Musik/TV und Saunaofen aus?"
+                    }
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.wohnzimmer_melder_gesperrt",
+                  "name": "Melder Wohnz. sperren",
+                  "icon": "mdi:motion-sensor-off",
+                  "color": "red",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.nachtlicht_heute_aus",
+                  "name": "Nachtlicht oben heute aus",
+                  "icon": "mdi:weather-night-partly-cloudy",
+                  "color": "indigo",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "conditions": [
+                    {
+                      "condition": "state",
+                      "entity": "input_boolean.muell_alarm_aktiv",
+                      "state": "on"
+                    }
+                  ],
+                  "card": {
+                    "type": "custom:mushroom-template-card",
+                    "primary": "🗑️ {{ states('input_text.muell_alarm_tonne') }} – Tonne rausgestellt?",
+                    "secondary": "Tippen = erledigt (Stripe hört auf zu blinken)",
+                    "icon": "mdi:trash-can-outline",
+                    "icon_color": "red",
+                    "fill_container": true,
+                    "tap_action": {
+                      "action": "perform-action",
+                      "perform_action": "input_boolean.turn_on",
+                      "target": {
+                        "entity_id": "input_boolean.muell_erledigt"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "condition": "state",
+                      "entity": "binary_sensor.vallox_filter_fallig",
+                      "state": "on"
+                    }
+                  ],
+                  "card": {
+                    "type": "tile",
+                    "entity": "sensor.vallox_filter_resttage",
+                    "name": "Vallox-Filter wechseln (Tage)",
+                    "icon": "mdi:air-filter",
+                    "color": "red",
+                    "grid_options": {
+                      "columns": "full"
+                    }
+                  },
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "conditions": [
+                    {
+                      "condition": "or",
+                      "conditions": [
+                        {
+                          "condition": "state",
+                          "entity": "binary_sensor.frost_heute_oder_morgen",
+                          "state": "on"
+                        },
+                        {
+                          "condition": "state",
+                          "entity": "binary_sensor.schnee_heute_oder_morgen",
+                          "state": "on"
+                        }
+                      ]
+                    }
+                  ],
+                  "card": {
+                    "type": "tile",
+                    "entity": "input_boolean.frost_stripe_aus",
+                    "name": "Frost-Leuchten Küche ausschalten",
+                    "icon": "mdi:snowflake-off",
+                    "color": "blue",
+                    "tap_action": {
+                      "action": "toggle"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
                   "type": "heading",
                   "heading": "Klima",
                   "heading_style": "title",
@@ -370,43 +603,24 @@
                       "state": "on"
                     }
                   ]
-                }
-              ]
-            },
-            {
-              "type": "grid",
-              "cards": [
-                {
-                  "type": "heading",
-                  "heading": "Schnell",
-                  "icon": "mdi:lightning-bolt"
                 },
                 {
-                  "type": "tile",
-                  "entity": "script.ich_gehe_ins_bett",
-                  "name": "Ich gehe ins Bett",
-                  "icon": "mdi:bed",
-                  "hide_state": true,
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Heizung",
+                  "secondary": "{% set z = ['climate.heizung_wohnzimmer','climate.heizung_obergeschoss_3','climate.heizung_bad_yvonne_2','climate.heizung_flur_eg','climate.heizung_ankleide','climate.heizung_hwr','climate.heizung_sauna'] %}Ø {{ (z | map('state_attr','current_temperature') | select('number') | list | average(0)) | round(1) }} °C · {{ z | select('is_state_attr','hvac_action','heating') | list | count }} heizen",
+                  "icon": "mdi:radiator",
+                  "icon_color": "deep-orange",
+                  "badge_color": "grey",
+                  "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_heizung', 'on') else 'mdi:chevron-down' }}",
                   "tap_action": {
                     "action": "perform-action",
-                    "perform_action": "script.ich_gehe_ins_bett"
+                    "perform_action": "input_boolean.toggle",
+                    "target": {
+                      "entity_id": "input_boolean.dash_heizung"
+                    }
                   },
                   "grid_options": {
-                    "columns": 6
-                  }
-                },
-                {
-                  "type": "tile",
-                  "entity": "script.alles_aus",
-                  "name": "Alles aus",
-                  "icon": "mdi:power",
-                  "hide_state": true,
-                  "tap_action": {
-                    "action": "perform-action",
-                    "perform_action": "script.alles_aus"
-                  },
-                  "grid_options": {
-                    "columns": 6
+                    "columns": "full"
                   }
                 },
                 {
@@ -414,197 +628,122 @@
                   "conditions": [
                     {
                       "condition": "state",
-                      "entity": "binary_sensor.vallox_filter_fallig",
+                      "entity": "input_boolean.dash_heizung",
                       "state": "on"
                     }
                   ],
                   "card": {
-                    "type": "tile",
-                    "entity": "sensor.vallox_filter_resttage",
-                    "name": "Vallox-Filter wechseln (Tage)",
-                    "icon": "mdi:air-filter",
-                    "color": "red",
-                    "grid_options": {
-                      "columns": "full"
-                    }
-                  }
-                },
-                {
-                  "type": "tile",
-                  "entity": "input_boolean.wohnzimmer_melder_gesperrt",
-                  "name": "Melder Wohnzimmer sperren",
-                  "icon": "mdi:motion-sensor-off",
-                  "color": "red",
-                  "tap_action": {
-                    "action": "toggle"
-                  },
-                  "grid_options": {
-                    "columns": 6,
-                    "rows": 1
-                  }
-                },
-                {
-                  "type": "tile",
-                  "entity": "input_boolean.nachtlicht_heute_aus",
-                  "name": "Nachtlicht oben heute aus",
-                  "icon": "mdi:weather-night-partly-cloudy",
-                  "color": "indigo",
-                  "tap_action": {
-                    "action": "toggle"
-                  },
-                  "grid_options": {
-                    "columns": 6,
-                    "rows": 1
-                  }
-                },
-                {
-                  "type": "tile",
-                  "entity": "input_boolean.nachtlicht_automatik",
-                  "name": "Nachtlicht oben automatisch",
-                  "icon": "mdi:weather-night",
-                  "color": "amber",
-                  "tap_action": {
-                    "action": "toggle"
-                  },
-                  "grid_options": {
-                    "columns": 6,
-                    "rows": 1
-                  }
-                },
-                {
-                  "type": "conditional",
-                  "conditions": [
-                    {
-                      "condition": "or",
-                      "conditions": [
-                        {
-                          "condition": "state",
-                          "entity": "binary_sensor.frost_heute_oder_morgen",
-                          "state": "on"
+                    "type": "vertical-stack",
+                    "cards": [
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_wohnzimmer",
+                        "name": "Wohnen / Küche",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
                         },
-                        {
-                          "condition": "state",
-                          "entity": "binary_sensor.schnee_heute_oder_morgen",
-                          "state": "on"
-                        }
-                      ]
-                    }
-                  ],
-                  "card": {
-                    "type": "tile",
-                    "entity": "input_boolean.frost_stripe_aus",
-                    "name": "Frost-/Schnee-Leuchten aus",
-                    "icon": "mdi:snowflake-off",
-                    "color": "blue",
-                    "tap_action": {
-                      "action": "toggle"
-                    },
-                    "grid_options": {
-                      "columns": 6,
-                      "rows": 1
-                    }
-                  }
-                },
-                {
-                  "type": "tile",
-                  "entity": "input_boolean.frost_stripe_automatik",
-                  "name": "Frost: Küchen-Stripe blinkt",
-                  "icon": "mdi:snowflake-alert",
-                  "color": "light-blue",
-                  "tap_action": {
-                    "action": "toggle"
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      },
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_obergeschoss_3",
+                        "name": "Obergeschoss",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
+                        },
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      },
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_bad_yvonne_2",
+                        "name": "Bad Yvonne",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
+                        },
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      },
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_flur_eg",
+                        "name": "Flur EG",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
+                        },
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      },
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_ankleide",
+                        "name": "Ankleide",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
+                        },
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      },
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_hwr",
+                        "name": "HWR",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
+                        },
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      },
+                      {
+                        "type": "tile",
+                        "entity": "climate.heizung_sauna",
+                        "name": "Sauna",
+                        "color": "deep-orange",
+                        "grid_options": {
+                          "columns": "full"
+                        },
+                        "features": [
+                          {
+                            "type": "target-temperature"
+                          }
+                        ],
+                        "features_position": "inline"
+                      }
+                    ]
                   },
-                  "grid_options": {
-                    "columns": 6,
-                    "rows": 1
-                  }
-                }
-              ]
-            },
-            {
-              "type": "grid",
-              "cards": [
-                {
-                  "type": "custom:mushroom-chips-card",
-                  "alignment": "center",
                   "grid_options": {
                     "columns": "full"
-                  },
-                  "chips": [
-                    {
-                      "type": "template",
-                      "icon": "mdi:floor-plan",
-                      "content": "Räume",
-                      "icon_color": "amber",
-                      "tap_action": {
-                        "action": "navigate",
-                        "navigation_path": "/lovelace/raeume"
-                      }
-                    },
-                    {
-                      "type": "template",
-                      "icon": "mdi:robot",
-                      "content": "Automatik",
-                      "icon_color": "deep-purple",
-                      "tap_action": {
-                        "action": "navigate",
-                        "navigation_path": "/lovelace/zeiten"
-                      }
-                    },
-                    {
-                      "type": "template",
-                      "icon": "mdi:music",
-                      "content": "Musik",
-                      "icon_color": "pink",
-                      "tap_action": {
-                        "action": "navigate",
-                        "navigation_path": "/lovelace/musik"
-                      }
-                    },
-                    {
-                      "type": "template",
-                      "icon": "mdi:cctv",
-                      "content": "Kameras",
-                      "icon_color": "blue",
-                      "tap_action": {
-                        "action": "navigate",
-                        "navigation_path": "/lovelace/kamera"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "grid",
-              "id": "muell_alarm",
-              "cards": [
-                {
-                  "type": "conditional",
-                  "grid_options": {
-                    "columns": "full"
-                  },
-                  "conditions": [
-                    {
-                      "condition": "state",
-                      "entity": "input_boolean.muell_alarm_aktiv",
-                      "state": "on"
-                    }
-                  ],
-                  "card": {
-                    "type": "custom:mushroom-template-card",
-                    "primary": "🗑️ {{ states('input_text.muell_alarm_tonne') }} – Tonne rausgestellt?",
-                    "secondary": "Tippen = erledigt (Stripe hört auf zu blinken)",
-                    "icon": "mdi:trash-can-outline",
-                    "icon_color": "red",
-                    "fill_container": true,
-                    "tap_action": {
-                      "action": "perform-action",
-                      "perform_action": "input_boolean.turn_on",
-                      "target": {
-                        "entity_id": "input_boolean.muell_erledigt"
-                      }
-                    }
                   }
                 }
               ]
@@ -841,153 +980,6 @@
               "type": "grid",
               "cards": [
                 {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "Heizung",
-                  "secondary": "{% set z = ['climate.heizung_wohnzimmer','climate.heizung_obergeschoss_3','climate.heizung_bad_yvonne_2','climate.heizung_flur_eg','climate.heizung_ankleide','climate.heizung_hwr','climate.heizung_sauna'] %}Ø {{ (z | map('state_attr','current_temperature') | select('number') | list | average(0)) | round(1) }} °C · {{ z | select('is_state_attr','hvac_action','heating') | list | count }} heizen",
-                  "icon": "mdi:radiator",
-                  "icon_color": "deep-orange",
-                  "badge_color": "grey",
-                  "badge_icon": "{{ 'mdi:chevron-up' if is_state('input_boolean.dash_heizung', 'on') else 'mdi:chevron-down' }}",
-                  "tap_action": {
-                    "action": "perform-action",
-                    "perform_action": "input_boolean.toggle",
-                    "target": {
-                      "entity_id": "input_boolean.dash_heizung"
-                    }
-                  },
-                  "grid_options": {
-                    "columns": "full"
-                  }
-                },
-                {
-                  "type": "conditional",
-                  "conditions": [
-                    {
-                      "condition": "state",
-                      "entity": "input_boolean.dash_heizung",
-                      "state": "on"
-                    }
-                  ],
-                  "card": {
-                    "type": "vertical-stack",
-                    "cards": [
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_wohnzimmer",
-                        "name": "Wohnen / Küche",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      },
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_obergeschoss_3",
-                        "name": "Obergeschoss",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      },
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_bad_yvonne_2",
-                        "name": "Bad Yvonne",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      },
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_flur_eg",
-                        "name": "Flur EG",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      },
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_ankleide",
-                        "name": "Ankleide",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      },
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_hwr",
-                        "name": "HWR",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      },
-                      {
-                        "type": "tile",
-                        "entity": "climate.heizung_sauna",
-                        "name": "Sauna",
-                        "color": "deep-orange",
-                        "grid_options": {
-                          "columns": "full"
-                        },
-                        "features": [
-                          {
-                            "type": "target-temperature"
-                          }
-                        ],
-                        "features_position": "inline"
-                      }
-                    ]
-                  },
-                  "grid_options": {
-                    "columns": "full"
-                  }
-                }
-              ]
-            },
-            {
-              "type": "grid",
-              "cards": [
-                {
                   "type": "heading",
                   "heading": "Zuhause",
                   "icon": "mdi:home-heart",
@@ -1033,31 +1025,6 @@
                       }
                     ],
                     "features_position": "inline"
-                  }
-                },
-                {
-                  "type": "tile",
-                  "entity": "script.haus_verlassen",
-                  "name": "Haus verlassen",
-                  "color": "red",
-                  "grid_options": {
-                    "columns": 6
-                  },
-                  "icon": "mdi:exit-run",
-                  "hide_state": true,
-                  "tap_action": {
-                    "action": "perform-action",
-                    "perform_action": "script.haus_verlassen",
-                    "confirmation": {
-                      "text": "Alle Lichter aus, Lüftung auf Abwesend, Musik/TV und Saunaofen aus?"
-                    }
-                  },
-                  "icon_tap_action": {
-                    "action": "perform-action",
-                    "perform_action": "script.haus_verlassen",
-                    "confirmation": {
-                      "text": "Alle Lichter aus, Lüftung auf Abwesend, Musik/TV und Saunaofen aus?"
-                    }
                   }
                 },
                 {
@@ -3144,6 +3111,42 @@
                         "entity": "automation.voice_musik_beim_zuhoren_leiser"
                       }
                     ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Weitere Schalter",
+                  "icon": "mdi:toggle-switch-outline"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.nachtlicht_automatik",
+                  "name": "Nachtlicht oben automatisch",
+                  "icon": "mdi:weather-night",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.frost_stripe_automatik",
+                  "name": "Frost/Schnee: Küchen-Stripe",
+                  "icon": "mdi:snowflake-alert",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 1
                   }
                 }
               ]

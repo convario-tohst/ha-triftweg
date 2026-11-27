@@ -211,6 +211,18 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:licht draußen bei der sauna an
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261126T065648Z
+UID:8cada046-e966-11f1-9747-d83addc0128c
+CREATED:20261126T065648Z
+DESCRIPTION:{"dienst":"light.turn_off"\,"ziel":["light.aussenbeleuchtung_ga
+ rten"\,"light.dimmer_aussenbeleuchtung_giebel"\,"light.licht_decke"]\,"dat
+ en":{}\,"antwort":"Gartenlicht und Carportlicht sind aus."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261126T075648
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:gartenlicht und carportlicht aus
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
