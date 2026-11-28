@@ -1025,6 +1025,15 @@ SUMMARY:Bei "Carport und Gartenlicht aus" nur Carport und Außenbeleuchtung
  Garten ausschalten\, nicht den Giebel (Giebel nur auf ausdrücklichen 
  Wunsch)
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261127T081601Z
+UID:c897b34c-ea3a-11f1-9747-d83addc0128c
+CREATED:20261127T081601Z
+DTSTART;TZID=Europe/Berlin:20261127T091601
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:Carport- und Gartenlicht dürfen tagsüber nicht angehen
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD

@@ -1,12 +1,5 @@
 [
 {
-"p": 1,
-"k": "Präsenz & Licht",
-"t": "Alle 38 Lichter erreichbar",
-"s": "fehler",
-"i": "Voice Wohnzimmer LED Ring"
-},
-{
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Entfeuchter (Schlafzimmer) Dehumidifier",
@@ -28,18 +21,11 @@
 "i": "unavailable"
 },
 {
-"p": 3,
-"k": "Komfort",
-"t": "Voice Wohnzimmer Assist-Satellit",
-"s": "fehler",
-"i": "unavailable"
-},
-{
 "p": 1,
 "k": "Präsenz & Licht",
 "t": "Präsenz Anwesenheit hängt nicht auf 'besetzt'",
 "s": "warnung",
-"i": "seit 62 h ununterbrochen besetzt – Melder prüfen"
+"i": "seit 86 h ununterbrochen besetzt – Melder prüfen"
 },
 {
 "p": 1,
@@ -53,7 +39,7 @@
 "k": "Präsenz & Licht",
 "t": "„Bad Yvonne: Entspannen an/aus“: lief zuletzt erfolgreich (72 h)",
 "s": "warnung",
-"i": "letzte Auslösung vor 299 h"
+"i": "letzte Auslösung vor 323 h"
 },
 {
 "p": 1,
@@ -67,63 +53,49 @@
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Lara aktuell",
 "s": "warnung",
-"i": "unknown, 94 h alt (1-Wire OG offline)"
+"i": "unknown, 118 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Malte aktuell",
 "s": "warnung",
-"i": "8.86, 94 h alt (1-Wire OG offline)"
+"i": "8.86, 118 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Absolute Feuchte Schlafzimmer aktuell",
 "s": "warnung",
-"i": "7.77, 94 h alt (1-Wire OG offline)"
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Feuchte Ankleide aktuell",
-"s": "warnung",
-"i": "42.4, 12 h alt"
+"i": "6.6, 14 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Lara aktuell",
 "s": "warnung",
-"i": "49.24, 94 h alt (1-Wire OG offline)"
+"i": "49.24, 118 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Malte aktuell",
 "s": "warnung",
-"i": "41.24, 84 h alt (1-Wire OG offline)"
+"i": "41.24, 108 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Schlafzimmer aktuell",
 "s": "warnung",
-"i": "42.8, 94 h alt (1-Wire OG offline)"
-},
-{
-"p": 2,
-"k": "Heizung & Klima",
-"t": "Raumwert Helligkeit Ankleide aktuell",
-"s": "warnung",
-"i": "1.0, 9 h alt"
+"i": "40.02, 15 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Bad Yvonne aktuell",
 "s": "warnung",
-"i": "5.0, 15 h alt"
+"i": "5.0, 39 h alt"
 },
 {
 "p": 2,
@@ -144,70 +116,70 @@
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Gästebad Wand aktuell",
 "s": "warnung",
-"i": "1.0, 10 h alt"
+"i": "3.0, 14 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit HWR aktuell",
 "s": "warnung",
-"i": "4.0, 10 h alt"
+"i": "3.0, 10 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Lara aktuell",
 "s": "warnung",
-"i": "31.0, 13 h alt (1-Wire OG offline)"
+"i": "31.0, 37 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Malte aktuell",
 "s": "warnung",
-"i": "3.0, 61 h alt (1-Wire OG offline)"
+"i": "3.0, 85 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Schlafzimmer aktuell",
 "s": "warnung",
-"i": "1.0, 94 h alt (1-Wire OG offline)"
+"i": "42.0, 14 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Helligkeit Werkstatt aktuell",
 "s": "warnung",
-"i": "0.0, 20 h alt"
+"i": "0.0, 44 h alt"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Lara aktuell",
 "s": "warnung",
-"i": "unknown, 94 h alt (1-Wire OG offline)"
+"i": "unknown, 118 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Malte aktuell",
 "s": "warnung",
-"i": "unknown, 94 h alt (1-Wire OG offline)"
+"i": "unknown, 118 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Taupunkt Schlafzimmer aktuell",
 "s": "warnung",
-"i": "7.82, 94 h alt (1-Wire OG offline)"
+"i": "5.26, 14 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Temperatur Schlafzimmer aktuell",
 "s": "warnung",
-"i": "unknown, 94 h alt (1-Wire OG offline)"
+"i": "unknown, 118 h alt (1-Wire OG offline)"
 },
 {
 "p": 2,
@@ -235,7 +207,7 @@
 "k": "Anwesenheit",
 "t": "Handy Yvonne Ohst meldet sich",
 "s": "info",
-"i": "seit 8.5 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
+"i": "seit 4.7 h keine Meldung – zählt nicht als zu Hause (HA-App: Standort immer erlauben)"
 },
 {
 "p": 3,
@@ -703,6 +675,13 @@
 "p": 1,
 "k": "Präsenz & Licht",
 "t": "Anwesenheit (Jemand im Haus) verfügbar",
+"s": "ok",
+"i": ""
+},
+{
+"p": 1,
+"k": "Präsenz & Licht",
+"t": "Alle 38 Lichter erreichbar",
 "s": "ok",
 "i": ""
 },
@@ -2697,6 +2676,13 @@
 {
 "p": 2,
 "k": "Heizung & Klima",
+"t": "Raumwert Feuchte Ankleide aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
 "t": "Raumwert Feuchte Bad Yvonne aktuell",
 "s": "ok",
 "i": ""
@@ -2740,6 +2726,13 @@
 "p": 2,
 "k": "Heizung & Klima",
 "t": "Raumwert Feuchte Wohnzimmer aktuell",
+"s": "ok",
+"i": ""
+},
+{
+"p": 2,
+"k": "Heizung & Klima",
+"t": "Raumwert Helligkeit Ankleide aktuell",
 "s": "ok",
 "i": ""
 },
@@ -3832,6 +3825,13 @@
 "p": 3,
 "k": "Komfort",
 "t": "Wohnzimmer (Music Assistant)",
+"s": "ok",
+"i": ""
+},
+{
+"p": 3,
+"k": "Komfort",
+"t": "Voice Wohnzimmer Assist-Satellit",
 "s": "ok",
 "i": ""
 },

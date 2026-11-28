@@ -223,6 +223,18 @@ SEQUENCE:0
 STATUS:NEEDS-ACTION
 SUMMARY:gartenlicht und carportlicht aus
 END:VTODO
+BEGIN:VTODO
+DTSTAMP:20261127T062413Z
+UID:29ec0e6e-ea2b-11f1-9747-d83addc0128c
+CREATED:20261127T062413Z
+DESCRIPTION:{"dienst":"light.turn_on"\,"ziel":["light.dimmer_kuche_decke_2"
+ ]\,"daten":{"brightness_pct":100}\,"antwort":"Küchenlicht ist auf 100 
+ Prozent."\,"anzahl":1}
+DTSTART;TZID=Europe/Berlin:20261127T072413
+SEQUENCE:0
+STATUS:NEEDS-ACTION
+SUMMARY:küchenlicht 100%
+END:VTODO
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
 BEGIN:STANDARD
